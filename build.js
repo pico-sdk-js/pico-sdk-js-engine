@@ -16,7 +16,11 @@ const srcGenPath = path.join(__dirname, "src/gen");
 
 if (argv.clean) {
   clean();
-} else {
+} else if (argv.cmake) {
+  cmake();
+} else if (argv.make) {
+  make();
+}else {
   build();
 }
 
@@ -25,23 +29,39 @@ function clean() {
   fs.removeSync(srcGenPath);
 }
 
-function build() {
+function cmake() {
   // ensure /build
   fs.ensureDirSync(buildPath);
 
-  // execute cmake and make
   process.chdir(buildPath);
+
+  // cmake everything
   const params = [
     "..", 
     `-DTARGET_NAME=${package.name}`,
     `-DTARGET_VERSION=${package.version}`
   ];
-
-  // build everything
-  const cores = os.cpus().length;
   cmd("cmake", params);
-  cmd("make", [`-j${cores}`]);
+
   process.chdir(__dirname);
+}
+
+function make() {
+  // ensure /build
+  fs.ensureDirSync(buildPath);
+
+  process.chdir(buildPath);
+
+  // make everything
+  const cores = os.cpus().length;
+  cmd("make", [`-j${cores}`]);
+
+  process.chdir(__dirname);
+}
+
+function build() {
+  cmake();
+  make();
 }
 
 function cmd(cmd, args) {

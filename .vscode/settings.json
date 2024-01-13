@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "jerryscript.h": "c",
+        "jerryscript-core.h": "c"
+    }
+}
