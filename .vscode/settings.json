@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "jerryscript.h": "c",
-        "jerryscript-core.h": "c"
+        "jerryscript-core.h": "c",
+        "select.h": "c",
+        "handler.h": "c"
     }
 }

@@ -8,9 +8,12 @@ if (NOT TARGET_VERSION)
     message(FATAL_ERROR "Missing required parameter TARGET_VERSION")
 endif()
 
-# Set PICO settings
-set(PICO_SDK_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib/pico-sdk)
-set(PICO_BOARD pico_w)
+# valid options are "rp2xxx" and "linux"
+if (NOT TARGET_OS)
+  set(TARGET_OS "linux")
+endif()
+
+set(CMAKE_BUILD_TYPE Debug)
 
 # Set general build settings
 set(CMAKE_C_STANDARD 11)
@@ -18,7 +21,12 @@ set(CMAKE_CXX_STANDARD 17)
 
 # Set JERRYSCRIPT settings
 set(JERRYSCRIPT_SDK_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib/jerryscript)
-set(JERRYSCRIPT_TOOLCHAIN ${CMAKE_CURRENT_SOURCE_DIR}/jerryscript_toolchain.cmake)
+
+if (TARGET_OS STREQUAL "rp2xxx")
+  set(JERRYSCRIPT_TOOLCHAIN ${CMAKE_CURRENT_SOURCE_DIR}/jerryscript_toolchain.cmake)
+elseif(TARGET_OS STREQUAL "linux")
+  set(JERRYSCRIPT_TOOLCHAIN ${JERRYSCRIPT_SDK_PATH}/cmake/toolchain_linux_i686.cmake)
+endif()
 
 set(JERRYSCRIPT_LIBS
   ${JERRYSCRIPT_SDK_PATH}/build/lib/libjerry-core.a
@@ -65,12 +73,20 @@ set(JERRYSCRIPT_BUILD_ARGS
   #--gc-limit=100000
   --cpointer-32bit=ON)
 
-include(${PICO_SDK_PATH}/external/pico_sdk_import.cmake)
+if (TARGET_OS STREQUAL "rp2xxx")
+  # Set PICO settings
+  set(PICO_SDK_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib/pico-sdk)
+  set(PICO_BOARD pico_w)
+
+  include(${PICO_SDK_PATH}/external/pico_sdk_import.cmake)
+endif()
 
 project(pico-sdk-js CXX C ASM)
 
-# Initialize PICO_SDK
-pico_sdk_init()
+if (TARGET_OS STREQUAL "rp2xxx")
+  # Initialize PICO_SDK
+  pico_sdk_init()
+endif()
 
 # run jerryscript build
 add_custom_command(OUTPUT ${JERRYSCRIPT_LIBS}
@@ -82,21 +98,38 @@ set(OUTPUT_TARGET ${TARGET_NAME}-${TARGET_VERSION})
 
 set(SOURCES
   ${SOURCES} 
-  ${CMAKE_CURRENT_LIST_DIR}/src/main.c)
+  ${CMAKE_CURRENT_LIST_DIR}/src/main.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/os/${TARGET_OS}/os.c)
 
 set(INCLUDES
   ${INCLUDES}
   ${CMAKE_CURRENT_LIST_DIR}/include
   ${JERRYSCRIPT_INC})
 
+set(LIBRARIES
+  ${LIBRARIES}
+  ${JERRYSCRIPT_LIBS})
+
+if (TARGET_OS STREQUAL "rp2xxx")
+  set(LIBRARIES
+    ${LIBRARIES}
+    pico_stdlib)
+elseif (TARGET_OS STREQUAL "linux")
+  set(LIBRARIES
+    ${LIBRARIES}
+    c m)
+endif()
+
 add_compile_definitions(TARGET_NAME="${TARGET_NAME}")
 add_compile_definitions(TARGET_VERSION="${TARGET_VERSION}")
+
 include_directories(${OUTPUT_TARGET} ${INCLUDES})
 add_executable(${OUTPUT_TARGET} ${SOURCES} ${JERRYSCRIPT_LIBS})
+target_link_libraries(${OUTPUT_TARGET} ${LIBRARIES})
 
-target_link_libraries(${OUTPUT_TARGET} pico_stdlib ${JERRYSCRIPT_LIBS})
-
-# Enable USB output, disable UART output
-pico_enable_stdio_usb(${OUTPUT_TARGET} 1)
-pico_enable_stdio_uart(${OUTPUT_TARGET} 0)
-pico_add_extra_outputs(${OUTPUT_TARGET})
+if (TARGET_OS STREQUAL "rp2xxx")
+  # Enable USB output, disable UART output
+  pico_enable_stdio_usb(${OUTPUT_TARGET} 1)
+  pico_enable_stdio_uart(${OUTPUT_TARGET} 0)
+  pico_add_extra_outputs(${OUTPUT_TARGET})
+endif()

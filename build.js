@@ -13,6 +13,7 @@ var argv = minimist(process.argv.slice(2));
 
 const buildPath = path.join(__dirname, "build");
 const srcGenPath = path.join(__dirname, "src/gen");
+const jerryBuildPath = path.join(__dirname, "lib/jerryscript/build");
 
 if (argv.clean) {
   clean();
@@ -20,13 +21,20 @@ if (argv.clean) {
   cmake();
 } else if (argv.make) {
   make();
-}else {
+} else if (argv.rebuild) {
+  clean();
+  build();
+} else {
   build();
 }
 
 function clean() {
   fs.removeSync(buildPath);
   fs.removeSync(srcGenPath);
+
+  if (argv.full) {
+    fs.removeSync(jerryBuildPath);
+  }
 }
 
 function cmake() {
