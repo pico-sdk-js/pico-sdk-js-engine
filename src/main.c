@@ -187,29 +187,24 @@ void main_print_unhandled_exception(jerry_value_t error_value) /**< error value 
 
 static void print_value(const jerry_value_t jsvalue)
 {
-    jerry_value_t value;
     /* If there is an error extract the object from it */
     if (jerry_value_is_error(jsvalue))
     {
         main_print_unhandled_exception(jsvalue);
         return;
     }
-    else
-    {
-        value = jerry_acquire_value(jsvalue);
-    }
 
-    if (jerry_value_is_undefined(value))
+    if (jerry_value_is_undefined(jsvalue))
     {
         printf("undefined");
     }
-    else if (jerry_value_is_null(value))
+    else if (jerry_value_is_null(jsvalue))
     {
         printf("null");
     }
-    else if (jerry_value_is_boolean(value))
+    else if (jerry_value_is_boolean(jsvalue))
     {
-        if (jerry_get_boolean_value(value))
+        if (jerry_get_boolean_value(jsvalue))
         {
             printf("true");
         }
@@ -219,21 +214,21 @@ static void print_value(const jerry_value_t jsvalue)
         }
     }
     /* Float value */
-    else if (jerry_value_is_number(value))
+    else if (jerry_value_is_number(jsvalue))
     {
-        printf("number: %lf", jerry_get_number_value(value));
+        printf("number: %lf", jerry_get_number_value(jsvalue));
     }
     /* String value */
-    else if (jerry_value_is_string(value))
+    else if (jerry_value_is_string(jsvalue))
     {
         jerry_char_t str_buf_p[256];
 
         /* Determining required buffer size */
-        jerry_size_t req_sz = jerry_get_string_size(value);
+        jerry_size_t req_sz = jerry_get_string_size(jsvalue);
 
         if (req_sz <= 255)
         {
-            jerry_string_to_char_buffer(value, str_buf_p, req_sz);
+            jerry_string_to_char_buffer(jsvalue, str_buf_p, req_sz);
             str_buf_p[req_sz] = '\0';
             printf("%s", (const char *)str_buf_p);
         }
@@ -243,15 +238,14 @@ static void print_value(const jerry_value_t jsvalue)
         }
     }
     /* Object reference */
-    else if (jerry_value_is_object(value))
+    else if (jerry_value_is_object(jsvalue))
     {
-        jerry_value_t stringifiedObj = jerry_json_stringify(value);
+        jerry_value_t stringifiedObj = jerry_json_stringify(jsvalue);
         print_value(stringifiedObj);
         jerry_release_value(stringifiedObj);
     }
 
     printf("\n");
-    jerry_release_value(value);
 }
 
 int main()
@@ -279,29 +273,38 @@ int main()
         chr = os_getchar_timeout_us(0);
         while (os_getchar_timeout_us_is_valid(chr))
         {
-            strg[lp++] = chr;
+            strg[lp] = chr;
             if (chr == CR || lp == (sizeof(strg) - 1))
             {
                 strg[lp] = 0; // terminate string
 
-                if (strncmp(strg, "quit", 4) == 0)
+                if (strcmp(strg, "quit") == 0)
                 {
                     is_done = true;
                     break;
                 }
 
-                jerry_value_t ret_val;
+                jerry_value_t parse_val = jerry_parse(NULL, 0, (const jerry_char_t *)strg, lp, JERRY_PARSE_STRICT_MODE);
 
-                /* Evaluate entered command */
-                ret_val = jerry_eval((const jerry_char_t *)strg, lp, JERRY_PARSE_NO_OPTS);
+                if (jerry_value_is_error(parse_val))
+                {
+                    main_print_unhandled_exception(parse_val);
+                }
+                else
+                {
+                    jerry_value_t ret_val = jerry_run(parse_val);
+                    print_value(ret_val);
+                    jerry_release_value(ret_val);
+                }
 
-                /* Print out the value */
-                print_value(ret_val);
-
-                jerry_release_value(ret_val);
-
+                jerry_release_value(parse_val);
                 lp = 0; // reset string buffer pointer
+
                 break;
+            }
+            else
+            {
+                lp++;
             }
 
             chr = os_getchar_timeout_us(0);

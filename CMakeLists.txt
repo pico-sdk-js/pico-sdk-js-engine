@@ -54,6 +54,7 @@ set(JERRYSCRIPT_INC
   ${JERRYSCRIPT_SDK_PATH}/jerry-libm)
 
 
+# See https://jerryscript.net/configuration/ for additional options
 set(JERRYSCRIPT_BUILD_ARGS
 --toolchain=${JERRYSCRIPT_TOOLCHAIN}
   #--build-type=Debug
