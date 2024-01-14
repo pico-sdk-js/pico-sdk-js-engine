@@ -12,7 +12,6 @@ const package = require("./package.json")
 var argv = minimist(process.argv.slice(2));
 
 const buildPath = path.join(__dirname, "build");
-const srcGenPath = path.join(__dirname, "src/gen");
 const jerryBuildPath = path.join(__dirname, "lib/jerryscript/build");
 
 if (argv.clean) {
@@ -28,9 +27,12 @@ if (argv.clean) {
   build();
 }
 
+if (argv.run) {
+  run();
+} 
+
 function clean() {
   fs.removeSync(buildPath);
-  fs.removeSync(srcGenPath);
 
   if (argv.full) {
     fs.removeSync(jerryBuildPath);
@@ -70,6 +72,16 @@ function make() {
 function build() {
   cmake();
   make();
+}
+
+function run() {
+  process.chdir(buildPath);
+
+  let processName = `./${package.name}-${package.version}`;
+  cmd(processName, []);
+
+  process.chdir(__dirname);
+
 }
 
 function cmd(cmd, args) {

@@ -11,14 +11,19 @@ typedef void (*CommandCallback)();
 
 char strg[100];
 int lp = 0;
+bool start_prompt = true;
 
 void psj_repl_init()
 {
-
 }
 
 void psj_repl_cycle()
 {
+    if (start_prompt) {
+        start_prompt = false;
+        printf("> ");
+    }
+
     char chr = os_getchar_timeout_us(0);
     while (os_getchar_timeout_us_is_valid(chr))
     {
@@ -41,7 +46,9 @@ void psj_repl_cycle()
             }
 
             jerry_release_value(parse_val);
+
             lp = 0; // reset string buffer pointer
+            start_prompt = true;
 
             break;
         }
