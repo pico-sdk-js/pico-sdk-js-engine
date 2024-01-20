@@ -3,6 +3,7 @@
         "jerryscript.h": "c",
         "jerryscript-core.h": "c",
         "select.h": "c",
-        "handler.h": "c"
+        "handler.h": "c",
+        "signal.h": "c"
     }
 }

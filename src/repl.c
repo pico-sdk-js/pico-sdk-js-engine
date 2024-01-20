@@ -8,11 +8,15 @@
 #include "os.h"
 #include "io.h"
 
-#define CR 13
+#define CR '\r'
+#define NL '\n'
+#define CTRLZ 0x1A
+#define BS 0x7F
 
 typedef void (*CommandCallback)();
 
-char strg[100];
+#define MAX_INPUT_LENGTH 100
+char strg[MAX_INPUT_LENGTH];
 int lp = 0;
 bool start_prompt = true;
 
@@ -51,13 +55,52 @@ bool psj_call_command(char *name)
 
 void psj_quit_command()
 {
-    printf("QUITTING...\n");
+    os_exit();
+}
+
+void psj_flash_command()
+{
+    printf("WRITE DATA (^Z to end)\n");
+
+    uint32_t max_buffer_size = os_get_flash_buffer_size();
+    char *buffer = malloc(max_buffer_size);
+    int bp = 0;
+
+    bool is_done = false;
+    while (!is_done)
+    {
+        char chr = os_getchar_timeout_us(0);
+        if (os_getchar_timeout_us_is_valid(chr))
+        {
+            switch (chr)
+            {
+                case CTRLZ:
+                    buffer[bp] = 0;
+                    os_flash_save(buffer);
+                    is_done = true;
+                    printf("\nSAVED\n");
+                    break;
+                default:
+                    os_process_input(chr, buffer, max_buffer_size, &bp);
+                    break;
+            }
+        }
+    }
+
+    free(buffer);
+}
+
+void psj_dump_flash_command()
+{
+    char* flash = os_flash_read();
+    printf("%s\n", flash);
 }
 
 void psj_repl_init()
 {
-    CommandCallback cmd = psj_quit_command;
-    psj_add_command(".quit", cmd);
+    psj_add_command(".flash", psj_flash_command);
+    psj_add_command(".quit", psj_quit_command);
+    psj_add_command(".dump", psj_dump_flash_command);
 }
 
 void psj_repl_cycle()
@@ -71,7 +114,8 @@ void psj_repl_cycle()
     char chr = os_getchar_timeout_us(0);
     while (os_getchar_timeout_us_is_valid(chr))
     {
-        strg[lp] = chr;
+        os_process_input(chr, strg, MAX_INPUT_LENGTH, &lp);
+
         if (chr == CR || lp == (sizeof(strg) - 1))
         {
             strg[lp] = 0; // terminate string
@@ -80,7 +124,7 @@ void psj_repl_cycle()
             {
                 if (!psj_call_command(strg))
                 {
-                    jerry_port_log(JERRY_LOG_LEVEL_ERROR, "ERROR: Command not found\n");
+                    jerry_port_log(JERRY_LOG_LEVEL_ERROR, "ERROR: Command '%s' not found\n", strg);
                 }
             }
             else
@@ -105,10 +149,6 @@ void psj_repl_cycle()
             start_prompt = true;
 
             break;
-        }
-        else
-        {
-            lp++;
         }
 
         chr = os_getchar_timeout_us(0);

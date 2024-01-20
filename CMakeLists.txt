@@ -113,12 +113,15 @@ add_custom_command(OUTPUT ${JERRYSCRIPT_LIBS}
 # Set PICO-SDK-JS build settings
 set(OUTPUT_TARGET ${TARGET_NAME}-${TARGET_VERSION})
 
+file(GLOB OS_SOURCES 
+  ${CMAKE_CURRENT_LIST_DIR}/src/os/${TARGET_OS}/*.c)
+
 set(SOURCES
   ${SOURCES} 
   ${CMAKE_CURRENT_LIST_DIR}/src/io.c
   ${CMAKE_CURRENT_LIST_DIR}/src/main.c
   ${CMAKE_CURRENT_LIST_DIR}/src/repl.c
-  ${CMAKE_CURRENT_LIST_DIR}/src/os/${TARGET_OS}/os.c)
+  ${OS_SOURCES})
 
 set(INCLUDES
   ${INCLUDES}

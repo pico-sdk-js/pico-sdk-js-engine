@@ -1,6 +1,7 @@
 #include "os.h"
 
 #include "pico/stdlib.h"
+#include <ctype.h>
 
 #define GPIO_WAIT_FOR_READY_PIN 22
 #define ENDSTDIN 255
@@ -38,4 +39,22 @@ int os_getchar_timeout_us(uint32_t timeout)
 bool os_getchar_timeout_us_is_valid(int chr)
 {
     return chr != PICO_ERROR_TIMEOUT && chr != ENDSTDIN;
+}
+
+bool os_get_is_running()
+{
+    return true;
+}
+
+void os_exit()
+{
+}
+
+void os_process_input(char c, char *s, int max_length, int *sp)
+{
+    if (isprint(c) && *sp < max_length - 1)
+    {
+        s[*sp] = c;
+        (*sp) += 1;
+    }
 }
