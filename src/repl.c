@@ -1,7 +1,10 @@
 #include "repl.h"
 
 #include <string.h>
+
 #include "jerryscript.h"
+#include "uthash.h"
+
 #include "os.h"
 #include "io.h"
 
@@ -13,13 +16,54 @@ char strg[100];
 int lp = 0;
 bool start_prompt = true;
 
+struct command
+{
+    char key[16]; /* key */
+    CommandCallback command;
+    UT_hash_handle hh; /* makes this structure hashable */
+};
+
+struct command *_commands = NULL;
+
+void psj_add_command(char *name, CommandCallback cb)
+{
+    struct command *cmd;
+    cmd = malloc(sizeof(*cmd));
+
+    strcpy(cmd->key, name);
+    cmd->command = cb;
+    HASH_ADD_STR(_commands, key, cmd);
+}
+
+bool psj_call_command(char *name)
+{
+    struct command *cmd;
+    HASH_FIND_STR(_commands, name, cmd);
+
+    if (cmd != NULL)
+    {
+        (*(cmd->command))();
+        return true;
+    }
+
+    return false;
+}
+
+void psj_quit_command()
+{
+    printf("QUITTING...\n");
+}
+
 void psj_repl_init()
 {
+    CommandCallback cmd = psj_quit_command;
+    psj_add_command(".quit", cmd);
 }
 
 void psj_repl_cycle()
 {
-    if (start_prompt) {
+    if (start_prompt)
+    {
         start_prompt = false;
         printf("> ");
     }
@@ -32,20 +76,30 @@ void psj_repl_cycle()
         {
             strg[lp] = 0; // terminate string
 
-            jerry_value_t parse_val = jerry_parse(NULL, 0, (const jerry_char_t *)strg, lp, JERRY_PARSE_STRICT_MODE);
-
-            if (jerry_value_is_error(parse_val))
+            if (strg[0] == '.')
             {
-                psj_print_unhandled_exception(parse_val);
+                if (!psj_call_command(strg))
+                {
+                    jerry_port_log(JERRY_LOG_LEVEL_ERROR, "ERROR: Command not found\n");
+                }
             }
             else
             {
-                jerry_value_t ret_val = jerry_run(parse_val);
-                psj_print_value(ret_val);
-                jerry_release_value(ret_val);
-            }
+                jerry_value_t parse_val = jerry_parse(NULL, 0, (const jerry_char_t *)strg, lp, JERRY_PARSE_STRICT_MODE);
 
-            jerry_release_value(parse_val);
+                if (jerry_value_is_error(parse_val))
+                {
+                    psj_print_unhandled_exception(parse_val);
+                }
+                else
+                {
+                    jerry_value_t ret_val = jerry_run(parse_val);
+                    psj_print_value(ret_val);
+                    jerry_release_value(ret_val);
+                }
+
+                jerry_release_value(parse_val);
+            }
 
             lp = 0; // reset string buffer pointer
             start_prompt = true;
@@ -63,5 +117,5 @@ void psj_repl_cycle()
 
 void psj_repl_cleanup()
 {
-
+    HASH_CLEAR(hh, _commands);
 }

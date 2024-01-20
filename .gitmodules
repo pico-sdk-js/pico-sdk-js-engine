@@ -4,3 +4,6 @@
 [submodule "lib/jerryscript"]
 	path = lib/jerryscript
 	url = https://github.com/jerryscript-project/jerryscript
+[submodule "lib/uthash"]
+	path = lib/uthash
+	url = https://github.com/troydhanson/uthash

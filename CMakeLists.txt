@@ -53,6 +53,11 @@ set(JERRYSCRIPT_INC
   ${JERRYSCRIPT_SDK_PATH}/jerry-ext/include
   ${JERRYSCRIPT_SDK_PATH}/jerry-libm)
 
+# Setting UTHash
+set(UTHASH_SDK_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib/uthash)
+
+set(UTHASH_INC
+  ${UTHASH_SDK_PATH}/include)
 
 # See https://jerryscript.net/configuration/ for additional options
 set(JERRYSCRIPT_BUILD_ARGS
@@ -107,7 +112,8 @@ set(SOURCES
 set(INCLUDES
   ${INCLUDES}
   ${CMAKE_CURRENT_LIST_DIR}/include
-  ${JERRYSCRIPT_INC})
+  ${JERRYSCRIPT_INC}
+  ${UTHASH_INC})
 
 set(LIBRARIES
   ${LIBRARIES}
