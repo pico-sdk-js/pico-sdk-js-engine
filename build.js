@@ -14,6 +14,8 @@ var argv = minimist(process.argv.slice(2));
 const buildPath = path.join(__dirname, "build");
 const jerryBuildPath = path.join(__dirname, "lib/jerryscript/build");
 
+const target_os = argv.os || "linux";
+
 if (argv.clean) {
   clean();
 } else if (argv.cmake) {
@@ -49,7 +51,8 @@ function cmake() {
   const params = [
     "..", 
     `-DTARGET_NAME=${package.name}`,
-    `-DTARGET_VERSION=${package.version}`
+    `-DTARGET_VERSION=${package.version}`,
+    `-DTARGET_OS=${target_os}`
   ];
   cmd("cmake", params);
 

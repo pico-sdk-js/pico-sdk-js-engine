@@ -2,15 +2,26 @@ cmake_minimum_required(VERSION 3.5)
 
 if (NOT TARGET_NAME)
     message(FATAL_ERROR "Missing required parameter TARGET_NAME")
+else()
+  message("TARGET_NAME: " ${TARGET_NAME})
 endif()
 
 if (NOT TARGET_VERSION)
     message(FATAL_ERROR "Missing required parameter TARGET_VERSION")
+else()
+  message("TARGET_VERSION: " ${TARGET_VERSION})
 endif()
 
-# valid options are "rp2xxx" and "linux"
 if (NOT TARGET_OS)
-  set(TARGET_OS "linux")
+  message(FATAL_ERROR "Missing required parameter TARGET_OS")
+else()
+  message("TARGET_OS: " ${TARGET_OS})
+endif()
+
+set(VALID_TARGET_OS "linux" "rp2xxx")
+
+if (NOT TARGET_OS IN_LIST VALID_TARGET_OS)
+  message(FATAL_ERROR "TARGET_OS must be either 'linux' or 'rp2xxx'")
 endif()
 
 set(CMAKE_BUILD_TYPE Debug)
