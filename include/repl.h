@@ -7,4 +7,6 @@ void psj_repl_cycle();
 
 void psj_repl_cleanup();
 
+void psj_repl_run_flash();
+
 #endif // __REPL_H

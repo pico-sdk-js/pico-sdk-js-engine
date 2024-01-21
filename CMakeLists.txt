@@ -41,8 +41,7 @@ endif()
 
 set(JERRYSCRIPT_LIBS
   ${JERRYSCRIPT_SDK_PATH}/build/lib/libjerry-core.a
-  ${JERRYSCRIPT_SDK_PATH}/build/lib/libjerry-ext.a
-  ${JERRYSCRIPT_SDK_PATH}/build/lib/libjerry-port-default.a)
+  ${JERRYSCRIPT_SDK_PATH}/build/lib/libjerry-ext.a)
 
 set(JERRYSCRIPT_INC
   ${JERRYSCRIPT_SDK_PATH}/jerry-core
@@ -119,6 +118,7 @@ file(GLOB OS_SOURCES
 set(SOURCES
   ${SOURCES} 
   ${CMAKE_CURRENT_LIST_DIR}/src/io.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/jerryscript_port.c
   ${CMAKE_CURRENT_LIST_DIR}/src/main.c
   ${CMAKE_CURRENT_LIST_DIR}/src/repl.c
   ${OS_SOURCES})

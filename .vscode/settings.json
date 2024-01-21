@@ -4,6 +4,7 @@
         "jerryscript-core.h": "c",
         "select.h": "c",
         "handler.h": "c",
-        "signal.h": "c"
+        "signal.h": "c",
+        "jerryscript-port.h": "c"
     }
 }

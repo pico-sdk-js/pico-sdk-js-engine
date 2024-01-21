@@ -90,6 +90,11 @@ void psj_flash_command()
     free(buffer);
 }
 
+void psj_restart_command()
+{
+    psj_repl_run_flash();
+}
+
 void psj_dump_flash_command()
 {
     char* flash = os_flash_read();
@@ -101,6 +106,7 @@ void psj_repl_init()
     psj_add_command(".flash", psj_flash_command);
     psj_add_command(".quit", psj_quit_command);
     psj_add_command(".dump", psj_dump_flash_command);
+    psj_add_command(".restart", psj_restart_command);    
 }
 
 void psj_repl_cycle()
@@ -158,4 +164,27 @@ void psj_repl_cycle()
 void psj_repl_cleanup()
 {
     HASH_CLEAR(hh, _commands);
+}
+
+void psj_repl_run_flash()
+{
+    const jerry_char_t *script = os_flash_read();
+    jerry_value_t parsed_code = jerry_parse("main.js", strlen("main.js"), script, strlen(script), JERRY_PARSE_STRICT_MODE | JERRY_PARSE_MODULE);
+
+    if (jerry_value_is_error(parsed_code))
+    {
+        psj_print_unhandled_exception(parsed_code);
+    }
+    else
+    {
+        jerry_value_t ret_val = jerry_run(parsed_code);
+        if (jerry_value_is_error(ret_val))
+        {
+            psj_print_unhandled_exception(ret_val);
+        }
+        jerry_release_value(ret_val);
+    }
+
+    /* Parsed source code must be freed */
+    jerry_release_value(parsed_code);
 }
