@@ -12,6 +12,8 @@ else()
   message("TARGET_VERSION: " ${TARGET_VERSION})
 endif()
 
+string(TOUPPER ${TARGET_OS} UPPER_TARGET_OS)
+
 if (NOT TARGET_OS)
   message(FATAL_ERROR "Missing required parameter TARGET_OS")
 else()
@@ -136,13 +138,14 @@ set(LIBRARIES
 if (TARGET_OS STREQUAL "rp2xxx")
   set(LIBRARIES
     ${LIBRARIES}
-    pico_stdlib)
+    pico_stdlib)  
 elseif (TARGET_OS STREQUAL "linux")
   set(LIBRARIES
     ${LIBRARIES}
     c m)
 endif()
 
+add_compile_definitions(${UPPER_TARGET_OS})
 add_compile_definitions(TARGET_NAME="${TARGET_NAME}")
 add_compile_definitions(TARGET_VERSION="${TARGET_VERSION}")
 

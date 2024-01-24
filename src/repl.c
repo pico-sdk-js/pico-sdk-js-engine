@@ -3,6 +3,8 @@
 #include <string.h>
 
 #include "jerryscript.h"
+#include "jerryscript-port.h"
+
 #include "uthash.h"
 
 #include "os.h"
@@ -98,7 +100,10 @@ void psj_restart_command()
 void psj_dump_flash_command()
 {
     char* flash = os_flash_read();
-    printf("%s\n", flash);
+    if (flash != NULL)
+    {
+        printf("%s\n", flash);
+    }
 }
 
 void psj_repl_init()
@@ -169,6 +174,11 @@ void psj_repl_cleanup()
 void psj_repl_run_flash()
 {
     const jerry_char_t *script = os_flash_read();
+    if (script == NULL)
+    {
+        return;
+    }
+    
     jerry_value_t parsed_code = jerry_parse("main.js", strlen("main.js"), script, strlen(script), JERRY_PARSE_STRICT_MODE | JERRY_PARSE_MODULE);
 
     if (jerry_value_is_error(parsed_code))
