@@ -106,12 +106,31 @@ void psj_dump_flash_command()
     }
 }
 
+void psj_stats_command()
+{
+    jerry_heap_stats_t stats;
+    if (!jerry_get_memory_stats (&stats))
+    {
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "FAILED TO GET MEMORY STATS\n");
+        return;
+    }
+
+    printf("version: %lu\nsize: %lu\nallocated bytes: %lu\npeak allocated bytes: %lu\n\n", stats.version, stats.size, stats.allocated_bytes, stats.peak_allocated_bytes);
+}
+
+void psj_gc_command()
+{
+    jerry_gc(JERRY_GC_PRESSURE_LOW);
+}
+
 void psj_repl_init()
 {
     psj_add_command(".flash", psj_flash_command);
     psj_add_command(".quit", psj_quit_command);
     psj_add_command(".dump", psj_dump_flash_command);
     psj_add_command(".restart", psj_restart_command);    
+    psj_add_command(".stats", psj_stats_command);
+    psj_add_command(".gc", psj_gc_command);
 }
 
 void psj_repl_cycle()

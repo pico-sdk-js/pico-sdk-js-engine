@@ -6,10 +6,10 @@
 
 #define SYNTAX_ERROR_MAX_LINE_LENGTH 256
 
-void psj_print_unhandled_exception(jerry_value_t error_value)
+void psj_print_unhandled_exception(jerry_value_t exception_value)
 {
-    assert(jerry_value_is_error(error_value));
-    error_value = jerry_get_value_from_error(error_value, true);
+    assert(jerry_value_is_error(exception_value));
+    jerry_value_t error_value = jerry_get_value_from_error(exception_value, false);
 
     jerry_char_t err_str_buf[256];
 

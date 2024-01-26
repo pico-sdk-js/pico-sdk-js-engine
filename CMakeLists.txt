@@ -43,7 +43,8 @@ endif()
 
 set(JERRYSCRIPT_LIBS
   ${JERRYSCRIPT_SDK_PATH}/build/lib/libjerry-core.a
-  ${JERRYSCRIPT_SDK_PATH}/build/lib/libjerry-ext.a)
+  ${JERRYSCRIPT_SDK_PATH}/build/lib/libjerry-ext.a
+)
 
 set(JERRYSCRIPT_INC
   ${JERRYSCRIPT_SDK_PATH}/jerry-core
@@ -71,25 +72,35 @@ set(UTHASH_SDK_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib/uthash)
 set(UTHASH_INC
   ${UTHASH_SDK_PATH}/include)
 
+if (TARGET_OS STREQUAL "rp2xxx")
+  set(MEM_HEAP_SIZE 180)
+elseif (TARGET_OS STREQUAL "linux")
+  set(MEM_HEAP_SIZE 1024)
+endif()
+
 # See https://jerryscript.net/configuration/ for additional options
 set(JERRYSCRIPT_BUILD_ARGS
---toolchain=${JERRYSCRIPT_TOOLCHAIN}
-  #--build-type=Debug
+  --toolchain=${JERRYSCRIPT_TOOLCHAIN}
+  --build-type=Debug
+  --valgrind=ON
+  #--mem-stress-test=ON
+  #--system-allocator=ON
+  #--cpointer-32bit=ON
   --compile-flag="-DJERRY_NDEBUG=1 -DJERRY_LCACHE=0 -DJERRY_PROPRETY_HASHMAP=0"
   --lto=OFF
   --error-messages=ON
   --js-parser=ON
-  --mem-heap=180
+  --mem-heap=${MEM_HEAP_SIZE}
   --mem-stats=ON
   --snapshot-exec=ON
   --line-info=ON
   --vm-exec-stop=ON
   --profile=es.next #es2015-subset
   --jerry-cmdline=OFF
-  #--logging=ON
-  #--stack-limit=1024
-  #--gc-limit=100000
-  --cpointer-32bit=ON)
+  --logging=ON
+  # --stack-limit=1024
+  # --gc-limit=100000
+)
 
 if (TARGET_OS STREQUAL "rp2xxx")
   # Set PICO settings
