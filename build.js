@@ -9,24 +9,52 @@ const childProcess = require("child_process");
 const package = require("./package.json")
 
 // Parse options
-var argv = minimist(process.argv.slice(2));
+var unknownArg = false;
+var minimistOpts = { 
+  string: ['buildType', 'os'],
+  boolean: ['clean', 'cmake', 'make', 'rebuild', 'build', 'full', 'run'],
+  default: {
+    clean: false,
+    cmake: true,
+    make: true,
+    buildType: 'Debug',
+    os: 'linux'
+  },
+  unknown: function(x) { 
+    console.error(`ERROR: Unknown arg '${x}'.`);
+    unknownArg = true; 
+  } 
+};
+var argv = minimist(process.argv.slice(2), minimistOpts);
+
+if (unknownArg) {
+  return;
+}
+
+if (argv.build) {
+  argv.cmake = true;
+  argv.make = true;
+} else if (argv.rebuild) {
+  argv.clean = true;
+  argv.cmake = true;
+  argv.make = true;
+}
+
+console.log(argv);
 
 const buildPath = path.join(__dirname, "build");
 const jerryBuildPath = path.join(__dirname, "lib/jerryscript/build");
 
-const target_os = argv.os || "linux";
-
 if (argv.clean) {
   clean();
-} else if (argv.cmake) {
+}
+
+if (argv.cmake) {
   cmake();
-} else if (argv.make) {
+}
+
+if (argv.make) {
   make();
-} else if (argv.rebuild) {
-  clean();
-  build();
-} else {
-  build();
 }
 
 if (argv.run) {
@@ -52,7 +80,8 @@ function cmake() {
     "..", 
     `-DTARGET_NAME=${package.name}`,
     `-DTARGET_VERSION=${package.version}`,
-    `-DTARGET_OS=${target_os}`
+    `-DTARGET_OS=${argv.os}`,
+    `-DBUILD_TYPE=${argv.buildType}`
   ];
   cmd("cmake", params);
 
@@ -72,11 +101,6 @@ function make() {
   process.chdir(__dirname);
 }
 
-function build() {
-  cmake();
-  make();
-}
-
 function run() {
   process.chdir(buildPath);
 
@@ -84,7 +108,6 @@ function run() {
   cmd(processName, []);
 
   process.chdir(__dirname);
-
 }
 
 function cmd(cmd, args) {

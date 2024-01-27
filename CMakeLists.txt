@@ -1,30 +1,28 @@
 cmake_minimum_required(VERSION 3.5)
 
 if (NOT TARGET_NAME)
-    message(FATAL_ERROR "Missing required parameter TARGET_NAME")
-else()
-  message("TARGET_NAME: " ${TARGET_NAME})
+    set(TARGET_NAME "pico-sdk-js")
 endif()
 
 if (NOT TARGET_VERSION)
-    message(FATAL_ERROR "Missing required parameter TARGET_VERSION")
-else()
-  message("TARGET_VERSION: " ${TARGET_VERSION})
+    set(TARGET_VERSION "0.0.0")
+endif()
+
+if (NOT TARGET_OS)
+  set(TARGET_OS "linux")
 endif()
 
 string(TOUPPER ${TARGET_OS} UPPER_TARGET_OS)
-
-if (NOT TARGET_OS)
-  message(FATAL_ERROR "Missing required parameter TARGET_OS")
-else()
-  message("TARGET_OS: " ${TARGET_OS})
-endif()
-
 set(VALID_TARGET_OS "linux" "rp2xxx")
 
 if (NOT TARGET_OS IN_LIST VALID_TARGET_OS)
   message(FATAL_ERROR "TARGET_OS must be either 'linux' or 'rp2xxx'")
 endif()
+
+message("TARGET_NAME: " ${TARGET_NAME})
+message("TARGET_VERSION: " ${TARGET_VERSION})
+message("TARGET_OS: " ${TARGET_OS})
+message("BUILD_TYPE: " ${BUILD_TYPE})
 
 set(CMAKE_BUILD_TYPE Debug)
 
@@ -81,12 +79,9 @@ endif()
 # See https://jerryscript.net/configuration/ for additional options
 set(JERRYSCRIPT_BUILD_ARGS
   --toolchain=${JERRYSCRIPT_TOOLCHAIN}
-  --build-type=Debug
-  --valgrind=ON
   #--mem-stress-test=ON
   #--system-allocator=ON
   #--cpointer-32bit=ON
-  --compile-flag="-DJERRY_NDEBUG=1 -DJERRY_LCACHE=0 -DJERRY_PROPRETY_HASHMAP=0"
   --lto=OFF
   --error-messages=ON
   --js-parser=ON
@@ -102,6 +97,20 @@ set(JERRYSCRIPT_BUILD_ARGS
   # --gc-limit=100000
 )
 
+if (BUILD_TYPE STREQUAL "Debug")
+  set(JERRYSCRIPT_BUILD_ARGS
+    ${JERRYSCRIPT_BUILD_ARGS}
+    --build-type=Debug
+    --compile-flag="-DJERRY_NDEBUG=1 -DJERRY_LCACHE=0 -DJERRY_PROPRETY_HASHMAP=0"
+  )
+else()
+  set(JERRYSCRIPT_BUILD_ARGS
+    ${JERRYSCRIPT_BUILD_ARGS}
+    --build-type=MinSizeRel
+    --compile-flag="-DJERRY_LCACHE=0 -DJERRY_PROPRETY_HASHMAP=0"
+  )
+endif()
+
 if (TARGET_OS STREQUAL "rp2xxx")
   # Set PICO settings
   set(PICO_SDK_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib/pico-sdk)
@@ -110,7 +119,7 @@ if (TARGET_OS STREQUAL "rp2xxx")
   include(${PICO_SDK_PATH}/external/pico_sdk_import.cmake)
 endif()
 
-project(pico-sdk-js CXX C ASM)
+project(${TARGET_NAME} CXX C ASM)
 
 if (TARGET_OS STREQUAL "rp2xxx")
   # Initialize PICO_SDK
