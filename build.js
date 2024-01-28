@@ -11,13 +11,9 @@ const package = require("./package.json")
 // Parse options
 var unknownArg = false;
 var minimistOpts = { 
-  string: ['buildType', 'os'],
-  boolean: ['clean', 'cmake', 'make', 'rebuild', 'build', 'full', 'run'],
+  string: ['os'],
+  boolean: ['clean', 'cmake', 'make', 'full', 'run', 'build', 'rebuild'],
   default: {
-    clean: false,
-    cmake: true,
-    make: true,
-    buildType: 'Debug',
     os: 'linux'
   },
   unknown: function(x) { 
@@ -26,10 +22,6 @@ var minimistOpts = {
   } 
 };
 var argv = minimist(process.argv.slice(2), minimistOpts);
-
-if (unknownArg) {
-  return;
-}
 
 if (argv.build) {
   argv.cmake = true;
@@ -41,6 +33,10 @@ if (argv.build) {
 }
 
 console.log(argv);
+
+if (unknownArg) {
+  return;
+}
 
 const buildPath = path.join(__dirname, "build");
 const jerryBuildPath = path.join(__dirname, "lib/jerryscript/build");
@@ -80,8 +76,7 @@ function cmake() {
     "..", 
     `-DTARGET_NAME=${package.name}`,
     `-DTARGET_VERSION=${package.version}`,
-    `-DTARGET_OS=${argv.os}`,
-    `-DBUILD_TYPE=${argv.buildType}`
+    `-DTARGET_OS=${argv.os}`
   ];
   cmd("cmake", params);
 

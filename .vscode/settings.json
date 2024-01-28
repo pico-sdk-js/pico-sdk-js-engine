@@ -7,9 +7,7 @@
         "signal.h": "c",
         "jerryscript-port.h": "c"
     },
-    "cmake.buildArgs": [
-        "--DTARGET_NAME=pico-sdk-js",
-        "--DTARGET_VERSION=0.0.1",
-        "--DTARGET_OS=linux"
-    ]
+    "cmake.configureSettings": {
+        "TARGET_OS": "rp2xxx"
+    }
 }

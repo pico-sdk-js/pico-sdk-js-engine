@@ -19,12 +19,20 @@ if (NOT TARGET_OS IN_LIST VALID_TARGET_OS)
   message(FATAL_ERROR "TARGET_OS must be either 'linux' or 'rp2xxx'")
 endif()
 
+if (TARGET_OS STREQUAL "rp2xxx")
+  set(MEM_HEAP_SIZE 180)
+  set(BUILD_TYPE MinSizeRel)
+elseif (TARGET_OS STREQUAL "linux")
+  set(MEM_HEAP_SIZE 1024)
+  set(BUILD_TYPE Debug)
+endif()
+
 message("TARGET_NAME: " ${TARGET_NAME})
 message("TARGET_VERSION: " ${TARGET_VERSION})
 message("TARGET_OS: " ${TARGET_OS})
 message("BUILD_TYPE: " ${BUILD_TYPE})
 
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE ${BUILD_TYPE})
 
 # Set general build settings
 set(CMAKE_C_STANDARD 11)
@@ -70,18 +78,13 @@ set(UTHASH_SDK_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib/uthash)
 set(UTHASH_INC
   ${UTHASH_SDK_PATH}/include)
 
-if (TARGET_OS STREQUAL "rp2xxx")
-  set(MEM_HEAP_SIZE 180)
-elseif (TARGET_OS STREQUAL "linux")
-  set(MEM_HEAP_SIZE 1024)
-endif()
-
 # See https://jerryscript.net/configuration/ for additional options
 set(JERRYSCRIPT_BUILD_ARGS
   --toolchain=${JERRYSCRIPT_TOOLCHAIN}
+  --compile-flag="-DJERRY_NDEBUG=1 -DJERRY_LCACHE=0 -DJERRY_PROPRETY_HASHMAP=0"
   #--mem-stress-test=ON
   #--system-allocator=ON
-  #--cpointer-32bit=ON
+  --cpointer-32bit=ON
   --lto=OFF
   --error-messages=ON
   --js-parser=ON
@@ -101,13 +104,11 @@ if (BUILD_TYPE STREQUAL "Debug")
   set(JERRYSCRIPT_BUILD_ARGS
     ${JERRYSCRIPT_BUILD_ARGS}
     --build-type=Debug
-    --compile-flag="-DJERRY_NDEBUG=1 -DJERRY_LCACHE=0 -DJERRY_PROPRETY_HASHMAP=0"
   )
 else()
   set(JERRYSCRIPT_BUILD_ARGS
     ${JERRYSCRIPT_BUILD_ARGS}
     --build-type=MinSizeRel
-    --compile-flag="-DJERRY_LCACHE=0 -DJERRY_PROPRETY_HASHMAP=0"
   )
 endif()
 
@@ -139,16 +140,20 @@ file(GLOB OS_SOURCES
 
 set(SOURCES
   ${SOURCES} 
+  ${CMAKE_CURRENT_LIST_DIR}/src/flash.c
   ${CMAKE_CURRENT_LIST_DIR}/src/io.c
   ${CMAKE_CURRENT_LIST_DIR}/src/jerryscript_port.c
   ${CMAKE_CURRENT_LIST_DIR}/src/main.c
   ${CMAKE_CURRENT_LIST_DIR}/src/repl.c
+  ${CMAKE_CURRENT_LIST_DIR}/lib/littlefs/lfs.c
+  ${CMAKE_CURRENT_LIST_DIR}/lib/littlefs/lfs_util.c 
   ${OS_SOURCES})
 
 set(INCLUDES
   ${INCLUDES}
   ${CMAKE_CURRENT_LIST_DIR}/include
   ${JERRYSCRIPT_INC}
+  ${CMAKE_CURRENT_LIST_DIR}/lib/littlefs
   ${UTHASH_INC})
 
 set(LIBRARIES
@@ -159,6 +164,7 @@ if (TARGET_OS STREQUAL "rp2xxx")
   set(LIBRARIES
     ${LIBRARIES}
     pico_stdlib)  
+    add_compile_definitions(NDEBUG=1)
 elseif (TARGET_OS STREQUAL "linux")
   set(LIBRARIES
     ${LIBRARIES}

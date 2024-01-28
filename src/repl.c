@@ -9,6 +9,7 @@
 
 #include "os.h"
 #include "io.h"
+#include "flash.h"
 
 #define CR '\r'
 #define NL '\n'
@@ -18,6 +19,8 @@
 typedef void (*CommandCallback)();
 
 #define MAX_INPUT_LENGTH 100
+#define MAX_SCRIPT_LENGTH 1024
+
 char strg[MAX_INPUT_LENGTH];
 int lp = 0;
 bool start_prompt = true;
@@ -64,8 +67,7 @@ void psj_flash_command()
 {
     printf("WRITE DATA (^Z to end)\n");
 
-    uint32_t max_buffer_size = os_get_flash_buffer_size();
-    char *buffer = malloc(max_buffer_size);
+    jerry_char_t script[MAX_SCRIPT_LENGTH];
     int bp = 0;
 
     bool is_done = false;
@@ -77,19 +79,17 @@ void psj_flash_command()
             switch (chr)
             {
                 case CTRLZ:
-                    buffer[bp] = 0;
-                    os_flash_save(buffer);
+                    script[bp] = 0;
+                    psj_flash_save(script);
                     is_done = true;
                     printf("\nSAVED\n");
                     break;
                 default:
-                    os_process_input(chr, buffer, max_buffer_size, &bp);
+                    os_process_input(chr, script, MAX_SCRIPT_LENGTH, &bp);
                     break;
             }
         }
     }
-
-    free(buffer);
 }
 
 void psj_restart_command()
@@ -99,10 +99,11 @@ void psj_restart_command()
 
 void psj_dump_flash_command()
 {
-    char* flash = os_flash_read();
-    if (flash != NULL)
+    jerry_char_t script[MAX_SCRIPT_LENGTH];
+    int scriptLen = psj_flash_read(script, MAX_SCRIPT_LENGTH);
+    if (scriptLen != 0)
     {
-        printf("%s\n", flash);
+        printf("%s\n", script);
     }
 }
 
@@ -123,6 +124,11 @@ void psj_gc_command()
     jerry_gc(JERRY_GC_PRESSURE_LOW);
 }
 
+void psj_bootsel_command()
+{
+    os_reset_usb_boot(0, 0);
+}
+
 void psj_repl_init()
 {
     psj_add_command(".flash", psj_flash_command);
@@ -131,6 +137,7 @@ void psj_repl_init()
     psj_add_command(".restart", psj_restart_command);    
     psj_add_command(".stats", psj_stats_command);
     psj_add_command(".gc", psj_gc_command);
+    psj_add_command(".bootsel", psj_bootsel_command);
 }
 
 void psj_repl_cycle()
@@ -192,8 +199,9 @@ void psj_repl_cleanup()
 
 void psj_repl_run_flash()
 {
-    const jerry_char_t *script = os_flash_read();
-    if (script == NULL)
+    jerry_char_t script[MAX_SCRIPT_LENGTH];
+    int scriptLen = psj_flash_read(script, MAX_SCRIPT_LENGTH);
+    if (scriptLen == 0)
     {
         return;
     }

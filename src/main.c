@@ -7,6 +7,7 @@
 #include "io.h"
 #include "os.h"
 #include "repl.h"
+#include "flash.h"
 
 #ifndef TARGET_NAME
 #define TARGET_NAME "UNKNOWN"
@@ -19,9 +20,11 @@
 int main()
 {
     os_init();
-    psj_repl_init();
 
     os_wait_for_ready();
+
+    psj_repl_init();
+    psj_flash_init();
 
     /* Initialize engine */
     jerry_init(JERRY_INIT_EMPTY);
@@ -40,6 +43,8 @@ int main()
 
     /* Cleanup engine */
     jerry_cleanup();
+
+    psj_flash_cleanup();
     psj_repl_cleanup();
     os_cleanup();
 

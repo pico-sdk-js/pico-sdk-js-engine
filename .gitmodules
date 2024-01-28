@@ -7,3 +7,6 @@
 [submodule "lib/uthash"]
 	path = lib/uthash
 	url = https://github.com/troydhanson/uthash
+[submodule "lib/littlefs"]
+	path = lib/littlefs
+	url = https://github.com/littlefs-project/littlefs.git
