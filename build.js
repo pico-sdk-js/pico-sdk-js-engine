@@ -12,7 +12,7 @@ const package = require("./package.json")
 var unknownArg = false;
 var minimistOpts = { 
   string: ['os'],
-  boolean: ['clean', 'cmake', 'make', 'full', 'run', 'build', 'rebuild'],
+  boolean: ['clean', 'cmake', 'make', 'full', 'run', 'build', 'rebuild', 'publish', 'debug'],
   default: {
     os: 'linux'
   },
@@ -51,6 +51,14 @@ if (argv.cmake) {
 
 if (argv.make) {
   make();
+}
+
+if (argv.publish) {
+  publish();
+}
+
+if (argv.debug) {
+  startDebugServer();
 }
 
 if (argv.run) {
@@ -92,6 +100,34 @@ function make() {
   // make everything
   const cores = os.cpus().length;
   cmd("make", [`-j${cores}`]);
+
+  process.chdir(__dirname);
+}
+
+function publish() {
+
+  const exeName = `${package.name}-${package.version}.elf`;
+
+  // ensure /build
+  fs.ensureDirSync(buildPath);
+
+  process.chdir(buildPath);
+
+  // sudo openocd -f interface/cmsis-dap.cfg -f target/rp2040.cfg -c "adapter speed 5000" -c "program pico-sdk-js-0.0.1.elf verify reset exit"
+  cmd("sudo", ["openocd", "-f", "interface/cmsis-dap.cfg", "-f", "target/rp2040.cfg", "-c", "adapter speed 5000", "-c", `program ${exeName} verify reset exit`]);
+
+  process.chdir(__dirname);
+}
+
+function startDebugServer() {
+
+  // ensure /build
+  fs.ensureDirSync(buildPath);
+
+  process.chdir(buildPath);
+
+  // sudo openocd -f interface/cmsis-dap.cfg -f target/rp2040.cfg -c "adapter speed 5000"
+  cmd("sudo", ["openocd", "-f", "interface/cmsis-dap.cfg", "-f", "target/rp2040.cfg", "-c", "adapter speed 5000"]);
 
   process.chdir(__dirname);
 }

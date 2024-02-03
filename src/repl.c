@@ -16,8 +16,6 @@
 #define CTRLZ 0x1A
 #define BS 0x7F
 
-typedef void (*CommandCallback)();
-
 #define MAX_INPUT_LENGTH 100
 
 char strg[MAX_INPUT_LENGTH];
