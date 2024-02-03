@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(gdb) Launch",
+            "name": "(gdb) Launch local",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/pico-sdk-js-0.0.1",
@@ -24,6 +24,19 @@
                     "ignoreFailures": true
                 }
             ]
+        },
+        {
+            "name": "(gdb) Launch remote",
+            "type": "gdb",
+            "request": "attach",
+            "gdbpath": "/usr/bin/gdb-multiarch",
+            "executable": "${workspaceFolder}/build/pico-sdk-js-0.0.1.elf",
+            "cwd": "${workspaceFolder}",
+            "target": "localhost:3333",
+            "remote": true,
+            "printCalls": true,
+            "valuesFormatting": "parseText"
         }
+
     ]
 }

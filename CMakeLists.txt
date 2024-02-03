@@ -12,6 +12,10 @@ if (NOT TARGET_OS)
   set(TARGET_OS "linux")
 endif()
 
+if (NOT BUILT_TYPE)
+  set(BUILD_TYPE Debug)
+endif()
+
 string(TOUPPER ${TARGET_OS} UPPER_TARGET_OS)
 set(VALID_TARGET_OS "linux" "rp2xxx")
 
@@ -21,10 +25,10 @@ endif()
 
 if (TARGET_OS STREQUAL "rp2xxx")
   set(MEM_HEAP_SIZE 180)
-  set(BUILD_TYPE MinSizeRel)
+  set(JERRYSCRIPT_BUILD_TYPE MinSizeRel)
 elseif (TARGET_OS STREQUAL "linux")
   set(MEM_HEAP_SIZE 1024)
-  set(BUILD_TYPE Debug)
+  set(JERRYSCRIPT_BUILD_TYPE Debug)
 endif()
 
 message("TARGET_NAME: " ${TARGET_NAME})
@@ -82,6 +86,7 @@ set(UTHASH_INC
 set(JERRYSCRIPT_BUILD_ARGS
   --toolchain=${JERRYSCRIPT_TOOLCHAIN}
   --compile-flag="-DJERRY_NDEBUG=1 -DJERRY_LCACHE=0 -DJERRY_PROPRETY_HASHMAP=0"
+  --build-type=${JERRYSCRIPT_BUILD_TYPE}
   #--mem-stress-test=ON
   #--system-allocator=ON
   --cpointer-32bit=ON
@@ -99,18 +104,6 @@ set(JERRYSCRIPT_BUILD_ARGS
   # --stack-limit=1024
   # --gc-limit=100000
 )
-
-if (BUILD_TYPE STREQUAL "Debug")
-  set(JERRYSCRIPT_BUILD_ARGS
-    ${JERRYSCRIPT_BUILD_ARGS}
-    --build-type=Debug
-  )
-else()
-  set(JERRYSCRIPT_BUILD_ARGS
-    ${JERRYSCRIPT_BUILD_ARGS}
-    --build-type=MinSizeRel
-  )
-endif()
 
 if (TARGET_OS STREQUAL "rp2xxx")
   # Set PICO settings

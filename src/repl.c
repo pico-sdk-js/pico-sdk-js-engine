@@ -19,7 +19,6 @@
 typedef void (*CommandCallback)();
 
 #define MAX_INPUT_LENGTH 100
-#define MAX_SCRIPT_LENGTH 1024
 
 char strg[MAX_INPUT_LENGTH];
 int lp = 0;

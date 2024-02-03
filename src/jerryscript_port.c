@@ -10,13 +10,25 @@ const char wrn_prefix[] = "\033[0;33mWRN: \033[0m";
 const char dbg_prefix[] = "\033[0;32mDBG: \033[0m";
 const char trc_prefix[] = "\033[0;34mTRC: \033[0m";
 
+static jerry_log_level_t log_level = JERRY_LOG_LEVEL_TRACE;
+
 void jerry_port_fatal(jerry_fatal_code_t code)
 {
     exit(code);
 }
 
+void psj_set_jerry_port_log_level(jerry_log_level_t level)
+{
+    log_level = level;
+}
+
 void jerry_port_log(jerry_log_level_t level, const char *format, ...)
 {
+    if (level > log_level)
+    {
+        return;
+    }
+
     char *logfmt = malloc((strlen(format) + prefix_len) * sizeof(char));
     logfmt[0] = 0;
 

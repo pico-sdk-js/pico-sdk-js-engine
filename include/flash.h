@@ -6,6 +6,8 @@
 
 #include "jerryscript.h"
 
+#define MAX_SCRIPT_LENGTH 1024
+
 void psj_flash_init();
 void psj_flash_cleanup();
 void psj_flash_save(const jerry_char_t *jsFile);

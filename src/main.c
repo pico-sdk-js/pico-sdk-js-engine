@@ -5,6 +5,7 @@
 #include "jerryscript-ext/handler.h"
 
 #include "io.h"
+#include "jerryscript-port-psj.h"
 #include "os.h"
 #include "repl.h"
 #include "flash.h"
@@ -17,6 +18,8 @@
 #define TARGET_VERSION "v0.0.0"
 #endif
 
+void run_jerryscript_engine();
+
 int main()
 {
     os_init();
@@ -26,6 +29,18 @@ int main()
     psj_repl_init();
     psj_flash_init();
 
+    run_jerryscript_engine();
+
+cleanup:
+    psj_flash_cleanup();
+    psj_repl_cleanup();
+    os_cleanup();
+
+    return 0;
+}
+
+void run_jerryscript_engine()
+{
     /* Initialize engine */
     jerry_init(JERRY_INIT_EMPTY);
 
@@ -43,10 +58,4 @@ int main()
 
     /* Cleanup engine */
     jerry_cleanup();
-
-    psj_flash_cleanup();
-    psj_repl_cleanup();
-    os_cleanup();
-
-    return 0;
 }

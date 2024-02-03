@@ -24,12 +24,12 @@ const char entry_file[] = "main.js";
 // to the user.
 int user_provided_block_device_read(const struct lfs_config *c, lfs_block_t block, lfs_off_t off, void *buffer, lfs_size_t size)
 {
-    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_read(block: %i, off: %i, buffer: %p, size: %i)\n", block, off, buffer, size);
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_read(block: %u, off: %u, buffer: %p, size: %u)\n", block, off, buffer, size);
 
     u_int8_t *flash_buffer = os_get_flash_buffer();
     u_int32_t offset = (c->block_size * block) + off;
     memcpy(buffer, flash_buffer + offset, size);
-    
+
     return LFS_ERR_OK;
 }
 
@@ -38,7 +38,7 @@ int user_provided_block_device_read(const struct lfs_config *c, lfs_block_t bloc
 // May return LFS_ERR_CORRUPT if the block should be considered bad.
 int user_provided_block_device_prog(const struct lfs_config *c, lfs_block_t block, lfs_off_t off, const void *buffer, lfs_size_t size)
 {
-    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_prog(block: %i, off: %i, buffer: %p, size: %i)\n", block, off, buffer, size);
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_prog(block: %u, off: %u, buffer: %p, size: %u)\n", block, off, buffer, size);
 
     // set a page of data
     u_int32_t offset = (c->block_size * block) + off;
@@ -53,7 +53,7 @@ int user_provided_block_device_prog(const struct lfs_config *c, lfs_block_t bloc
 // May return LFS_ERR_CORRUPT if the block should be considered bad.
 int user_provided_block_device_erase(const struct lfs_config *c, lfs_block_t block)
 {
-    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_erase(block: %i)\n", block);
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_erase(block: %u)\n", block);
     u_int32_t offset = c->block_size * block;
 
     // Clear entire flash_buffer
