@@ -11,10 +11,10 @@ const package = require("./package.json")
 // Parse options
 var unknownArg = false;
 var minimistOpts = { 
-  string: ['os'],
-  boolean: ['clean', 'cmake', 'make', 'full', 'run', 'build', 'rebuild', 'publish', 'debug'],
+  string: ['target'],
+  boolean: ['clean', 'cmake', 'make', 'run', 'build', 'rebuild', 'publish', 'debug'],
   default: {
-    os: 'linux'
+    target: 'linux'
   },
   unknown: function(x) { 
     console.error(`ERROR: Unknown arg '${x}'.`);
@@ -67,80 +67,57 @@ if (argv.run) {
 
 function clean() {
   fs.removeSync(buildPath);
-
-  if (argv.full) {
-    fs.removeSync(jerryBuildPath);
-  }
+  fs.removeSync(jerryBuildPath);
 }
 
 function cmake() {
-  // ensure /build
-  fs.ensureDirSync(buildPath);
-
-  process.chdir(buildPath);
 
   // cmake everything
   const params = [
     "..", 
     `-DTARGET_NAME=${package.name}`,
     `-DTARGET_VERSION=${package.version}`,
-    `-DTARGET_OS=${argv.os}`
+    `-DTARGET_OS=${argv.target}`
   ];
-  cmd("cmake", params);
-
-  process.chdir(__dirname);
+  cmd(buildPath, "cmake", params);
 }
 
 function make() {
-  // ensure /build
-  fs.ensureDirSync(buildPath);
-
-  process.chdir(buildPath);
 
   // make everything
   const cores = os.cpus().length;
-  cmd("make", [`-j${cores}`]);
-
-  process.chdir(__dirname);
+  cmd(buildPath, "make", [`-j${cores}`]);
 }
 
 function publish() {
 
-  const exeName = `${package.name}-${package.version}.elf`;
-
-  // ensure /build
-  fs.ensureDirSync(buildPath);
-
-  process.chdir(buildPath);
-
   // sudo openocd -f interface/cmsis-dap.cfg -f target/rp2040.cfg -c "adapter speed 5000" -c "program pico-sdk-js-0.0.1.elf verify reset exit"
-  cmd("sudo", ["openocd", "-f", "interface/cmsis-dap.cfg", "-f", "target/rp2040.cfg", "-c", "adapter speed 5000", "-c", `program ${exeName} verify reset exit`]);
-
-  process.chdir(__dirname);
+  const exeName = `${package.name}-${package.version}.elf`;
+  cmd(buildPath, "sudo", ["openocd", "-f", "interface/cmsis-dap.cfg", "-f", "target/rp2040.cfg", "-c", "adapter speed 5000", "-c", `program ${exeName} verify reset exit`]);
 }
 
 function startDebugServer() {
 
-  // ensure /build
-  fs.ensureDirSync(buildPath);
-
-  process.chdir(buildPath);
-
   // sudo openocd -f interface/cmsis-dap.cfg -f target/rp2040.cfg -c "adapter speed 5000"
-  cmd("sudo", ["openocd", "-f", "interface/cmsis-dap.cfg", "-f", "target/rp2040.cfg", "-c", "adapter speed 5000"]);
-
-  process.chdir(__dirname);
+  cmd(buildPath, "sudo", ["openocd", "-f", "interface/cmsis-dap.cfg", "-f", "target/rp2040.cfg", "-c", "adapter speed 5000"]);
 }
 
 function run() {
-  process.chdir(buildPath);
-
   let processName = `./${package.name}-${package.version}`;
-  cmd(processName, []);
-
-  process.chdir(__dirname);
+  cmd(buildPath, processName, []);
 }
 
-function cmd(cmd, args) {
-  childProcess.spawnSync(cmd, args, { stdio: "inherit" });
+function cmd(wd, cmd, args) {
+  fs.ensureDirSync(wd);
+  process.chdir(wd);
+
+  try {
+    let output = childProcess.spawnSync(cmd, args, { stdio: "inherit" });
+    if (output.status !== 0) {
+      console.error(`Child process returned non-zero status: ${output.status}`);
+      process.exit(1);
+    }
+  } finally {
+    process.chdir(__dirname);
+  }
 }
