@@ -12,7 +12,7 @@ if (NOT TARGET_OS)
   set(TARGET_OS "linux")
 endif()
 
-if (NOT BUILT_TYPE)
+if (NOT BUILD_TYPE)
   set(BUILD_TYPE Debug)
 endif()
 

@@ -12,7 +12,7 @@ const package = require("./package.json")
 var unknownArg = false;
 var minimistOpts = { 
   string: ['target'],
-  boolean: ['clean', 'cmake', 'make', 'run', 'build', 'rebuild', 'publish', 'debug'],
+  boolean: ['clean', 'cmake', 'make', 'run', 'build', 'rebuild', 'publish', 'debug', 'release'],
   default: {
     target: 'linux'
   },
@@ -31,8 +31,6 @@ if (argv.build) {
   argv.cmake = true;
   argv.make = true;
 }
-
-console.log(argv);
 
 if (unknownArg) {
   return;
@@ -79,6 +77,11 @@ function cmake() {
     `-DTARGET_VERSION=${package.version}`,
     `-DTARGET_OS=${argv.target}`
   ];
+
+  if (argv.release) {
+    params.push("-DBUILD_TYPE=MinSizeRel")
+  }
+
   cmd(buildPath, "cmake", params);
 }
 

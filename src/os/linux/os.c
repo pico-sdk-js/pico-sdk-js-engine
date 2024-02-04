@@ -44,7 +44,8 @@ void os_init()
     FILE *fp = fopen(flashFile, "r");
     if (fp != NULL)
     {
-        fread(flash_buffer, FLASH_TARGET_SIZE, 1, fp);
+        size_t bytes = fread(flash_buffer, FLASH_TARGET_SIZE, 1, fp);
+        assert(bytes > 0);
         fclose(fp);
     }
 }
@@ -55,7 +56,8 @@ void os_cleanup()
     FILE *fp = fopen(flashFile, "w");
     if (fp != NULL)
     {
-        fwrite(flash_buffer, FLASH_TARGET_SIZE, 1, fp);
+        size_t bytes = fwrite(flash_buffer, FLASH_TARGET_SIZE, 1, fp);
+        assert(bytes > 0);
         fclose(fp);
     }
 
@@ -128,29 +130,29 @@ void os_process_input(char c, char *s, int max_length, int *sp)
 
 void os_flash_range_erase(uint32_t flash_offs, size_t count)
 {
-    uint32_t offset = (flash_offs-FLASH_TARGET_OFFSET);
+    uint32_t offset = (flash_offs - FLASH_TARGET_OFFSET);
     assert(offset >= 0);
 
     for (size_t i = 0; i < count; i++)
     {
         flash_buffer[offset + i] = 0;
-    }    
+    }
 }
 
 void os_flash_range_program(uint32_t flash_offs, const uint8_t *data, size_t count)
 {
-    uint32_t offset = (flash_offs-FLASH_TARGET_OFFSET);
+    uint32_t offset = (flash_offs - FLASH_TARGET_OFFSET);
     assert(offset >= 0);
 
     for (size_t i = 0; i < count; i++)
     {
         flash_buffer[offset + i] = data[i];
-    }   
+    }
 }
 
 uint8_t *os_get_flash_buffer()
 {
-    return (uint8_t*)flash_buffer;
+    return (uint8_t *)flash_buffer;
 }
 
 uint32_t os_save_and_disable_interrupts()
