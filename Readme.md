@@ -23,15 +23,10 @@
 
 2. Setup credential cache
 
-    See [GCM Credential stores](https://github.com/git-ecosystem/git-credential-manager/blob/main/docs/credstores.md#gpgpass-compatible-files) for more info.
-
-    Replace below `<gpg-id>` with your username. When asked for your "real name" use your github username instead.
+    See [GCM Credential stores](https://github.com/git-ecosystem/git-credential-manager/blob/main/docs/credstores.md) for more info and additional options.
 
     ```bash
-    sudo apt install -y gpg pass
-    pass init <gpg-id>
-    gpg --gen-key
-    git config --global credential.credentialStore gpg
+    git config --global credential.credentialStore cache
     ```
 
 3. Install\Configure GMC (Git Credential Manager)
