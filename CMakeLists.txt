@@ -48,7 +48,7 @@ set(JERRYSCRIPT_SDK_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib/jerryscript)
 if (TARGET_OS STREQUAL "rp2xxx")
   set(JERRYSCRIPT_TOOLCHAIN ${CMAKE_CURRENT_SOURCE_DIR}/jerryscript_toolchain.cmake)
 elseif(TARGET_OS STREQUAL "linux")
-  set(JERRYSCRIPT_TOOLCHAIN ${JERRYSCRIPT_SDK_PATH}/cmake/toolchain_linux_i686.cmake)
+  set(JERRYSCRIPT_TOOLCHAIN ${JERRYSCRIPT_SDK_PATH}/cmake/toolchain_linux_aarch64.cmake)
 endif()
 
 set(JERRYSCRIPT_LIBS
@@ -156,7 +156,8 @@ set(LIBRARIES
 if (TARGET_OS STREQUAL "rp2xxx")
   set(LIBRARIES
     ${LIBRARIES}
-    pico_stdlib)  
+    pico_stdlib
+    hardware_flash)  
     add_compile_definitions(NDEBUG=1)
 elseif (TARGET_OS STREQUAL "linux")
   set(LIBRARIES
