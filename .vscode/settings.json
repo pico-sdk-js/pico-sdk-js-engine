@@ -8,6 +8,6 @@
         "jerryscript-port.h": "c"
     },
     "cmake.configureSettings": {
-        "TARGET_OS": "rp2xxx"
+        "TARGET_OS": "linux"
     }
 }

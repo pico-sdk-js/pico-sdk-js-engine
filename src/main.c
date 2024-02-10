@@ -26,6 +26,9 @@ int main()
 
     os_wait_for_ready();
 
+    /* Initialize engine */
+    jerry_init(JERRY_INIT_EMPTY);
+
     psj_repl_init();
     psj_flash_init();
 
@@ -41,9 +44,6 @@ cleanup:
 
 void run_jerryscript_engine()
 {
-    /* Initialize engine */
-    jerry_init(JERRY_INIT_EMPTY);
-
     /* Register 'print' function from the extensions */
     jerryx_handler_register_global((const jerry_char_t *)"print", jerryx_handler_print);
 

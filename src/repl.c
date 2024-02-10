@@ -7,9 +7,10 @@
 
 #include "uthash.h"
 
-#include "os.h"
-#include "io.h"
 #include "flash.h"
+#include "io.h"
+#include "jerry_helper.h"
+#include "os.h"
 
 #define CR '\r'
 #define NL '\n'
@@ -20,7 +21,6 @@
 
 char strg[MAX_INPUT_LENGTH];
 int lp = 0;
-bool start_prompt = true;
 
 struct command
 {
@@ -41,110 +41,100 @@ void psj_add_command(char *name, CommandCallback cb)
     HASH_ADD_STR(_commands, key, cmd);
 }
 
-bool psj_call_command(char *name)
+jerry_value_t psj_call_command(jerry_value_t cmd_object)
 {
-    struct command *cmd;
+    struct command *cmd = NULL;
+    jerry_char_t *name = psj_jerry_get_string_property(cmd_object, "cmd");
+    uint32_t etag = psj_jerry_get_uint32_property(cmd_object, "etag");
+    jerry_value_t response = jerry_create_object();
+    jerry_value_t error_obj = 0;
+
+    if (etag != 0)
+    {
+        psj_jerry_set_uint32_property(response, "etag", etag);
+    }
+
+    if (name != NULL)
+    {
+        psj_jerry_set_string_property(response, "cmd", name);
+    }
+    else
+    {
+        error_obj = psj_jerry_create_error_obj(MISSING_ARG, "cmd");
+        goto has_error;
+    }
+
     HASH_FIND_STR(_commands, name, cmd);
 
-    if (cmd != NULL)
+    if (cmd == NULL)
     {
-        (*(cmd->command))();
-        return true;
+        error_obj = psj_jerry_create_error_obj(UNKNOWN_CMD, name);
+        goto has_error;
     }
 
-    return false;
-}
+    jerry_value_t args = psj_jerry_get_property(cmd_object, "args");
+    jerry_value_t response_value = (*(cmd->command))(args);
 
-void psj_quit_command()
-{
-    os_exit();
-}
-
-void psj_flash_command()
-{
-    printf("WRITE DATA (^Z to end)\n");
-
-    jerry_char_t script[MAX_SCRIPT_LENGTH];
-    int bp = 0;
-
-    bool is_done = false;
-    while (!is_done)
+    if (response_value != 0)
     {
-        char chr = os_getchar_timeout_us(0);
-        if (os_getchar_timeout_us_is_valid(chr))
-        {
-            switch (chr)
-            {
-                case CTRLZ:
-                    script[bp] = 0;
-                    psj_flash_save(script);
-                    is_done = true;
-                    printf("\nSAVED\n");
-                    break;
-                default:
-                    os_process_input(chr, script, MAX_SCRIPT_LENGTH, &bp);
-                    break;
-            }
-        }
-    }
-}
-
-void psj_restart_command()
-{
-    psj_repl_run_flash();
-}
-
-void psj_dump_flash_command()
-{
-    jerry_char_t script[MAX_SCRIPT_LENGTH];
-    int scriptLen = psj_flash_read(script, MAX_SCRIPT_LENGTH);
-    if (scriptLen != 0)
-    {
-        printf("%s\n", script);
-    }
-}
-
-void psj_stats_command()
-{
-    jerry_heap_stats_t stats;
-    if (!jerry_get_memory_stats (&stats))
-    {
-        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "FAILED TO GET MEMORY STATS\n");
-        return;
+        psj_jerry_set_property(response, "value", response_value);
+        jerry_release_value(response_value);
     }
 
-    printf("version: %lu\nsize: %lu\nallocated bytes: %lu\npeak allocated bytes: %lu\n\n", stats.version, stats.size, stats.allocated_bytes, stats.peak_allocated_bytes);
+    jerry_release_value(args);
+
+has_error:
+    if (error_obj != 0)
+    {
+        psj_jerry_set_property(response, "value", error_obj);
+        jerry_release_value(error_obj);
+    }
+
+cleanup:
+
+    if (name != NULL)
+    {
+        free(name);
+    }
+
+    return response;
 }
 
-void psj_gc_command()
+jerry_value_t psj_ping_command(jerry_value_t request_args)
 {
-    jerry_gc(JERRY_GC_PRESSURE_LOW);
+    jerry_value_t value = jerry_create_object();
+    psj_jerry_set_string_property(value, "pong", "TRUE");
+    return value;
 }
 
-void psj_bootsel_command()
+void psj_exec_command()
 {
-    os_reset_usb_boot(0, 0);
+    jerry_char_t *value = "print(\"hello world\")";
+    uint16_t value_size = strlen(value);
+
+    jerry_value_t parse_val = jerry_parse(NULL, 0, value, value_size, JERRY_PARSE_STRICT_MODE);
+
+    if (jerry_value_is_error(parse_val))
+    {
+        psj_print_unhandled_exception(parse_val);
+    }
+    else
+    {
+        jerry_value_t ret_val = jerry_run(parse_val);
+        psj_print_value(ret_val);
+        jerry_release_value(ret_val);
+    }
+
+    jerry_release_value(parse_val);
 }
 
 void psj_repl_init()
 {
-    psj_add_command(".flash", psj_flash_command);
-    psj_add_command(".quit", psj_quit_command);
-    psj_add_command(".dump", psj_dump_flash_command);
-    psj_add_command(".restart", psj_restart_command);    
-    psj_add_command(".stats", psj_stats_command);
-    psj_add_command(".gc", psj_gc_command);
-    psj_add_command(".bootsel", psj_bootsel_command);
+    psj_add_command("ping", psj_ping_command);
 }
 
 void psj_repl_cycle()
 {
-    if (start_prompt)
-    {
-        start_prompt = false;
-        printf("> ");
-    }
-
     char chr = os_getchar_timeout_us(0);
     while (os_getchar_timeout_us_is_valid(chr))
     {
@@ -154,33 +144,25 @@ void psj_repl_cycle()
         {
             strg[lp] = 0; // terminate string
 
-            if (strg[0] == '.')
+            jerry_value_t cmd = jerry_json_parse(strg, lp);
+            if (jerry_value_is_error(cmd))
             {
-                if (!psj_call_command(strg))
-                {
-                    jerry_port_log(JERRY_LOG_LEVEL_ERROR, "ERROR: Command '%s' not found\n", strg);
-                }
+                psj_print_unhandled_exception(cmd);
             }
             else
             {
-                jerry_value_t parse_val = jerry_parse(NULL, 0, (const jerry_char_t *)strg, lp, JERRY_PARSE_STRICT_MODE);
+                jerry_value_t response = psj_call_command(cmd);
+                jerry_char_t *jsonValue = psj_jerry_stringify(response);
 
-                if (jerry_value_is_error(parse_val))
-                {
-                    psj_print_unhandled_exception(parse_val);
-                }
-                else
-                {
-                    jerry_value_t ret_val = jerry_run(parse_val);
-                    psj_print_value(ret_val);
-                    jerry_release_value(ret_val);
-                }
+                printf("%s\n", jsonValue);
 
-                jerry_release_value(parse_val);
+                free(jsonValue);
+                jerry_release_value(response);
             }
 
+            jerry_release_value(cmd);
+
             lp = 0; // reset string buffer pointer
-            start_prompt = true;
 
             break;
         }

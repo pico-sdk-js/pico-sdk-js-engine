@@ -2,13 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "jerryscript.h"
 #include "jerryscript-port.h"
 
-const int prefix_len = 16;
-const char err_prefix[] = "\033[1;31mERR: \033[0m";
-const char wrn_prefix[] = "\033[0;33mWRN: \033[0m";
-const char dbg_prefix[] = "\033[0;32mDBG: \033[0m";
-const char trc_prefix[] = "\033[0;34mTRC: \033[0m";
+#include "jerry_helper.h"
 
 static jerry_log_level_t log_level = JERRY_LOG_LEVEL_TRACE;
 
@@ -29,35 +26,26 @@ void jerry_port_log(jerry_log_level_t level, const char *format, ...)
         return;
     }
 
-    char *logfmt = malloc((strlen(format) + prefix_len) * sizeof(char));
-    logfmt[0] = 0;
+    jerry_value_t response = jerry_create_object();
+    psj_jerry_set_string_property(response, "cmd", "log");
 
-    switch (level)
-    {
-    case JERRY_LOG_LEVEL_ERROR:
-        strcpy(logfmt, err_prefix);
-        break;
-    case JERRY_LOG_LEVEL_WARNING:
-        strcpy(logfmt, wrn_prefix);
-        break;
-    case JERRY_LOG_LEVEL_DEBUG:
-        strcpy(logfmt, dbg_prefix);
-        break;
-    case JERRY_LOG_LEVEL_TRACE:
-        strcpy(logfmt, trc_prefix);
-        break;
-    default:
-        break;
-    }
-
-    strcat(logfmt, format);
+    jerry_value_t value = jerry_create_object();
+    psj_jerry_set_uint32_property(value, "level", level);
 
     va_list args;
     va_start(args, format);
-    vfprintf(stderr, logfmt, args);
+    jerry_char_t *msg = VS(format, args);
+    psj_jerry_set_string_property(value, "msg", msg);
     va_end(args);
 
-    free(logfmt);
+    psj_jerry_set_property(response, "value", value);
+
+    jerry_char_t *jsonValue = psj_jerry_stringify(response);
+    printf("%s\n", jsonValue);
+
+    free(msg);
+    jerry_release_value(value);
+    jerry_release_value(response);
 }
 
 void jerry_port_print_char(char c)

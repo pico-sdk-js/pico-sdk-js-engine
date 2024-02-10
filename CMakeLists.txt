@@ -135,6 +135,7 @@ set(SOURCES
   ${SOURCES} 
   ${CMAKE_CURRENT_LIST_DIR}/src/flash.c
   ${CMAKE_CURRENT_LIST_DIR}/src/io.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/jerry_helper.c
   ${CMAKE_CURRENT_LIST_DIR}/src/jerryscript_port.c
   ${CMAKE_CURRENT_LIST_DIR}/src/main.c
   ${CMAKE_CURRENT_LIST_DIR}/src/repl.c
@@ -165,6 +166,7 @@ elseif (TARGET_OS STREQUAL "linux")
     c m)
 endif()
 
+add_compile_definitions(LFS_NO_ERROR)
 add_compile_definitions(${UPPER_TARGET_OS})
 add_compile_definitions(TARGET_NAME="${TARGET_NAME}")
 add_compile_definitions(TARGET_VERSION="${TARGET_VERSION}")

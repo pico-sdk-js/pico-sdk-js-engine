@@ -1,6 +1,7 @@
 {
     "recommendations": [
         "bierner.markdown-preview-github-styles",
-        "ms-vscode.cmake-tools"
+        "ms-vscode.cmake-tools",
+        "ms-vscode.cpptools-extension-pack"
     ]
 }

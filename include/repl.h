@@ -1,7 +1,9 @@
 #ifndef __REPL_H
 #define __REPL_H
 
-typedef void (*CommandCallback)();
+#include "jerryscript.h"
+
+typedef jerry_value_t (*CommandCallback)(jerry_value_t request_args);
 
 void psj_add_command(char *name, CommandCallback cb);
 
