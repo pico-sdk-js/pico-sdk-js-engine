@@ -107,6 +107,13 @@ jerry_value_t psj_ping_command(jerry_value_t request_args)
     return value;
 }
 
+jerry_value_t psj_quit_command(jerry_value_t request_args)
+{
+    os_exit();
+
+    return jerry_create_null();
+}
+
 void psj_exec_command()
 {
     jerry_char_t *value = "print(\"hello world\")";
@@ -131,6 +138,7 @@ void psj_exec_command()
 void psj_repl_init()
 {
     psj_add_command("ping", psj_ping_command);
+    psj_add_command("quit", psj_quit_command);
 }
 
 void psj_repl_cycle()
@@ -155,6 +163,7 @@ void psj_repl_cycle()
                 jerry_char_t *jsonValue = psj_jerry_stringify(response);
 
                 printf("%s\n", jsonValue);
+                fflush(stdout);
 
                 free(jsonValue);
                 jerry_release_value(response);

@@ -42,6 +42,7 @@ void jerry_port_log(jerry_log_level_t level, const char *format, ...)
 
     jerry_char_t *jsonValue = psj_jerry_stringify(response);
     printf("%s\n", jsonValue);
+    fflush(stdout);
 
     free(msg);
     jerry_release_value(value);
