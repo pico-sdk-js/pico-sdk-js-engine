@@ -15,4 +15,8 @@ void psj_repl_cleanup();
 
 void psj_repl_run_flash();
 
+jerry_value_t psj_exec_command(jerry_value_t request_args);
+jerry_value_t psj_stats_command(jerry_value_t request_args);
+jerry_value_t psj_quit_command(jerry_value_t request_args);
+
 #endif // __REPL_H

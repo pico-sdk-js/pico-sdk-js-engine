@@ -1,22 +1,10 @@
+#include "psj.h"
+
 #include <stdlib.h>
 #include <string.h>
 
 #include "jerryscript.h"
 #include "jerryscript-ext/handler.h"
-
-#include "io.h"
-#include "jerryscript-port-psj.h"
-#include "os.h"
-#include "repl.h"
-#include "flash.h"
-
-#ifndef TARGET_NAME
-#define TARGET_NAME "UNKNOWN"
-#endif
-
-#ifndef TARGET_VERSION
-#define TARGET_VERSION "v0.0.0"
-#endif
 
 void run_jerryscript_engine();
 

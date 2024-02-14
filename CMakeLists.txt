@@ -131,6 +131,9 @@ set(OUTPUT_TARGET ${TARGET_NAME}-${TARGET_VERSION})
 file(GLOB OS_SOURCES 
   ${CMAKE_CURRENT_LIST_DIR}/src/os/${TARGET_OS}/*.c)
 
+file(GLOB CMD_SOURCES 
+  ${CMAKE_CURRENT_LIST_DIR}/src/cmds/*.c)
+
 set(SOURCES
   ${SOURCES} 
   ${CMAKE_CURRENT_LIST_DIR}/src/flash.c
@@ -141,7 +144,8 @@ set(SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/src/repl.c
   ${CMAKE_CURRENT_LIST_DIR}/lib/littlefs/lfs.c
   ${CMAKE_CURRENT_LIST_DIR}/lib/littlefs/lfs_util.c 
-  ${OS_SOURCES})
+  ${OS_SOURCES}
+  ${CMD_SOURCES})
 
 set(INCLUDES
   ${INCLUDES}

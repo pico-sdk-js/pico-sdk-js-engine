@@ -1,4 +1,4 @@
-#include "repl.h"
+#include "psj.h"
 
 #include <string.h>
 
@@ -6,11 +6,6 @@
 #include "jerryscript-port.h"
 
 #include "uthash.h"
-
-#include "flash.h"
-#include "io.h"
-#include "jerry_helper.h"
-#include "os.h"
 
 #define CR '\r'
 #define NL '\n'
@@ -100,44 +95,10 @@ cleanup:
     return response;
 }
 
-jerry_value_t psj_ping_command(jerry_value_t request_args)
-{
-    jerry_value_t value = jerry_create_object();
-    psj_jerry_set_string_property(value, "pong", "TRUE");
-    return value;
-}
-
-jerry_value_t psj_quit_command(jerry_value_t request_args)
-{
-    os_exit();
-
-    return jerry_create_null();
-}
-
-void psj_exec_command()
-{
-    jerry_char_t *value = "print(\"hello world\")";
-    uint16_t value_size = strlen(value);
-
-    jerry_value_t parse_val = jerry_parse(NULL, 0, value, value_size, JERRY_PARSE_STRICT_MODE);
-
-    if (jerry_value_is_error(parse_val))
-    {
-        psj_print_unhandled_exception(parse_val);
-    }
-    else
-    {
-        jerry_value_t ret_val = jerry_run(parse_val);
-        psj_print_value(ret_val);
-        jerry_release_value(ret_val);
-    }
-
-    jerry_release_value(parse_val);
-}
-
 void psj_repl_init()
 {
-    psj_add_command("ping", psj_ping_command);
+    psj_add_command("stats", psj_stats_command);
+    psj_add_command("exec", psj_exec_command);
     psj_add_command("quit", psj_quit_command);
 }
 
