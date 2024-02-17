@@ -12,7 +12,10 @@
 #define CTRLZ 0x1A
 #define BS 0x7F
 
-#define MAX_INPUT_LENGTH 100
+// JSON inputs can be up to 1.5kb
+#define MAX_INPUT_LENGTH (1024+512)
+
+const char entry_file[] = "main.js";
 
 char strg[MAX_INPUT_LENGTH];
 int lp = 0;
@@ -151,14 +154,23 @@ void psj_repl_cleanup()
 
 void psj_repl_run_flash()
 {
-    jerry_char_t script[SEGMENT_SIZE];
-    int scriptLen = psj_flash_read("main.js", script, SEGMENT_SIZE, 0);
-    if (scriptLen == 0)
+    int scriptLength;
+    int err = psj_flash_file_size(entry_file, &scriptLength);
+    if (err < 0)
     {
+        jerry_port_log(JERRY_LOG_LEVEL_TRACE, "psj_flash_file_size('%s') returned %i\n", entry_file, err);
+        return;
+    }
+
+    jerry_char_t script[scriptLength];
+    err = psj_flash_read_all(entry_file, script, scriptLength);
+    if (err < 0)
+    {
+        jerry_port_log(JERRY_LOG_LEVEL_TRACE, "psj_flash_read_all('%s') returned %i\n", entry_file, err);
         return;
     }
     
-    jerry_value_t parsed_code = jerry_parse("main.js", strlen("main.js"), script, strlen(script), JERRY_PARSE_STRICT_MODE | JERRY_PARSE_MODULE);
+    jerry_value_t parsed_code = jerry_parse(entry_file, strlen(entry_file), script, scriptLength, JERRY_PARSE_STRICT_MODE | JERRY_PARSE_MODULE);
 
     if (jerry_value_is_error(parsed_code))
     {

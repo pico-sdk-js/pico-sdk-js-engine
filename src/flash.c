@@ -18,8 +18,6 @@
     #define FLASH_BLOCK_SIZE (1u << 16)
 #endif
 
-const char entry_file[] = "main.js";
-
 // Read a region in a block. Negative error codes are propagated
 // to the user.
 int user_provided_block_device_read(const struct lfs_config *c, lfs_block_t block, lfs_off_t off, void *buffer, lfs_size_t size)
@@ -115,15 +113,24 @@ void psj_flash_cleanup()
     lfs_unmount(&lfs);
 }
 
-int psj_flash_save(const jerry_char_t *path, const jerry_char_t *data)
+int psj_flash_save(const jerry_char_t *path, const jerry_char_t *data, const bool append)
 {
     // Ensure interrupts are disabled to avoid flash corruption
     uint8_t status = os_save_and_disable_interrupts();
 
     lfs_file_t file;
     int err;
+    int open_flags = LFS_O_WRONLY | LFS_O_CREAT;
+    if (append)
+    {
+        open_flags |= LFS_O_APPEND;
+    }
+    else
+    {
+        open_flags |= LFS_O_TRUNC;
+    }
     
-    err = lfs_file_open(&lfs, &file, path, LFS_O_WRONLY | LFS_O_CREAT);
+    err = lfs_file_open(&lfs, &file, path, open_flags);
     if (err != LFS_ERR_OK)
     {
         // Restore interrupts to reenable logging
@@ -169,6 +176,49 @@ int psj_flash_file_size(const jerry_char_t *path, uint32_t *size)
     return 0;
 }
 
+int psj_flash_read_all(const jerry_char_t *path, jerry_char_t *buffer, uint32_t max_length)
+{
+    lfs_file_t file;
+    int err;
+    struct lfs_info info;
+    err = lfs_stat(&lfs, path, &info);
+    if (err == LFS_ERR_NOENT)
+    {
+        // file does not exist
+        jerry_port_log(JERRY_LOG_LEVEL_TRACE, "Error getting stats on '%s': %i\n", path, err);
+        return -1;
+    }
+    else if (err < LFS_ERR_OK)
+    {
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error getting stats on '%s': %i\n", path, err);
+        return -2;
+    }
+
+    err = lfs_file_open(&lfs, &file, path, LFS_O_RDONLY);
+    if (err < LFS_ERR_OK)
+    {
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error opening '%s': %i\n", path, err);
+        return -3;
+    }
+    
+    err = lfs_file_read(&lfs, &file, buffer, max_length);
+    if (err < LFS_ERR_OK)
+    {
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error reading '%s': %i\n", path, err);
+        err = -5;
+        goto cleanup;
+    }
+
+    // Terminate the string with '\0' 
+    buffer[err] = 0;
+
+cleanup:
+
+    lfs_file_close(&lfs, &file);
+
+    return err;
+}
+
 int psj_flash_read(const jerry_char_t *path, jerry_char_t *buffer, uint32_t max_length, uint32_t segment)
 {
     lfs_file_t file;
@@ -202,7 +252,7 @@ int psj_flash_read(const jerry_char_t *path, jerry_char_t *buffer, uint32_t max_
         goto cleanup;
     }
 
-    err = lfs_file_read(&lfs, &file, buffer, max_length);
+    err = lfs_file_read(&lfs, &file, buffer, lfs_min(max_length, SEGMENT_SIZE));
     if (err < LFS_ERR_OK)
     {
         jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error reading '%s': %i\n", path, err);

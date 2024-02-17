@@ -10,7 +10,8 @@ typedef enum __PSJErrorCode {
     UNKNOWN_CMD,
     WRITE_ERROR,
     READ_ERROR,
-    FILE_NOT_FOUND
+    FILE_NOT_FOUND,
+    INVALID_ARG
 } PSJErrorCode;
 
 jerry_char_t *S(const jerry_char_t *txt);

@@ -151,6 +151,9 @@ jerry_char_t *psj_jerry_vfget_error_message(const PSJErrorCode error_code, va_li
         case FILE_NOT_FOUND:
             return VS("File '%s' not found", args);
 
+        case INVALID_ARG:
+            return VS("Invalid argument for '%s'. Valid values include %s", args);
+
         default:
             return S("Undefined Error");
     }
