@@ -124,7 +124,7 @@ jerry_char_t *VS(const jerry_char_t *format,va_list args)
     return sVal;
 }
 
-jerry_char_t *psj_jerry_vfget_error_message(const JerryErrorCode error_code, va_list args)
+jerry_char_t *psj_jerry_vfget_error_message(const PSJErrorCode error_code, va_list args)
 {
     jerry_char_t *errMsg;
 
@@ -142,12 +142,15 @@ jerry_char_t *psj_jerry_vfget_error_message(const JerryErrorCode error_code, va_
         case UNKNOWN_CMD:
             return VS("Unknown command '%s'", args);
 
+        case WRITE_ERROR:
+            return VS("Error writing to '%s'", args);
+
         default:
             return S("Undefined Error");
     }
 }
 
-jerry_char_t *psj_jerry_get_error_message(const JerryErrorCode error_code, ...)
+jerry_char_t *psj_jerry_get_error_message(const PSJErrorCode error_code, ...)
 {
     va_list args;
     va_start(args, error_code);
@@ -157,7 +160,7 @@ jerry_char_t *psj_jerry_get_error_message(const JerryErrorCode error_code, ...)
     return msg;
 }
 
-jerry_value_t psj_jerry_create_error_obj(const JerryErrorCode error_code, ...)
+jerry_value_t psj_jerry_create_error_obj(const PSJErrorCode error_code, ...)
 {
     jerry_value_t error_obj = jerry_create_object();
     jerry_char_t *error_msg;

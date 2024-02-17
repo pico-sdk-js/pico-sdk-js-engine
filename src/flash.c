@@ -115,7 +115,7 @@ void psj_flash_cleanup()
     lfs_unmount(&lfs);
 }
 
-void psj_flash_save(const jerry_char_t *jsFile)
+int psj_flash_save(const jerry_char_t *path, const jerry_char_t *data)
 {
     // Ensure interrupts are disabled to avoid flash corruption
     uint8_t status = os_save_and_disable_interrupts();
@@ -123,24 +123,29 @@ void psj_flash_save(const jerry_char_t *jsFile)
     lfs_file_t file;
     int err;
     
-    err = lfs_file_open(&lfs, &file, entry_file, LFS_O_WRONLY | LFS_O_CREAT);
+    err = lfs_file_open(&lfs, &file, path, LFS_O_WRONLY | LFS_O_CREAT);
     if (err != LFS_ERR_OK)
     {
-        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error opening '%s' for write: %i\n", entry_file, err);
-        return;
+        // Restore interrupts to reenable logging
+        os_restore_interrupts(status);
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error opening '%s' for write: %i\n", path, err);
+        return -1;
     }
 
-    int fileLen = strlen(jsFile);
-    err = lfs_file_write(&lfs, &file, jsFile, fileLen);
-    if (err <= LFS_ERR_OK)
-    {
-        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error writing '%s': %i\n", entry_file, err);
-    }
+    int fileLen = strlen(data);
+    err = lfs_file_write(&lfs, &file, data, fileLen);
 
+    // Restore interrupts after writing
+    os_restore_interrupts(status);
     lfs_file_close(&lfs, &file);
 
-    // Restore interrupts
-    os_restore_interrupts(status);
+    if (err < LFS_ERR_OK)
+    {
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error writing '%s': %i\n", path, err);
+        return -2;
+    }
+
+    return err;
 }
 
 int psj_flash_read(jerry_char_t *buffer, u_int32_t max_length)
@@ -180,4 +185,37 @@ int psj_flash_read(jerry_char_t *buffer, u_int32_t max_length)
     lfs_file_close(&lfs, &file);
 
     return err;
+}
+
+int psj_flash_list(struct lfs_info *file_info, uint32_t max_file_info)
+{
+    lfs_dir_t root_dir;
+    int err = lfs_dir_open(&lfs, &root_dir, "/");
+    if (err < 0)
+    {
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error opening root directory: %i\n", err);
+        return 0;
+    }
+
+    int idx = 0;
+    while (idx < max_file_info && (err = lfs_dir_read(&lfs, &root_dir, file_info + idx)) > 0) 
+    {
+        if (file_info[idx].name[0] != '.')
+        {
+            idx++;
+        }
+    }
+
+    if (err < 0)
+    {
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error reading root directory: %i\n", err);
+    }
+
+    err = lfs_dir_close(&lfs, &root_dir);
+    if (err < 0)
+    {
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error closing root directory: %i\n", err);
+    }
+
+    return idx;
 }

@@ -97,6 +97,8 @@ cleanup:
 
 void psj_repl_init()
 {
+    psj_add_command("ls", psj_ls_command);
+    psj_add_command("write", psj_write_command);
     psj_add_command("stats", psj_stats_command);
     psj_add_command("exec", psj_exec_command);
     psj_add_command("quit", psj_quit_command);
