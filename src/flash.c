@@ -27,7 +27,7 @@ int user_provided_block_device_read(const struct lfs_config *c, lfs_block_t bloc
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_read(block: %u, off: %u, buffer: %p, size: %u)\n", block, off, buffer, size);
 
     u_int8_t *flash_buffer = os_get_flash_buffer();
-    u_int32_t offset = (c->block_size * block) + off;
+    uint32_t offset = (c->block_size * block) + off;
     memcpy(buffer, flash_buffer + offset, size);
 
     return LFS_ERR_OK;
@@ -41,7 +41,7 @@ int user_provided_block_device_prog(const struct lfs_config *c, lfs_block_t bloc
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_prog(block: %u, off: %u, buffer: %p, size: %u)\n", block, off, buffer, size);
 
     // set a page of data
-    u_int32_t offset = (c->block_size * block) + off;
+    uint32_t offset = (c->block_size * block) + off;
     os_flash_range_program(FLASH_TARGET_OFFSET + offset, buffer, size);
 
     return LFS_ERR_OK;
@@ -54,7 +54,7 @@ int user_provided_block_device_prog(const struct lfs_config *c, lfs_block_t bloc
 int user_provided_block_device_erase(const struct lfs_config *c, lfs_block_t block)
 {
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_erase(block: %u)\n", block);
-    u_int32_t offset = c->block_size * block;
+    uint32_t offset = c->block_size * block;
 
     // Clear entire flash_buffer
     os_flash_range_erase(FLASH_TARGET_OFFSET + offset, c->block_size);
@@ -148,39 +148,72 @@ int psj_flash_save(const jerry_char_t *path, const jerry_char_t *data)
     return err;
 }
 
-int psj_flash_read(jerry_char_t *buffer, u_int32_t max_length)
+int psj_flash_file_size(const jerry_char_t *path, uint32_t *size)
+{
+    lfs_file_t file;
+    struct lfs_info info;
+    int err = lfs_stat(&lfs, path, &info);
+    if (err == LFS_ERR_NOENT)
+    {
+        // file does not exist
+        jerry_port_log(JERRY_LOG_LEVEL_TRACE, "Error getting stats on '%s': %i\n", path, err);
+        return -1;
+    }
+    else if (err < LFS_ERR_OK)
+    {
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error getting stats on '%s': %i\n", path, err);
+        return -2;
+    }
+
+    *size = info.size;
+    return 0;
+}
+
+int psj_flash_read(const jerry_char_t *path, jerry_char_t *buffer, uint32_t max_length, uint32_t segment)
 {
     lfs_file_t file;
     int err;
     struct lfs_info info;
-    err = lfs_stat(&lfs, entry_file, &info);
+    err = lfs_stat(&lfs, path, &info);
     if (err == LFS_ERR_NOENT)
     {
         // file does not exist
-        jerry_port_log(JERRY_LOG_LEVEL_TRACE, "Error getting stats on '%s': %i\n", entry_file, err);
-        return 0;
+        jerry_port_log(JERRY_LOG_LEVEL_TRACE, "Error getting stats on '%s': %i\n", path, err);
+        return -1;
     }
-    else if (err != LFS_ERR_OK)
+    else if (err < LFS_ERR_OK)
     {
-        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error getting stats on '%s': %i\n", entry_file, err);
-        return 0;
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error getting stats on '%s': %i\n", path, err);
+        return -2;
     }
 
-    err = lfs_file_open(&lfs, &file, entry_file, LFS_O_RDONLY);
-    if (err != LFS_ERR_OK)
+    err = lfs_file_open(&lfs, &file, path, LFS_O_RDONLY);
+    if (err < LFS_ERR_OK)
     {
-        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error opening '%s': %i\n", entry_file, err);
-        return 0;
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error opening '%s': %i\n", path, err);
+        return -3;
     }
     
-    err = lfs_file_read(&lfs, &file, buffer, max_length);
-    if (err <= 0)
+    err = lfs_file_seek(&lfs, &file, segment * SEGMENT_SIZE, LFS_SEEK_SET);
+    if (err < LFS_ERR_OK)
     {
-        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error reading '%s': %i\n", entry_file, err);
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error seeking '%s' to segment %i: %i\n", path, segment, err);
+        err = -4;
+        goto cleanup;
+    }
+
+    err = lfs_file_read(&lfs, &file, buffer, max_length);
+    if (err < LFS_ERR_OK)
+    {
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error reading '%s': %i\n", path, err);
+        err = -5;
+        goto cleanup;
     }
 
     // Terminate the string with '\0' 
     buffer[err] = 0;
+
+cleanup:
 
     lfs_file_close(&lfs, &file);
 

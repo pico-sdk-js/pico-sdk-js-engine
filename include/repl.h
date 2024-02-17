@@ -17,6 +17,7 @@ void psj_repl_run_flash();
 
 jerry_value_t psj_exec_command(jerry_value_t request_args);
 jerry_value_t psj_stats_command(jerry_value_t request_args);
+jerry_value_t psj_read_command(jerry_value_t request_args);
 jerry_value_t psj_write_command(jerry_value_t request_args);
 jerry_value_t psj_quit_command(jerry_value_t request_args);
 jerry_value_t psj_ls_command(jerry_value_t request_args);

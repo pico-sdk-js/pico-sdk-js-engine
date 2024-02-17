@@ -145,6 +145,12 @@ jerry_char_t *psj_jerry_vfget_error_message(const PSJErrorCode error_code, va_li
         case WRITE_ERROR:
             return VS("Error writing to '%s'", args);
 
+        case READ_ERROR:
+            return VS("Error reading from '%s'", args);
+
+        case FILE_NOT_FOUND:
+            return VS("File '%s' not found", args);
+
         default:
             return S("Undefined Error");
     }

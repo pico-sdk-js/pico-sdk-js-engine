@@ -99,6 +99,7 @@ void psj_repl_init()
 {
     psj_add_command("ls", psj_ls_command);
     psj_add_command("write", psj_write_command);
+    psj_add_command("read", psj_read_command);
     psj_add_command("stats", psj_stats_command);
     psj_add_command("exec", psj_exec_command);
     psj_add_command("quit", psj_quit_command);
@@ -150,8 +151,8 @@ void psj_repl_cleanup()
 
 void psj_repl_run_flash()
 {
-    jerry_char_t script[MAX_SCRIPT_LENGTH];
-    int scriptLen = psj_flash_read(script, MAX_SCRIPT_LENGTH);
+    jerry_char_t script[SEGMENT_SIZE];
+    int scriptLen = psj_flash_read("main.js", script, SEGMENT_SIZE, 0);
     if (scriptLen == 0)
     {
         return;
