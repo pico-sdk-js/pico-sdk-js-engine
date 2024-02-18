@@ -96,7 +96,7 @@ jerry_value_t jerry_port_module_resolve(const jerry_value_t specifier, const jer
     jerry_string_to_utf8_char_buffer(specifier, str_buf_p, req_sz);
     str_buf_p[req_sz] = '\0';
 
-    jerry_port_log(JERRY_LOG_LEVEL_DEBUG, "Module Resolution '%s'\n", str_buf_p);
+    jerry_port_log(JERRY_LOG_LEVEL_DEBUG, "Module Resolution '%s'", str_buf_p);
     return jerry_create_undefined();
 }
 
@@ -114,7 +114,7 @@ jerry_value_t jerry_port_get_native_module(jerry_value_t name)
     jerry_string_to_utf8_char_buffer(name, str_buf_p, req_sz);
     str_buf_p[req_sz] = '\0';
 
-    jerry_port_log(JERRY_LOG_LEVEL_DEBUG, "Native Module Resolution '%s'\n", str_buf_p);
+    jerry_port_log(JERRY_LOG_LEVEL_DEBUG, "Native Module Resolution '%s'", str_buf_p);
     return jerry_create_undefined();
 }
 
@@ -132,5 +132,5 @@ void jerry_port_track_promise_rejection(const jerry_value_t promise, const jerry
     jerry_release_value(reason_to_string);
     jerry_release_value(reason);
 
-    jerry_port_log(JERRY_LOG_LEVEL_WARNING, "Uncaught (in promise) %s\n", str_buf_p);
+    jerry_port_log(JERRY_LOG_LEVEL_WARNING, "Uncaught (in promise) %s", str_buf_p);
 }

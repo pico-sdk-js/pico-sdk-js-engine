@@ -22,7 +22,7 @@
 // to the user.
 int user_provided_block_device_read(const struct lfs_config *c, lfs_block_t block, lfs_off_t off, void *buffer, lfs_size_t size)
 {
-    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_read(block: %u, off: %u, buffer: %p, size: %u)\n", block, off, buffer, size);
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_read(block: %u, off: %u, buffer: %p, size: %u)", block, off, buffer, size);
 
     u_int8_t *flash_buffer = os_get_flash_buffer();
     uint32_t offset = (c->block_size * block) + off;
@@ -36,7 +36,7 @@ int user_provided_block_device_read(const struct lfs_config *c, lfs_block_t bloc
 // May return LFS_ERR_CORRUPT if the block should be considered bad.
 int user_provided_block_device_prog(const struct lfs_config *c, lfs_block_t block, lfs_off_t off, const void *buffer, lfs_size_t size)
 {
-    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_prog(block: %u, off: %u, buffer: %p, size: %u)\n", block, off, buffer, size);
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_prog(block: %u, off: %u, buffer: %p, size: %u)", block, off, buffer, size);
 
     // set a page of data
     uint32_t offset = (c->block_size * block) + off;
@@ -51,7 +51,7 @@ int user_provided_block_device_prog(const struct lfs_config *c, lfs_block_t bloc
 // May return LFS_ERR_CORRUPT if the block should be considered bad.
 int user_provided_block_device_erase(const struct lfs_config *c, lfs_block_t block)
 {
-    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_erase(block: %u)\n", block);
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_erase(block: %u)", block);
     uint32_t offset = c->block_size * block;
 
     // Clear entire flash_buffer
@@ -64,7 +64,7 @@ int user_provided_block_device_erase(const struct lfs_config *c, lfs_block_t blo
 // are propagated to the user.
 int user_provided_block_device_sync(const struct lfs_config *c)
 {
-    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_sync()\n");
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_sync()");
     return LFS_ERR_OK;
 }
 
@@ -135,7 +135,7 @@ int psj_flash_save(const jerry_char_t *path, const jerry_char_t *data, const boo
     {
         // Restore interrupts to reenable logging
         os_restore_interrupts(status);
-        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error opening '%s' for write: %i\n", path, err);
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error opening '%s' for write: %i", path, err);
         return -1;
     }
 
@@ -148,7 +148,7 @@ int psj_flash_save(const jerry_char_t *path, const jerry_char_t *data, const boo
 
     if (err < LFS_ERR_OK)
     {
-        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error writing '%s': %i\n", path, err);
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error writing '%s': %i", path, err);
         return -2;
     }
 
@@ -163,12 +163,12 @@ int psj_flash_file_size(const jerry_char_t *path, uint32_t *size)
     if (err == LFS_ERR_NOENT)
     {
         // file does not exist
-        jerry_port_log(JERRY_LOG_LEVEL_TRACE, "Error getting stats on '%s': %i\n", path, err);
+        jerry_port_log(JERRY_LOG_LEVEL_TRACE, "Error getting stats on '%s': %i", path, err);
         return -1;
     }
     else if (err < LFS_ERR_OK)
     {
-        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error getting stats on '%s': %i\n", path, err);
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error getting stats on '%s': %i", path, err);
         return -2;
     }
 
@@ -185,26 +185,26 @@ int psj_flash_read_all(const jerry_char_t *path, jerry_char_t *buffer, uint32_t 
     if (err == LFS_ERR_NOENT)
     {
         // file does not exist
-        jerry_port_log(JERRY_LOG_LEVEL_TRACE, "Error getting stats on '%s': %i\n", path, err);
+        jerry_port_log(JERRY_LOG_LEVEL_TRACE, "Error getting stats on '%s': %i", path, err);
         return -1;
     }
     else if (err < LFS_ERR_OK)
     {
-        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error getting stats on '%s': %i\n", path, err);
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error getting stats on '%s': %i", path, err);
         return -2;
     }
 
     err = lfs_file_open(&lfs, &file, path, LFS_O_RDONLY);
     if (err < LFS_ERR_OK)
     {
-        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error opening '%s': %i\n", path, err);
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error opening '%s': %i", path, err);
         return -3;
     }
     
     err = lfs_file_read(&lfs, &file, buffer, max_length);
     if (err < LFS_ERR_OK)
     {
-        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error reading '%s': %i\n", path, err);
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error reading '%s': %i", path, err);
         err = -5;
         goto cleanup;
     }
@@ -228,26 +228,26 @@ int psj_flash_read(const jerry_char_t *path, jerry_char_t *buffer, uint32_t max_
     if (err == LFS_ERR_NOENT)
     {
         // file does not exist
-        jerry_port_log(JERRY_LOG_LEVEL_TRACE, "Error getting stats on '%s': %i\n", path, err);
+        jerry_port_log(JERRY_LOG_LEVEL_TRACE, "Error getting stats on '%s': %i", path, err);
         return -1;
     }
     else if (err < LFS_ERR_OK)
     {
-        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error getting stats on '%s': %i\n", path, err);
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error getting stats on '%s': %i", path, err);
         return -2;
     }
 
     err = lfs_file_open(&lfs, &file, path, LFS_O_RDONLY);
     if (err < LFS_ERR_OK)
     {
-        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error opening '%s': %i\n", path, err);
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error opening '%s': %i", path, err);
         return -3;
     }
     
     err = lfs_file_seek(&lfs, &file, segment * SEGMENT_SIZE, LFS_SEEK_SET);
     if (err < LFS_ERR_OK)
     {
-        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error seeking '%s' to segment %i: %i\n", path, segment, err);
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error seeking '%s' to segment %i: %i", path, segment, err);
         err = -4;
         goto cleanup;
     }
@@ -255,7 +255,7 @@ int psj_flash_read(const jerry_char_t *path, jerry_char_t *buffer, uint32_t max_
     err = lfs_file_read(&lfs, &file, buffer, lfs_min(max_length, SEGMENT_SIZE));
     if (err < LFS_ERR_OK)
     {
-        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error reading '%s': %i\n", path, err);
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error reading '%s': %i", path, err);
         err = -5;
         goto cleanup;
     }
@@ -276,7 +276,7 @@ int psj_flash_list(struct lfs_info *file_info, uint32_t max_file_info)
     int err = lfs_dir_open(&lfs, &root_dir, "/");
     if (err < 0)
     {
-        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error opening root directory: %i\n", err);
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error opening root directory: %i", err);
         return 0;
     }
 
@@ -291,13 +291,13 @@ int psj_flash_list(struct lfs_info *file_info, uint32_t max_file_info)
 
     if (err < 0)
     {
-        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error reading root directory: %i\n", err);
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error reading root directory: %i", err);
     }
 
     err = lfs_dir_close(&lfs, &root_dir);
     if (err < 0)
     {
-        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error closing root directory: %i\n", err);
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error closing root directory: %i", err);
     }
 
     return idx;

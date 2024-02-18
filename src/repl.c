@@ -158,7 +158,7 @@ void psj_repl_run_flash()
     int err = psj_flash_file_size(entry_file, &scriptLength);
     if (err < 0)
     {
-        jerry_port_log(JERRY_LOG_LEVEL_TRACE, "psj_flash_file_size('%s') returned %i\n", entry_file, err);
+        jerry_port_log(JERRY_LOG_LEVEL_TRACE, "psj_flash_file_size('%s') returned %i", entry_file, err);
         return;
     }
 
@@ -166,7 +166,7 @@ void psj_repl_run_flash()
     err = psj_flash_read_all(entry_file, script, scriptLength);
     if (err < 0)
     {
-        jerry_port_log(JERRY_LOG_LEVEL_TRACE, "psj_flash_read_all('%s') returned %i\n", entry_file, err);
+        jerry_port_log(JERRY_LOG_LEVEL_TRACE, "psj_flash_read_all('%s') returned %i", entry_file, err);
         return;
     }
     

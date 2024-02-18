@@ -15,19 +15,27 @@ jerry_value_t psj_exec_command(jerry_value_t request_args)
 
     uint16_t value_size = strlen(value);
     jerry_value_t parse_val = jerry_parse(NULL, 0, value, value_size, JERRY_PARSE_STRICT_MODE);
+    jerry_value_t ret_val;
 
     free(value);
 
     if (jerry_value_is_error(parse_val))
     {
-        // Return & don't release the parse error
-        return parse_val;
+        ret_val = parse_val;
     }
     else
     {
-        jerry_value_t ret_val = jerry_run(parse_val);
+        ret_val = jerry_run(parse_val);
         jerry_release_value(parse_val);
-        return ret_val;
     }
+
+    if (jerry_value_is_error(ret_val))
+    {
+        jerry_value_t exception = ret_val;
+        ret_val = psj_jerry_exception_to_error_obj(exception);
+        jerry_release_value(exception);
+    }
+    
+    return ret_val;
 }
 

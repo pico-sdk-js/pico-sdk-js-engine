@@ -161,6 +161,9 @@ jerry_char_t *psj_jerry_vfget_error_message(const PSJErrorCode error_code, va_li
         case INVALID_ARG:
             return VS("Invalid argument for '%s'. Valid values include %s", args);
 
+        case JAVASCRIPT_ERROR:
+            return S("Javascript Error");
+
         default:
             return S("Undefined Error");
     }
@@ -190,5 +193,21 @@ jerry_value_t psj_jerry_create_error_obj(const PSJErrorCode error_code, ...)
     psj_jerry_set_string_property(error_obj, "message", error_msg);
 
     free(error_msg);
+    return error_obj;
+}
+
+jerry_value_t psj_jerry_exception_to_error_obj(jerry_value_t exception) {
+    assert(jerry_value_is_error(exception));
+
+    jerry_value_t error_obj = jerry_create_object();
+    jerry_value_t error_val = jerry_get_value_from_error(exception, false);
+    jerry_char_t *error_msg = psj_jerry_get_string_property(error_val, "message");
+
+    psj_jerry_set_uint32_property(error_obj, "error", JAVASCRIPT_ERROR);
+    psj_jerry_set_string_property(error_obj, "message", error_msg);
+
+    free(error_msg);
+    jerry_release_value(error_val);
+
     return error_obj;
 }
