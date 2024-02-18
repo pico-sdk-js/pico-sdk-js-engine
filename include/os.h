@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-void os_init();
+void os_init(int argc, char *argv[]);
 void os_cleanup();
 
 void os_wait_for_ready();

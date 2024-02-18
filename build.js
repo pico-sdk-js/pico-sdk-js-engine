@@ -14,7 +14,7 @@ var minimistOpts = {
   string: ['target'],
   boolean: ['clean', 'cmake', 'make', 'run', 'build', 'rebuild', 'publish', 'debug', 'release'],
   default: {
-    target: 'linux'
+    target: '?'
   },
   unknown: function(x) { 
     console.error(`ERROR: Unknown arg '${x}'.`);
@@ -34,6 +34,21 @@ if (argv.build) {
 
 if (unknownArg) {
   return;
+}
+
+if (argv.target === '?') {
+  switch (process.arch) {
+    case "x64":
+    case "x32":
+      argv.target = 'linux_x86_64';
+    break;
+    case "arm64":
+      argv.target = 'linux_amd64';
+    break;
+    default:
+      console.error("unsupported target processor for auto-detection");
+    break;
+  }
 }
 
 const buildPath = path.join(__dirname, "build");

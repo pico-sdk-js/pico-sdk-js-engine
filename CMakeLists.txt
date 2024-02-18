@@ -16,7 +16,6 @@ if (NOT BUILD_TYPE)
   set(BUILD_TYPE Debug)
 endif()
 
-string(TOUPPER ${TARGET_OS} UPPER_TARGET_OS)
 set(VALID_TARGET_OS "linux_amd64" "linux_x86_64" "rp2xxx")
 
 if (NOT TARGET_OS IN_LIST VALID_TARGET_OS)
@@ -26,9 +25,11 @@ endif()
 if (TARGET_OS STREQUAL "rp2xxx")
   set(MEM_HEAP_SIZE 180)
   set(JERRYSCRIPT_BUILD_TYPE MinSizeRel)
+  set(TARGET_OS_SRC ${TARGET_OS})
 elseif (TARGET_OS MATCHES "linux_.*")
   set(MEM_HEAP_SIZE 1024)
   set(JERRYSCRIPT_BUILD_TYPE Debug)
+  set(TARGET_OS_SRC "linux")
 endif()
 
 message("TARGET_NAME: " ${TARGET_NAME})
@@ -79,7 +80,8 @@ set(JERRYSCRIPT_INC
   ${JERRYSCRIPT_SDK_PATH}/jerry-libm)
 
 # Setting UTHash
-set(UTHASH_SDK_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib/uthash)
+set(UTHASH_SDK_PATH 
+  ${CMAKE_CURRENT_SOURCE_DIR}/lib/uthash)
 
 set(UTHASH_INC
   ${UTHASH_SDK_PATH}/include)
@@ -131,7 +133,7 @@ add_custom_command(OUTPUT ${JERRYSCRIPT_LIBS}
 set(OUTPUT_TARGET ${TARGET_NAME}-${TARGET_VERSION})
 
 file(GLOB OS_SOURCES 
-  ${CMAKE_CURRENT_LIST_DIR}/src/os/${TARGET_OS}/*.c)
+  ${CMAKE_CURRENT_LIST_DIR}/src/os/${TARGET_OS_SRC}/*.c)
 
 file(GLOB CMD_SOURCES 
   ${CMAKE_CURRENT_LIST_DIR}/src/cmds/*.c)
@@ -166,14 +168,13 @@ if (TARGET_OS STREQUAL "rp2xxx")
     pico_stdlib
     hardware_flash)  
     add_compile_definitions(NDEBUG=1)
-elseif (TARGET_OS MATCHES "linux_.*")
+else()
   set(LIBRARIES
     ${LIBRARIES}
     c m)
 endif()
 
 add_compile_definitions(LFS_NO_ERROR)
-add_compile_definitions(${UPPER_TARGET_OS})
 add_compile_definitions(TARGET_NAME="${TARGET_NAME}")
 add_compile_definitions(TARGET_VERSION="${TARGET_VERSION}")
 

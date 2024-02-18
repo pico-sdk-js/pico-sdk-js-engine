@@ -13,7 +13,7 @@
 
 const uint8_t *flash_buffer = (const uint8_t *)(XIP_BASE + FLASH_TARGET_OFFSET);
 
-void os_init()
+void os_init(int argc, char *argv[])
 {
     stdio_init_all();
 }

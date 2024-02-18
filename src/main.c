@@ -8,9 +8,9 @@
 
 void run_jerryscript_engine();
 
-int main()
+int main(int argc, char *argv[])
 {
-    os_init();
+    os_init(argc, argv);
 
     os_wait_for_ready();
 

@@ -23,8 +23,29 @@ bool is_running = true;
 static char flashFile[] = "flash.bin";
 static uint8_t *flash_buffer = NULL;
 
-void os_init()
+typedef struct __os_options {
+    bool echo_on;
+} os_options;
+
+static os_options options;
+
+void os_process_options(int argc, char *argv[], os_options *options)
 {
+    options->echo_on = true;
+
+    for (int i = 0; i < argc; i++)
+    {
+        if (strcmp(argv[i], "--echo_off") == 0)
+        {
+            options->echo_on = false;
+        }
+    }
+}
+
+void os_init(int argc, char *argv[])
+{
+    os_process_options(argc, argv, &options);
+
     // Initialize terminal
     stdin_fd = stdin->_fileno;
     init_fd = fcntl(stdin_fd, F_GETFD);
@@ -34,6 +55,7 @@ void os_init()
     struct termios tcNew;
     memcpy(&tcNew, &tcOrig, sizeof(tcNew));
 
+    // Turn off terminal echo, will potentially handle it ourselves below
     tcNew.c_lflag &= ~(ICANON | ECHO);
     tcNew.c_cc[VSUSP] = 0;
 
@@ -110,18 +132,29 @@ void os_process_input(char c, char *s, int max_length, int *sp)
     case BS:
         if (*sp > 0)
         {
-            printf("\b \b");
+            if (options.echo_on)
+            {
+                printf("\b \b");
+            }
+    
             *sp -= 1;
         }
         break;
     case NL:
     case CR:
-        printf("\n");
+        if (options.echo_on)
+        {
+            printf("\n");
+        }
         break;
     default:
         if (isprint(c) && *sp < max_length - 1)
         {
-            putc(c, stdout);
+            if (options.echo_on)
+            {
+                putc(c, stdout);
+            }
+
             s[(*sp)++] = c;
         }
         break;
