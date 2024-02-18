@@ -26,6 +26,35 @@
             ]
         },
         {
+            "name": "(gdb) Launch local w/ valgrind",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/pico-sdk-js-0.0.1",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                },
+                {
+                  "description": "Connect to valgrind",
+                  "text": "${command:valgrind-task-integration.valgrindGdbArg}",
+                  "ignoreFailures": true
+                }
+            ]
+        },
+        {
             "name": "(gdb) Launch remote",
             "type": "gdb",
             "request": "attach",

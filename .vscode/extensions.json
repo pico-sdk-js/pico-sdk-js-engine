@@ -2,6 +2,6 @@
     "recommendations": [
         "bierner.markdown-preview-github-styles",
         "ms-vscode.cmake-tools",
-        "ms-vscode.cpptools-extension-pack"
+        "1nvitr0.valgrind-task-integration"
     ]
 }

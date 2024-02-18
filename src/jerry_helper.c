@@ -118,9 +118,16 @@ jerry_char_t *S(const jerry_char_t *txt)
 
 jerry_char_t *VS(const jerry_char_t *format,va_list args)
 {
-    size_t sz = vsnprintf(NULL, 0, format, args);
+    va_list szArgs;
+    va_copy(szArgs, args);
+    size_t sz = vsnprintf(NULL, 0, format, szArgs);
+    va_end(szArgs);
+
     jerry_char_t *sVal = malloc(sizeof(jerry_char_t) * (sz + 1));
-    vsprintf(sVal, format, args);
+    size_t chkSz = vsprintf(sVal, format, args);
+    
+    assert(sz == chkSz);
+
     return sVal;
 }
 
