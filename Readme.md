@@ -38,7 +38,7 @@
 
 4. Install Prerequisites
 
-    Install the following packages via `apt-get` to enable building of the pico-sdk-js package along with submodules [jerryscript](https://github.com/jerryscript-project/jerryscript/blob/master/docs/00.GETTING-STARTED.md) and [pico-sdk](TBD)
+    Install the following packages via `apt-get` to enable building of the pico-sdk-js package along with submodules [jerryscript](https://github.com/jerryscript-project/jerryscript/blob/master/docs/00.GETTING-STARTED.md) and [pico-sdk](https://github.com/raspberrypi/pico-sdk)
 
     ```bash
     sudo apt-get install -y nodejs npm cmake gcc gcc-arm-none-eabi cppcheck clang-format libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib
@@ -50,7 +50,9 @@
 
 1. Clone the repo
 
-    ```git clone https://github.com/jt000/pico-sdk-js.git```
+    ```bash
+    git clone https://github.com/jt000/pico-sdk-js.git
+    ```
 
     Note: If this is the first time you've cloned, then you'll get a popup to enter your credentials. If you get prompted to enter your github credentials in the terminal, then GCM was not properly installed or configured.
 
@@ -58,19 +60,25 @@
 
 2. Load submodules
 
-    ```git submodule update --init```
+    ```bash
+    git submodule update --init
+    ```
 
 3. Pull NPM Packages
 
-    ```npm install```
+    ```bash
+    npm install
+    ```
 
 4. Run build
 
-    ```node build --rebuild --target rp2xxx```
+    ```bash
+    node build --rebuild --target rp2xxx
+    ```
 
     **Build Options**
 
-    * **--target <linux | rp2xxx>** - Sets the target for the build to either linux or rp2xxx (rp2040)
+    * **--target <os\arch>** - Sets the target for the build to `linux_amd64`, `linux_x86_64`, or `rp2xxx` (rp2040)
     * **--clean** - Removes previous build folders
     * **--build** - Runs cmake &amp; make and produces an executable package
     * **--rebuild** - Cleans the build folder before running a build

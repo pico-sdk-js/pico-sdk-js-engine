@@ -8,6 +8,7 @@
         "jerryscript-port.h": "c"
     },
     "cmake.configureSettings": {
-        "TARGET_OS": "linux"
+        "TARGET_OS": "linux_x86_64",
+        "TARGET_VERSION": "0.0.1"
     }
 }

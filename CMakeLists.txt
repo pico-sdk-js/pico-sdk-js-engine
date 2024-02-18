@@ -9,7 +9,7 @@ if (NOT TARGET_VERSION)
 endif()
 
 if (NOT TARGET_OS)
-  set(TARGET_OS "linux")
+  set(TARGET_OS "linux_amd64")
 endif()
 
 if (NOT BUILD_TYPE)
@@ -17,16 +17,16 @@ if (NOT BUILD_TYPE)
 endif()
 
 string(TOUPPER ${TARGET_OS} UPPER_TARGET_OS)
-set(VALID_TARGET_OS "linux" "rp2xxx")
+set(VALID_TARGET_OS "linux_amd64" "linux_x86_64" "rp2xxx")
 
 if (NOT TARGET_OS IN_LIST VALID_TARGET_OS)
-  message(FATAL_ERROR "TARGET_OS must be either 'linux' or 'rp2xxx'")
+  message(FATAL_ERROR "TARGET_OS must be: linux_amd64, linux_x86_64, or rp2xxx")
 endif()
 
 if (TARGET_OS STREQUAL "rp2xxx")
   set(MEM_HEAP_SIZE 180)
   set(JERRYSCRIPT_BUILD_TYPE MinSizeRel)
-elseif (TARGET_OS STREQUAL "linux")
+elseif (TARGET_OS MATCHES "linux_.*")
   set(MEM_HEAP_SIZE 1024)
   set(JERRYSCRIPT_BUILD_TYPE Debug)
 endif()
@@ -47,8 +47,10 @@ set(JERRYSCRIPT_SDK_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib/jerryscript)
 
 if (TARGET_OS STREQUAL "rp2xxx")
   set(JERRYSCRIPT_TOOLCHAIN ${CMAKE_CURRENT_SOURCE_DIR}/jerryscript_toolchain.cmake)
-elseif(TARGET_OS STREQUAL "linux")
+  elseif(TARGET_OS STREQUAL "linux_amd64")
   set(JERRYSCRIPT_TOOLCHAIN ${JERRYSCRIPT_SDK_PATH}/cmake/toolchain_linux_aarch64.cmake)
+elseif(TARGET_OS STREQUAL "linux_x86_64")
+  set(JERRYSCRIPT_TOOLCHAIN ${JERRYSCRIPT_SDK_PATH}/cmake/toolchain_linux_i686.cmake)
 endif()
 
 set(JERRYSCRIPT_LIBS
@@ -164,7 +166,7 @@ if (TARGET_OS STREQUAL "rp2xxx")
     pico_stdlib
     hardware_flash)  
     add_compile_definitions(NDEBUG=1)
-elseif (TARGET_OS STREQUAL "linux")
+elseif (TARGET_OS MATCHES "linux_.*")
   set(LIBRARIES
     ${LIBRARIES}
     c m)
