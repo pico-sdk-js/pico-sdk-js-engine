@@ -2,30 +2,20 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "utstring.h"
+
 #include "jerryscript.h"
 #include "jerryscript-port.h"
 
 #include "jerry_helper.h"
-
-static jerry_log_level_t log_level = JERRY_LOG_LEVEL_TRACE;
 
 void jerry_port_fatal(jerry_fatal_code_t code)
 {
     exit(code);
 }
 
-void psj_set_jerry_port_log_level(jerry_log_level_t level)
-{
-    log_level = level;
-}
-
 void jerry_port_log(jerry_log_level_t level, const char *format, ...)
 {
-    if (level > log_level)
-    {
-        return;
-    }
-
     jerry_value_t response = jerry_create_object();
     psj_jerry_set_string_property(response, "cmd", "log");
 
@@ -49,9 +39,27 @@ void jerry_port_log(jerry_log_level_t level, const char *format, ...)
     jerry_release_value(response);
 }
 
+UT_string *output_buffer = NULL;
+
 void jerry_port_print_char(char c)
 {
-    putchar(c);
+    if (output_buffer == NULL)
+    {
+        utstring_new(output_buffer);
+    }
+
+    if (c == '\n')
+    {
+        jerry_port_log(JERRY_LOG_LEVEL_TRACE+1, utstring_body(output_buffer));
+        utstring_renew(output_buffer);
+    }
+    else
+    {
+        char new_str[2];
+        new_str[0] = c;
+        new_str[1] = 0;
+        utstring_printf(output_buffer, new_str);
+    }
 }
 
 static jerry_context_t *current_context_p = NULL;
