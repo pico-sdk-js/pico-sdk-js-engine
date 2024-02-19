@@ -2,6 +2,7 @@
     "recommendations": [
         "bierner.markdown-preview-github-styles",
         "ms-vscode.cmake-tools",
-        "1nvitr0.valgrind-task-integration"
+        "1nvitr0.valgrind-task-integration",
+        "ms-vscode.hexeditor"
     ]
 }
