@@ -14,7 +14,7 @@ jerry_value_t psj_exec_command(jerry_value_t request_args)
     }
 
     uint16_t value_size = strlen(value);
-    jerry_value_t parse_val = jerry_parse(NULL, 0, value, value_size, JERRY_PARSE_STRICT_MODE);
+    jerry_value_t parse_val = jerry_parse(NULL, 0, value, value_size, JERRY_PARSE_STRICT_MODE | JERRY_PARSE_MODULE);
     jerry_value_t ret_val;
 
     free(value);

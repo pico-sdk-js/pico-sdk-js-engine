@@ -76,6 +76,7 @@ jerry_context_t *jerry_port_get_current_context(void)
 
 uint8_t *jerry_port_read_source(const char *file_name_p, size_t *out_size_p)
 {
+    jerry_port_log(JERRY_LOG_LEVEL_DEBUG, "Read source '%s'", file_name_p);
     return NULL;
 }
 
