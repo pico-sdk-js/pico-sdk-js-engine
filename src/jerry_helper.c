@@ -44,6 +44,11 @@ jerry_char_t *psj_jerry_to_string(const jerry_value_t value)
     return str_buf_p;
 }
 
+uint32_t psj_jerry_to_uint32_t(const jerry_value_t value)
+{
+    return (uint32_t)jerry_get_number_value(value);    
+}
+
 uint32_t psj_jerry_get_uint32_property(const jerry_value_t jObject, const jerry_char_t *property)
 {
     uint32_t prop_value = 0;
@@ -171,6 +176,9 @@ jerry_char_t *psj_jerry_vfget_error_message(const PSJErrorCode error_code, va_li
         case JAVASCRIPT_ERROR:
             return S("Javascript Error");
 
+        case RUNTIME_ARG_ERROR:
+            return VS("Argument error calling '%s'", args);
+            
         default:
             return S("Undefined Error");
     }

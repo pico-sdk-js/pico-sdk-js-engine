@@ -73,11 +73,8 @@ jerry_value_t psj_call_command(jerry_value_t cmd_object)
     jerry_value_t args = psj_jerry_get_property(cmd_object, "args");
     jerry_value_t response_value = (*(cmd->command))(args);
 
-    if (response_value != 0)
-    {
-        psj_jerry_set_property(response, "value", response_value);
-        jerry_release_value(response_value);
-    }
+    psj_jerry_set_property(response, "value", response_value);
+    jerry_release_value(response_value);
 
     jerry_release_value(args);
 
@@ -155,7 +152,7 @@ void psj_repl_cleanup()
 
 void psj_repl_run_flash()
 {
-    int scriptLength;
+    uint32_t scriptLength;
     int err = psj_flash_file_size(entry_file, &scriptLength);
     if (err < 0)
     {

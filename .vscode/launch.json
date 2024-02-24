@@ -65,6 +65,13 @@
             "remote": true,
             "printCalls": true,
             "valuesFormatting": "parseText"
+        },
+        {
+            "name": "Debug Build",
+            "type": "node",
+            "cwd": "${workspaceFolder}",
+            "program": "build",
+            "args": ["--gen"]
         }
 
     ]

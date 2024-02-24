@@ -1,0 +1,12 @@
+{
+    "modules": [
+        {
+            "name": "hardware",
+            "functions": [
+                { "name": "time_us_32", "returnType": "uint32_t", "args": [], "linuxRetVal": "0" },
+                { "name": "time_us_64", "returnType": "uint64_t", "args": [], "linuxRetVal": "0" },
+                { "name": "busy_wait_us_32", "args": [ { "name": "delay_us", "type": "uint32_t"} ]}
+            ]
+        }
+    ]
+}

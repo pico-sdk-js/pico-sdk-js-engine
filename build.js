@@ -6,13 +6,15 @@ const path = require("path");
 const minimist = require("minimist");
 const childProcess = require("child_process");
 
+const b = require("./script/build_pico_modules");
+
 const package = require("./package.json")
 
 // Parse options
 var unknownArg = false;
 var minimistOpts = { 
   string: ['target'],
-  boolean: ['clean', 'cmake', 'make', 'run', 'build', 'rebuild', 'publish', 'debug', 'release'],
+  boolean: ['clean', 'cmake', 'make', 'gen', 'run', 'build', 'rebuild', 'publish', 'debug', 'release'],
   default: {
     target: '?'
   },
@@ -24,9 +26,11 @@ var minimistOpts = {
 var argv = minimist(process.argv.slice(2), minimistOpts);
 
 if (argv.build) {
+  // argv.gen = true;
   argv.cmake = true;
   argv.make = true;
 } else if (argv.rebuild) {
+  // argv.gen = true;
   argv.clean = true;
   argv.cmake = true;
   argv.make = true;
@@ -56,6 +60,15 @@ const jerryBuildPath = path.join(__dirname, "lib/jerryscript/build");
 
 if (argv.clean) {
   clean();
+}
+
+if (argv.gen) {
+  const linuxModulePath = path.join(__dirname, 'src/os/linux/modules/');
+  const rp2xxxModulePath = path.join(__dirname, 'src/os/rp2xxx/modules/');
+  const nativeModules = require('./script/native-modules.json');
+
+  b.generate(nativeModules, 'linux.mustache', linuxModulePath);
+  b.generate(nativeModules, 'rp2xxx.mustache', rp2xxxModulePath);
 }
 
 if (argv.cmake) {

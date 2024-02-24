@@ -12,7 +12,8 @@ typedef enum __PSJErrorCode {
     READ_ERROR,
     FILE_NOT_FOUND,
     INVALID_ARG,
-    JAVASCRIPT_ERROR
+    JAVASCRIPT_ERROR,
+    RUNTIME_ARG_ERROR
 } PSJErrorCode;
 
 jerry_char_t *S(const jerry_char_t *txt);
@@ -20,6 +21,8 @@ jerry_char_t *S(const jerry_char_t *txt);
 jerry_char_t *VS(const jerry_char_t *format,va_list args);
 
 jerry_char_t *psj_jerry_to_string(const jerry_value_t value);
+
+uint32_t psj_jerry_to_uint32_t(const jerry_value_t value);
 
 bool psj_jerry_has_property(const jerry_value_t jObject, const jerry_char_t *property);
 
