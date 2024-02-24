@@ -42,6 +42,7 @@ set(CMAKE_BUILD_TYPE ${BUILD_TYPE})
 # Set general build settings
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_COMPILE_WARNING_AS_ERROR TRUE)
 
 # Set JERRYSCRIPT settings
 set(JERRYSCRIPT_SDK_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib/jerryscript)
@@ -132,24 +133,22 @@ add_custom_command(OUTPUT ${JERRYSCRIPT_LIBS}
 # Set PICO-SDK-JS build settings
 set(OUTPUT_TARGET ${TARGET_NAME}-${TARGET_VERSION})
 
-file(GLOB OS_SOURCES 
+file(GLOB_RECURSE OS_SOURCES 
   ${CMAKE_CURRENT_LIST_DIR}/src/os/${TARGET_OS_SRC}/*.c)
 
 file(GLOB CMD_SOURCES 
   ${CMAKE_CURRENT_LIST_DIR}/src/cmds/*.c)
 
+file(GLOB ROOT_SOURCES 
+  ${CMAKE_CURRENT_LIST_DIR}/src/*.c)
+
 set(SOURCES
   ${SOURCES} 
-  ${CMAKE_CURRENT_LIST_DIR}/src/flash.c
-  ${CMAKE_CURRENT_LIST_DIR}/src/io.c
-  ${CMAKE_CURRENT_LIST_DIR}/src/jerry_helper.c
-  ${CMAKE_CURRENT_LIST_DIR}/src/jerryscript_port.c
-  ${CMAKE_CURRENT_LIST_DIR}/src/main.c
-  ${CMAKE_CURRENT_LIST_DIR}/src/repl.c
-  ${CMAKE_CURRENT_LIST_DIR}/lib/littlefs/lfs.c
-  ${CMAKE_CURRENT_LIST_DIR}/lib/littlefs/lfs_util.c 
+  ${ROOT_SOURCES}
   ${OS_SOURCES}
-  ${CMD_SOURCES})
+  ${CMD_SOURCES}
+  ${CMAKE_CURRENT_LIST_DIR}/lib/littlefs/lfs.c
+  ${CMAKE_CURRENT_LIST_DIR}/lib/littlefs/lfs_util.c)
 
 set(INCLUDES
   ${INCLUDES}

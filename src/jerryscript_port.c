@@ -4,6 +4,7 @@
 
 #include "utstring.h"
 
+#include "modules.h"
 #include "jerryscript.h"
 #include "jerryscript-port.h"
 
@@ -114,17 +115,20 @@ void jerry_port_module_release(const jerry_value_t realm)
     // This function releases the known modules, forcing their reload
     // when resolved again later. The released modules can be filtered
     // by realms. This function is only called by user applications.
+    jerry_port_log(JERRY_LOG_LEVEL_DEBUG, "Native Module Release");
 }
 
 jerry_value_t jerry_port_get_native_module(jerry_value_t name)
 {
-    jerry_size_t req_sz = jerry_get_utf8_string_size(name);
-    JERRY_VLA(jerry_char_t, str_buf_p, req_sz + 1);
-    jerry_string_to_utf8_char_buffer(name, str_buf_p, req_sz);
-    str_buf_p[req_sz] = '\0';
+    jerry_char_t *str_name = psj_jerry_to_string(name);
 
-    jerry_port_log(JERRY_LOG_LEVEL_DEBUG, "Native Module Resolution '%s'", str_buf_p);
-    return jerry_create_undefined();
+    jerry_port_log(JERRY_LOG_LEVEL_DEBUG, "Native Module Resolution '%s'", str_name);
+
+    jerry_value_t module = get_module(str_name);
+
+    free(str_name);
+
+    return module;
 }
 
 void jerry_port_track_promise_rejection(const jerry_value_t promise, const jerry_promise_rejection_operation_t operation)

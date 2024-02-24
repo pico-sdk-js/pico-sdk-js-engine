@@ -22,8 +22,16 @@ bool psj_jerry_has_property(const jerry_value_t jObject, const jerry_char_t *pro
 
 jerry_char_t *psj_jerry_get_string_property(const jerry_value_t jObject, const jerry_char_t *property)
 {
-    jerry_char_t *str_buf_p = NULL;
     jerry_value_t value = psj_jerry_get_property(jObject, property);
+    jerry_char_t *str_buf_p = psj_jerry_to_string(value);
+
+    jerry_release_value(value);
+    return str_buf_p;
+}
+
+jerry_char_t *psj_jerry_to_string(const jerry_value_t value)
+{
+    jerry_char_t *str_buf_p = NULL;
 
     if (jerry_value_is_string(value))
     {
@@ -33,7 +41,6 @@ jerry_char_t *psj_jerry_get_string_property(const jerry_value_t jObject, const j
         str_buf_p[req_sz] = 0;
     }
 
-    jerry_release_value(value);
     return str_buf_p;
 }
 

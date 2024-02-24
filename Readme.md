@@ -61,7 +61,7 @@
 2. Load submodules
 
     ```bash
-    git submodule update --init
+    git submodule update --init --recursive
     ```
 
 3. Pull NPM Packages

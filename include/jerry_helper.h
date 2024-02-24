@@ -19,6 +19,8 @@ jerry_char_t *S(const jerry_char_t *txt);
 
 jerry_char_t *VS(const jerry_char_t *format,va_list args);
 
+jerry_char_t *psj_jerry_to_string(const jerry_value_t value);
+
 bool psj_jerry_has_property(const jerry_value_t jObject, const jerry_char_t *property);
 
 jerry_value_t psj_jerry_get_property(const jerry_value_t jObject, const jerry_char_t *property);

@@ -5,7 +5,10 @@
         "select.h": "c",
         "handler.h": "c",
         "signal.h": "c",
-        "jerryscript-port.h": "c"
+        "jerryscript-port.h": "c",
+        "typeinfo": "c",
+        "cstdlib": "c",
+        "algorithm": "c"
     },
     "cmake.configureSettings": {
         "TARGET_OS": "linux_x86_64",

@@ -105,6 +105,7 @@ void psj_repl_init()
     psj_add_command("read", psj_read_command);
     psj_add_command("stats", psj_stats_command);
     psj_add_command("exec", psj_exec_command);
+    psj_add_command("reset", psj_reset_command);
     psj_add_command("quit", psj_quit_command);
 }
 
