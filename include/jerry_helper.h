@@ -24,6 +24,14 @@ jerry_char_t *psj_jerry_to_string(const jerry_value_t value);
 
 uint32_t psj_jerry_to_uint32_t(const jerry_value_t value);
 
+uint64_t psj_jerry_to_uint64_t(const jerry_value_t value);
+
+int32_t psj_jerry_to_int32_t(const jerry_value_t value);
+
+int64_t psj_jerry_to_int64_t(const jerry_value_t value);
+
+bool psj_jerry_to_bool(const jerry_value_t value);
+
 bool psj_jerry_has_property(const jerry_value_t jObject, const jerry_char_t *property);
 
 jerry_value_t psj_jerry_get_property(const jerry_value_t jObject, const jerry_char_t *property);

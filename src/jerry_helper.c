@@ -49,6 +49,26 @@ uint32_t psj_jerry_to_uint32_t(const jerry_value_t value)
     return (uint32_t)jerry_get_number_value(value);    
 }
 
+uint64_t psj_jerry_to_uint64_t(const jerry_value_t value)
+{
+    return (uint64_t)jerry_get_number_value(value);    
+}
+
+int32_t psj_jerry_to_int32_t(const jerry_value_t value)
+{
+    return (int32_t)jerry_get_number_value(value);    
+}
+
+int64_t psj_jerry_to_int64_t(const jerry_value_t value)
+{
+    return (int64_t)jerry_get_number_value(value);    
+}
+
+bool psj_jerry_to_bool(const jerry_value_t value)
+{
+    return jerry_get_boolean_value(value);
+}
+
 uint32_t psj_jerry_get_uint32_property(const jerry_value_t jObject, const jerry_char_t *property)
 {
     uint32_t prop_value = 0;

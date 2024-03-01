@@ -3,13 +3,22 @@ const fs = require('fs');
 const path = require('path');
 
 function CtoJSType(cType) {
+
     switch (cType) {
-        case "uint32_t": 
+        case "uint32_t":
         case "uint64_t":
+        case "int32_t":
+        case "int64_t":
             return "number";
-        case void(0):
+        case "bool":
+            return "boolean";
+        case void (0):
             return "";
         default:
+            if (cType.includes("_callback_")) {
+                return "function";
+            }
+
             throw new Error(`Unknown js type for ${cType}`);
     }
 
@@ -18,7 +27,7 @@ function CtoJSType(cType) {
 class ModuleData {
     constructor(moduleInfo) {
         this.name = moduleInfo.name;
-        this.functions = moduleInfo.functions.map((f => new ModuleFunction(f)));
+        this.functions = moduleInfo.functions.map((f => new ModuleFunction(f))).filter(f => f.enabled);
     }
 }
 
@@ -27,7 +36,8 @@ class ModuleFunction {
         this.name = functionInfo.name;
         this.returnType = functionInfo.returnType;
         this.linuxRetVal = functionInfo.linuxRetVal;
-        this.args = functionInfo.args.map((a,i) => new ModuleFunctionArg(a, i, this));
+        this.enabled = functionInfo.enabled === undefined ? true : functionInfo.enabled;
+        this.args = functionInfo.args.map((a, i) => new ModuleFunctionArg(a, i, this));
     }
 
     jsReturnType() {

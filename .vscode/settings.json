@@ -8,7 +8,8 @@
         "jerryscript-port.h": "c",
         "typeinfo": "c",
         "cstdlib": "c",
-        "algorithm": "c"
+        "algorithm": "c",
+        "stdint-intn.h": "c"
     },
     "cmake.configureSettings": {
         "TARGET_OS": "linux_x86_64",
