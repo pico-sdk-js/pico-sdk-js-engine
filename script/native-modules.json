@@ -3,18 +3,18 @@
         {
             "name": "hardware",
             "functions": [
-                { "name": "time_us_32", "returnType": "uint32_t", "args": [], "linuxRetVal": "0" },
-                { "name": "time_us_64", "returnType": "uint64_t", "args": [], "linuxRetVal": "0" },
-                { "name": "busy_wait_us_32", "args": [ { "name": "delay_us", "type": "uint32_t"} ]},
-                { "name": "busy_wait_us", "args": [ { "name": "delay_us", "type": "uint64_t"} ]},
-                { "name": "busy_wait_ms", "args": [ { "name": "delay_ms", "type": "uint32_t"} ]},
-                { "name": "busy_wait_until", "args": [ { "name": "t", "type": "uint64_t"} ]},
-                { "name": "time_reached", "returnType": "bool", "args": [ { "name": "t", "type": "uint64_t"} ], "linuxRetVal": "true"},
-                { "name": "hardware_alarm_claim", "args": [ { "name": "alarm_num", "type": "uint32_t"} ] },
-                { "name": "hardware_alarm_claim_unused", "returnType":"int32_t", "args": [ { "name": "required", "type": "bool"} ], "linuxRetVal": 0 },
-                { "name": "hardware_alarm_unclaim", "args": [ { "name": "alarm_num", "type": "uint32_t"} ] },
-                { "name": "hardware_alarm_is_claimed", "returnType": "bool", "args": [ { "name": "alarm_num", "type": "uint32_t"} ], "linuxRetVal": "true" },
-                { "name": "hardware_alarm_set_callback", "args": [ { "name": "alarm_num", "type": "uint32_t"}, { "name": "callback", "type": "hardware_alarm_callback_t" } ], "callback": "CALLBACK_HARDWARE_ALARM" }
+                { "fn": "uint32_t time_us_32()", "linuxRetVal": "0" },
+                { "fn": "uint64_t time_us_64()", "linuxRetVal": "0" },
+                { "fn": "void busy_wait_us_32(uint32_t delay_us)" },
+                { "fn": "void busy_wait_us(uint64_t delay_us)" },
+                { "fn": "void busy_wait_ms(uint32_t delay_ms)" },
+                { "fn": "void busy_wait_until(uint64_t t)" },
+                { "fn": "bool time_reached(uint64_t t)", "linuxRetVal": "true" },
+                { "fn": "void hardware_alarm_claim(uint32_t alarm_num)" },
+                { "fn": "int32_t hardware_alarm_claim_unused(bool required)", "linuxRetVal": 0 },
+                { "fn": "void hardware_alarm_unclaim(uint32_t alarm_num)" },
+                { "fn": "bool hardware_alarm_is_claimed(uint32_t alarm_num)", "linuxRetVal": "true" },
+                { "fn": "void hardware_alarm_set_callback(uint32_t alarm_num, hardware_alarm_callback_t callback)", "callback": "CALLBACK_HARDWARE_ALARM" }
             ]
         }
     ]

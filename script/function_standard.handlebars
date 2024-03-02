@@ -3,7 +3,7 @@
     if (
         args_count != {{argCount}}
     {{#each args}}
-        || !jerry_value_is_{{jsType}}(args_p[{{index}}])
+        || !jerry_value_is_{{jsType}}(args_p[{{@index}}])
     {{/each}}
     )
     {
@@ -12,7 +12,7 @@
     }
 
     {{#each args}}
-    {{type}} {{name}} = psj_jerry_to_{{type}}(args_p[{{index}}]);
+    {{type}} {{name}} = psj_jerry_to_{{type}}(args_p[{{@index}}]);
     {{/each}}
 
     {{{traceSignature}}}

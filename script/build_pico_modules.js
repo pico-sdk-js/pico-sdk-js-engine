@@ -12,7 +12,7 @@ function CtoJSType(cType) {
             return "number";
         case "bool":
             return "boolean";
-        case void (0):
+        case "void":
             return "";
         default:
             if (cType.includes("_callback_")) {
@@ -31,13 +31,41 @@ class ModuleData {
     }
 }
 
+const fnRegEx = /^(?<retType>\w+) (?<name>\w+)\(((?<arg1Type>\w+) (?<arg1Name>\w+))?(, (?<arg2Type>\w+) (?<arg2Name>\w+))?(, (?<arg3Type>\w+) (?<arg3Name>\w+))?\)$/;
+
 class ModuleFunction {
     constructor(functionInfo) {
-        this.name = functionInfo.name;
-        this.returnType = functionInfo.returnType;
+        const match = fnRegEx.exec(functionInfo.fn);
+        if (match == null) {
+            throw new Error(`Invalid format: ${functionInfo.fn}`);
+        }
+
+        this.name = match.groups.name;
+        this.returnType = match.groups.retType;
+
+        const args = [];
+        if (match.groups.arg1Type) {
+            args.push({
+                name: match.groups.arg1Name,
+                type: match.groups.arg1Type
+            });
+        }
+        if (match.groups.arg2Type) {
+            args.push({
+                name: match.groups.arg2Name,
+                type: match.groups.arg2Type
+            });
+        }
+        if (match.groups.arg3Type) {
+            args.push({
+                name: match.groups.arg3Name,
+                type: match.groups.arg3Type
+            });
+        }
+
+        this.args = args.map((a) => new ModuleFunctionArg(a));
         this.linuxRetVal = functionInfo.linuxRetVal;
         this.enabled = functionInfo.enabled === undefined ? true : functionInfo.enabled;
-        this.args = functionInfo.args.map((a, i) => new ModuleFunctionArg(a, i, this));
         this.callback = functionInfo.callback;
     }
 
@@ -80,11 +108,9 @@ class ModuleFunction {
 }
 
 class ModuleFunctionArg {
-    constructor(arg, index, parent) {
+    constructor(arg) {
         this.name = arg.name;
         this.type = arg.type;
-        this.index = index;
-        this.parent = parent;
     }
 
     jsType() {
