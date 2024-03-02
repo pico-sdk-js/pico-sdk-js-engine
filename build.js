@@ -126,6 +126,11 @@ function make() {
 }
 
 function test() {
+  if (argv.target === "rp2xxx") {
+    console.error(`Running tests on rp2xxx is not supported.`);
+    process.exit(1);
+}
+
   cmd(testBuildPath, 'ctest'), ['--verbose'];
 }
 

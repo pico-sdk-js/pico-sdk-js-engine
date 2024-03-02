@@ -188,7 +188,7 @@ add_compile_definitions(TARGET_VERSION="${TARGET_VERSION}")
 
 # create library shared with tests
 include_directories(${OUTPUT_LIB} ${INCLUDES})
-add_library(${OUTPUT_LIB} ${SOURCES})
+add_library(${OUTPUT_LIB} ${SOURCES} ${JERRYSCRIPT_LIBS})
 target_link_libraries(${OUTPUT_LIB} ${LIBRARIES})
 
 # create exe
