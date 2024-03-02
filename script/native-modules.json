@@ -3,18 +3,21 @@
         {
             "name": "hardware",
             "functions": [
-                { "fn": "uint32_t time_us_32()", "linuxRetVal": "0" },
-                { "fn": "uint64_t time_us_64()", "linuxRetVal": "0" },
-                { "fn": "void busy_wait_us_32(uint32_t delay_us)" },
-                { "fn": "void busy_wait_us(uint64_t delay_us)" },
-                { "fn": "void busy_wait_ms(uint32_t delay_ms)" },
-                { "fn": "void busy_wait_until(uint64_t t)" },
-                { "fn": "bool time_reached(uint64_t t)", "linuxRetVal": "true" },
-                { "fn": "void hardware_alarm_claim(uint32_t alarm_num)" },
-                { "fn": "int32_t hardware_alarm_claim_unused(bool required)", "linuxRetVal": 0 },
-                { "fn": "void hardware_alarm_unclaim(uint32_t alarm_num)" },
-                { "fn": "bool hardware_alarm_is_claimed(uint32_t alarm_num)", "linuxRetVal": "true" },
-                { "fn": "void hardware_alarm_set_callback(uint32_t alarm_num, hardware_alarm_callback_t callback)", "callback": "CALLBACK_HARDWARE_ALARM" }
+                { "fn": "uint32_t time_us_32 ()", "linuxRetVal": "0" },
+                { "fn": "uint64_t time_us_64 ()", "linuxRetVal": "0" },
+                { "fn": "void busy_wait_us_32 (uint32_t delay_us)" },
+                { "fn": "void busy_wait_us (uint64_t delay_us)" },
+                { "fn": "void busy_wait_ms (uint32_t delay_ms)" },
+                { "fn": "void busy_wait_until (uint64_t t)" },
+                { "fn": "bool time_reached (uint64_t t)", "linuxRetVal": "true" },
+                { "fn": "void hardware_alarm_claim (uint32_t alarm_num)" },
+                { "fn": "int32_t hardware_alarm_claim_unused (bool required)", "linuxRetVal": 0 },
+                { "fn": "void hardware_alarm_unclaim (uint32_t alarm_num)" },
+                { "fn": "bool hardware_alarm_is_claimed (uint32_t alarm_num)", "linuxRetVal": "true" },
+                { "fn": "void hardware_alarm_set_callback (uint32_t alarm_num, hardware_alarm_callback_t callback)", "callback": "CALLBACK_HARDWARE_ALARM" },
+                { "fn": "bool hardware_alarm_set_target (uint32_t alarm_num, uint64_t t)", "linuxRetVal": "true"  },
+                { "fn": "void hardware_alarm_cancel (uint32_t alarm_num)" },
+                { "fn": "void hardware_alarm_force_irq (uint32_t alarm_num)" }
             ]
         }
     ]

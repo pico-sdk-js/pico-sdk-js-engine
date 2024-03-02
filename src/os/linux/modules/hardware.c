@@ -308,6 +308,80 @@ cleanup:
     return ret_val;
 }
 
+static jerry_value_t hardware_alarm_set_target_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 2
+        || !jerry_value_is_number(args_p[0])
+        || !jerry_value_is_number(args_p[1])
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "hardware_alarm_set_target(number, number)");
+        goto cleanup;
+    }
+
+    uint32_t alarm_num = psj_jerry_to_uint32_t(args_p[0]);
+    uint64_t t = psj_jerry_to_uint64_t(args_p[1]);
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "hardware_alarm_set_target(%i, %i);", alarm_num, t);
+    const bool v = true;
+    ret_val = jerry_create_boolean(v);
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t hardware_alarm_cancel_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 1
+        || !jerry_value_is_number(args_p[0])
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "hardware_alarm_cancel(number)");
+        goto cleanup;
+    }
+
+    uint32_t alarm_num = psj_jerry_to_uint32_t(args_p[0]);
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "hardware_alarm_cancel(%i);", alarm_num);
+    
+    ret_val = jerry_create_undefined();
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t hardware_alarm_force_irq_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 1
+        || !jerry_value_is_number(args_p[0])
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "hardware_alarm_force_irq(number)");
+        goto cleanup;
+    }
+
+    uint32_t alarm_num = psj_jerry_to_uint32_t(args_p[0]);
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "hardware_alarm_force_irq(%i);", alarm_num);
+    
+    ret_val = jerry_create_undefined();
+
+cleanup:
+
+    return ret_val;
+}
+
 jerry_value_t get_hardware_module()
 {
     jerry_value_t module = jerry_create_object();
@@ -359,6 +433,18 @@ jerry_value_t get_hardware_module()
 
     handler = jerry_create_external_function(hardware_alarm_set_callback_handler);
     psj_jerry_set_property(module, "hardware_alarm_set_callback", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(hardware_alarm_set_target_handler);
+    psj_jerry_set_property(module, "hardware_alarm_set_target", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(hardware_alarm_cancel_handler);
+    psj_jerry_set_property(module, "hardware_alarm_cancel", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(hardware_alarm_force_irq_handler);
+    psj_jerry_set_property(module, "hardware_alarm_force_irq", handler);
     jerry_release_value(handler);
 
     return module;

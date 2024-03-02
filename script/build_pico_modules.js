@@ -31,7 +31,7 @@ class ModuleData {
     }
 }
 
-const fnRegEx = /^(?<retType>\w+) (?<name>\w+)\(((?<arg1Type>\w+) (?<arg1Name>\w+))?(, (?<arg2Type>\w+) (?<arg2Name>\w+))?(, (?<arg3Type>\w+) (?<arg3Name>\w+))?\)$/;
+const fnRegEx = /^(?<retType>\w+) (?<name>\w+) \(((?<arg1Type>\w+) (?<arg1Name>\w+))?(, (?<arg2Type>\w+) (?<arg2Name>\w+))?(, (?<arg3Type>\w+) (?<arg3Name>\w+))?\)$/;
 
 class ModuleFunction {
     constructor(functionInfo) {
