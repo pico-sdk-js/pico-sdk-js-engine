@@ -14,7 +14,7 @@ const package = require("./package.json")
 var unknownArg = false;
 var minimistOpts = { 
   string: ['target'],
-  boolean: ['clean', 'cmake', 'make', 'gen', 'run', 'build', 'rebuild', 'publish', 'debug', 'release'],
+  boolean: ['clean', 'cmake', 'make', 'gen', 'run', 'build', 'rebuild', 'test', 'publish', 'debug', 'release'],
   default: {
     target: '?'
   },
@@ -56,6 +56,7 @@ if (argv.target === '?') {
 }
 
 const buildPath = path.join(__dirname, "build");
+const testBuildPath = path.join(buildPath, "test");
 const jerryBuildPath = path.join(__dirname, "lib/jerryscript/build");
 
 if (argv.clean) {
@@ -77,6 +78,10 @@ if (argv.cmake) {
 
 if (argv.make) {
   make();
+}
+
+if (argv.test) {
+  test();
 }
 
 if (argv.publish) {
@@ -118,6 +123,10 @@ function make() {
   // make everything
   const cores = os.cpus().length;
   cmd(buildPath, "make", [`-j${cores}`]);
+}
+
+function test() {
+  cmd(testBuildPath, 'ctest');
 }
 
 function publish() {

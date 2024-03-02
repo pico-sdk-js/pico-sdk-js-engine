@@ -44,11 +44,13 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_COMPILE_WARNING_AS_ERROR TRUE)
 
+set(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+
 # Set JERRYSCRIPT settings
-set(JERRYSCRIPT_SDK_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib/jerryscript)
+set(JERRYSCRIPT_SDK_PATH ${ROOT_DIR}/lib/jerryscript)
 
 if (TARGET_OS STREQUAL "rp2xxx")
-  set(JERRYSCRIPT_TOOLCHAIN ${CMAKE_CURRENT_SOURCE_DIR}/jerryscript_toolchain.cmake)
+  set(JERRYSCRIPT_TOOLCHAIN ${ROOT_DIR}/jerryscript_toolchain.cmake)
   elseif(TARGET_OS STREQUAL "linux_amd64")
   set(JERRYSCRIPT_TOOLCHAIN ${JERRYSCRIPT_SDK_PATH}/cmake/toolchain_linux_aarch64.cmake)
 elseif(TARGET_OS STREQUAL "linux_x86_64")
@@ -82,7 +84,7 @@ set(JERRYSCRIPT_INC
 
 # Setting UTHash
 set(UTHASH_SDK_PATH 
-  ${CMAKE_CURRENT_SOURCE_DIR}/lib/uthash)
+  ${ROOT_DIR}/lib/uthash)
 
 set(UTHASH_INC
   ${UTHASH_SDK_PATH}/include)
@@ -112,7 +114,7 @@ set(JERRYSCRIPT_BUILD_ARGS
 
 if (TARGET_OS STREQUAL "rp2xxx")
   # Set PICO settings
-  set(PICO_SDK_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib/pico-sdk)
+  set(PICO_SDK_PATH ${ROOT_DIR}/lib/pico-sdk)
   set(PICO_BOARD pico_w)
 
   include(${PICO_SDK_PATH}/external/pico_sdk_import.cmake)
@@ -131,30 +133,37 @@ add_custom_command(OUTPUT ${JERRYSCRIPT_LIBS}
   COMMAND python tools/build.py --clean ${JERRYSCRIPT_BUILD_ARGS})
 
 # Set PICO-SDK-JS build settings
+set(OUTPUT_LIB ${TARGET_NAME}-lib)
 set(OUTPUT_TARGET ${TARGET_NAME}-${TARGET_VERSION})
 
 file(GLOB_RECURSE OS_SOURCES 
-  ${CMAKE_CURRENT_LIST_DIR}/src/os/${TARGET_OS_SRC}/*.c)
+  ${ROOT_DIR}/src/os/${TARGET_OS_SRC}/*.c)
 
 file(GLOB CMD_SOURCES 
-  ${CMAKE_CURRENT_LIST_DIR}/src/cmds/*.c)
+  ${ROOT_DIR}/src/cmds/*.c)
 
 file(GLOB ROOT_SOURCES 
-  ${CMAKE_CURRENT_LIST_DIR}/src/*.c)
+  ${ROOT_DIR}/src/*.c)
+
+file(GLOB TEST_SOURCES 
+  ${ROOT_DIR}/test/*.c)
 
 set(SOURCES
   ${SOURCES} 
   ${ROOT_SOURCES}
   ${OS_SOURCES}
   ${CMD_SOURCES}
-  ${CMAKE_CURRENT_LIST_DIR}/lib/littlefs/lfs.c
-  ${CMAKE_CURRENT_LIST_DIR}/lib/littlefs/lfs_util.c)
+  ${ROOT_DIR}/lib/littlefs/lfs.c
+  ${ROOT_DIR}/lib/littlefs/lfs_util.c)
+
+# remove "main.c" from source to avoid multiple mains
+list(REMOVE_ITEM SOURCES ${ROOT_DIR}/src/main.c)
 
 set(INCLUDES
   ${INCLUDES}
-  ${CMAKE_CURRENT_LIST_DIR}/include
+  ${ROOT_DIR}/include
   ${JERRYSCRIPT_INC}
-  ${CMAKE_CURRENT_LIST_DIR}/lib/littlefs
+  ${ROOT_DIR}/lib/littlefs
   ${UTHASH_INC})
 
 set(LIBRARIES
@@ -177,9 +186,17 @@ add_compile_definitions(LFS_NO_ERROR)
 add_compile_definitions(TARGET_NAME="${TARGET_NAME}")
 add_compile_definitions(TARGET_VERSION="${TARGET_VERSION}")
 
+# create library shared with tests
+include_directories(${OUTPUT_LIB} ${INCLUDES})
+add_library(${OUTPUT_LIB} ${SOURCES})
+target_link_libraries(${OUTPUT_LIB} ${LIBRARIES})
+
+# create exe
 include_directories(${OUTPUT_TARGET} ${INCLUDES})
-add_executable(${OUTPUT_TARGET} ${SOURCES} ${JERRYSCRIPT_LIBS})
-target_link_libraries(${OUTPUT_TARGET} ${LIBRARIES})
+add_executable(${OUTPUT_TARGET} ${ROOT_DIR}/src/main.c)
+target_link_libraries(${OUTPUT_TARGET} PRIVATE ${LIBRARIES} ${OUTPUT_LIB})
+
+add_subdirectory(${ROOT_DIR}/test)
 
 if (TARGET_OS STREQUAL "rp2xxx")
   # Enable USB output, disable UART output
