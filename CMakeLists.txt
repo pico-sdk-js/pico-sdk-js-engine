@@ -196,11 +196,11 @@ include_directories(${OUTPUT_TARGET} ${INCLUDES})
 add_executable(${OUTPUT_TARGET} ${ROOT_DIR}/src/main.c)
 target_link_libraries(${OUTPUT_TARGET} PRIVATE ${LIBRARIES} ${OUTPUT_LIB})
 
-add_subdirectory(${ROOT_DIR}/test)
-
 if (TARGET_OS STREQUAL "rp2xxx")
   # Enable USB output, disable UART output
   pico_enable_stdio_usb(${OUTPUT_TARGET} 1)
   pico_enable_stdio_uart(${OUTPUT_TARGET} 0)
   pico_add_extra_outputs(${OUTPUT_TARGET})
+else()
+  add_subdirectory(${ROOT_DIR}/test)
 endif()

@@ -71,3 +71,17 @@ void remove_callback(CALLBACK_TYPE type, uint32_t id)
         jerry_release_value(cb->callback);        
     }
 }
+
+void hardware_alarm_set_callback_wrapper(uint alarm_num)
+{
+    jerry_value_t result = invoke_callback(CALLBACK_HARDWARE_ALARM, alarm_num);
+
+    if (jerry_value_is_error(result))
+    {
+        jerry_char_t *error_string = psj_jerry_exception_to_string(result);
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Hardware Alarm Handler error: %s", error_string);
+        free(error_string);
+    }
+
+    jerry_release_value(result);
+}

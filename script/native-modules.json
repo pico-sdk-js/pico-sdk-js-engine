@@ -14,7 +14,7 @@
                 { "name": "hardware_alarm_claim_unused", "returnType":"int32_t", "args": [ { "name": "required", "type": "bool"} ], "linuxRetVal": 0 },
                 { "name": "hardware_alarm_unclaim", "args": [ { "name": "alarm_num", "type": "uint32_t"} ] },
                 { "name": "hardware_alarm_is_claimed", "returnType": "bool", "args": [ { "name": "alarm_num", "type": "uint32_t"} ], "linuxRetVal": "true" },
-                { "name": "hardware_alarm_set_callback", "enabled": false, "args": [ { "name": "alarm_num", "type": "uint32_t"}, { "name": "callback", "type": "hardware_alarm_callback_t" } ] }
+                { "name": "hardware_alarm_set_callback", "args": [ { "name": "alarm_num", "type": "uint32_t"}, { "name": "callback", "type": "hardware_alarm_callback_t" } ], "callback": "CALLBACK_HARDWARE_ALARM" }
             ]
         }
     ]

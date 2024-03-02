@@ -68,8 +68,8 @@ if (argv.gen) {
   const rp2xxxModulePath = path.join(__dirname, 'src/os/rp2xxx/modules/');
   const nativeModules = require('./script/native-modules.json');
 
-  b.generate(nativeModules, 'linux.mustache', linuxModulePath);
-  b.generate(nativeModules, 'rp2xxx.mustache', rp2xxxModulePath);
+  b.generate(nativeModules, 'modules.handlebars', linuxModulePath, 'linux');
+  b.generate(nativeModules, 'modules.handlebars', rp2xxxModulePath, 'rp2xxx');
 }
 
 if (argv.cmake) {
