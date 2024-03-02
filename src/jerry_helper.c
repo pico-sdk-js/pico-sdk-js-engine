@@ -231,7 +231,8 @@ jerry_value_t psj_jerry_create_error_obj(const PSJErrorCode error_code, ...)
     return error_obj;
 }
 
-jerry_value_t psj_jerry_exception_to_error_obj(jerry_value_t exception) {
+jerry_value_t psj_jerry_exception_to_error_obj(jerry_value_t exception)
+{
     assert(jerry_value_is_error(exception));
 
     jerry_value_t error_obj = jerry_create_object();
@@ -245,4 +246,14 @@ jerry_value_t psj_jerry_exception_to_error_obj(jerry_value_t exception) {
     jerry_release_value(error_val);
 
     return error_obj;
+}
+
+jerry_char_t *psj_jerry_exception_to_string(jerry_value_t exception)
+{
+    jerry_value_t error_obj = psj_jerry_exception_to_error_obj(exception);
+    jerry_char_t *str = psj_jerry_stringify(error_obj);
+
+    jerry_release_value(error_obj);
+
+    return str;
 }

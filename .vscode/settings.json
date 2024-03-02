@@ -9,7 +9,9 @@
         "typeinfo": "c",
         "cstdlib": "c",
         "algorithm": "c",
-        "stdint-intn.h": "c"
+        "stdint-intn.h": "c",
+        "functional": "c",
+        "string.h": "c"
     },
     "cmake.configureSettings": {
         "TARGET_OS": "linux_x86_64",

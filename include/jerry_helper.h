@@ -13,7 +13,8 @@ typedef enum __PSJErrorCode {
     FILE_NOT_FOUND,
     INVALID_ARG,
     JAVASCRIPT_ERROR,
-    RUNTIME_ARG_ERROR
+    RUNTIME_ARG_ERROR,
+    NO_CALLBACK_REGISTERED,
 } PSJErrorCode;
 
 jerry_char_t *S(const jerry_char_t *txt);
@@ -53,5 +54,7 @@ jerry_char_t *psj_jerry_get_error_message(const PSJErrorCode error_code, ...);
 jerry_value_t psj_jerry_create_error_obj(const PSJErrorCode error_code, ...);
 
 jerry_value_t psj_jerry_exception_to_error_obj(jerry_value_t exception);
+
+jerry_char_t *psj_jerry_exception_to_string(jerry_value_t exception);
 
 #endif // __JERRY_HELPER_H

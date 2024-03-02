@@ -126,7 +126,7 @@ function make() {
 }
 
 function test() {
-  cmd(testBuildPath, 'ctest');
+  cmd(testBuildPath, 'ctest'), ['--verbose'];
 }
 
 function publish() {
