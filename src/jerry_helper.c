@@ -44,6 +44,21 @@ jerry_char_t *psj_jerry_to_string(const jerry_value_t value)
     return str_buf_p;
 }
 
+uint psj_jerry_to_uint(const jerry_value_t value)
+{
+    return (uint)jerry_get_number_value(value);    
+}
+
+uint8_t psj_jerry_to_uint8_t(const jerry_value_t value)
+{
+    return (uint8_t)jerry_get_number_value(value);    
+}
+
+uint16_t psj_jerry_to_uint16_t(const jerry_value_t value)
+{
+    return (uint16_t)jerry_get_number_value(value);    
+}
+
 uint32_t psj_jerry_to_uint32_t(const jerry_value_t value)
 {
     return (uint32_t)jerry_get_number_value(value);    
@@ -52,6 +67,21 @@ uint32_t psj_jerry_to_uint32_t(const jerry_value_t value)
 uint64_t psj_jerry_to_uint64_t(const jerry_value_t value)
 {
     return (uint64_t)jerry_get_number_value(value);    
+}
+
+int psj_jerry_to_int(const jerry_value_t value)
+{
+    return (int)jerry_get_number_value(value);    
+}
+
+int8_t psj_jerry_to_int8_t(const jerry_value_t value)
+{
+    return (int8_t)jerry_get_number_value(value);    
+}
+
+int16_t psj_jerry_to_int16_t(const jerry_value_t value)
+{
+    return (int16_t)jerry_get_number_value(value);    
 }
 
 int32_t psj_jerry_to_int32_t(const jerry_value_t value)
@@ -67,6 +97,11 @@ int64_t psj_jerry_to_int64_t(const jerry_value_t value)
 bool psj_jerry_to_bool(const jerry_value_t value)
 {
     return jerry_get_boolean_value(value);
+}
+
+float psj_jerry_to_float(const jerry_value_t value)
+{
+    return (float)jerry_get_number_value(value);    
 }
 
 uint32_t psj_jerry_get_uint32_property(const jerry_value_t jObject, const jerry_char_t *property)

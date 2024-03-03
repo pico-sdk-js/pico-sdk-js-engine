@@ -12,7 +12,7 @@
     }
 
     {{#each args}}
-    {{type}} {{name}} = psj_jerry_to_{{type}}(args_p[{{@index}}]);
+    {{type}} {{name}} = {{converterFunction}}(args_p[{{@index}}]);
     {{/each}}
 
     {{{traceSignature}}}

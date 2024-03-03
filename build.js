@@ -1,4 +1,4 @@
-// Generate c source from js files
+require("jsonc-require");
 
 const fs = require("fs-extra");
 const os = require("os");
@@ -66,7 +66,7 @@ if (argv.clean) {
 if (argv.gen) {
   const linuxModulePath = path.join(__dirname, 'src/os/linux/modules/');
   const rp2xxxModulePath = path.join(__dirname, 'src/os/rp2xxx/modules/');
-  const nativeModules = require('./script/native-modules.json');
+  const nativeModules = require('./script/native-modules.jsonc');
 
   b.generate(nativeModules, 'modules.handlebars', linuxModulePath, 'linux');
   b.generate(nativeModules, 'modules.handlebars', rp2xxxModulePath, 'rp2xxx');

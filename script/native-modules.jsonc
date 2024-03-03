@@ -1,0 +1,56 @@
+{
+    "modules": [
+        {
+            "name": "hardware",
+            "functions": [
+                // ADC functions (see https://www.raspberrypi.com/documentation/pico-sdk/hardware.html#functions)
+                { "fn": "void adc_init ()" },
+                { "fn": "void adc_gpio_init (uint gpio)" },
+                { "fn": "void adc_select_input (uint input)" },
+                { "fn": "uint adc_get_selected_input ()" },
+                { "fn": "void adc_set_round_robin (uint input_mask)" },
+                { "fn": "void adc_set_temp_sensor_enabled (bool enable)" },
+                { "fn": "uint16_t adc_read ()" },
+                { "fn": "void adc_run (bool run)" },
+                { "fn": "void adc_set_clkdiv (float clkdiv)" },
+                { "fn": "void adc_fifo_setup (bool en, bool dreq_en, uint16_t dreq_thresh, bool err_in_fifo, bool byte_shift)" },
+                { "fn": "bool adc_fifo_is_empty ()" },
+                { "fn": "uint8_t adc_fifo_get_level ()" },
+                { "fn": "uint16_t adc_fifo_get ()" },
+                { "fn": "uint16_t adc_fifo_get_blocking ()" },
+                { "fn": "void adc_fifo_drain ()" },
+                { "fn": "void adc_irq_set_enabled (bool enabled)" },
+
+                // Clock functions (see https://www.raspberrypi.com/documentation/pico-sdk/hardware.html#hardware_clocks)
+                // NOTE: "enum clock_index" replaced with "int" to avoid issues on linux builds
+                { "fn": "void clocks_init ()" },
+                { "fn": "bool clock_configure (int clk_index, uint32_t src, uint32_t auxsrc, uint32_t src_freq, uint32_t freq)" },
+                { "fn": "void clock_stop (int clk_index)" },
+                { "fn": "uint32_t clock_get_hz (int clk_index)" },
+                { "fn": "uint32_t frequency_count_khz (uint src)" },
+                { "fn": "void clock_set_reported_hz (int clk_index, uint hz)" },
+                { "fn": "void clocks_enable_resus (resus_callback_t resus_callback)", "callback": "CALLBACK_CLOCK_ENABLE_RESUS" },
+                { "fn": "void clock_gpio_init_int_frac (uint gpio, uint src, uint32_t div_int, uint8_t div_frac)" },
+                { "fn": "void clock_gpio_init (uint gpio, uint src, float div)" },
+                { "fn": "bool clock_configure_gpin (int clk_index, uint gpio, uint32_t src_freq, uint32_t freq)" },
+
+                // Timer functions (see https://www.raspberrypi.com/documentation/pico-sdk/hardware.html#functions140)
+                { "fn": "uint32_t time_us_32 ()" },
+                { "fn": "uint64_t time_us_64 ()" },
+                { "fn": "void busy_wait_us_32 (uint32_t delay_us)" },
+                { "fn": "void busy_wait_us (uint64_t delay_us)" },
+                { "fn": "void busy_wait_ms (uint32_t delay_ms)" },
+                { "fn": "void busy_wait_until (uint64_t t)" },
+                { "fn": "bool time_reached (uint64_t t)" },
+                { "fn": "void hardware_alarm_claim (uint32_t alarm_num)" },
+                { "fn": "int32_t hardware_alarm_claim_unused (bool required)" },
+                { "fn": "void hardware_alarm_unclaim (uint32_t alarm_num)" },
+                { "fn": "bool hardware_alarm_is_claimed (uint32_t alarm_num)" },
+                { "fn": "void hardware_alarm_set_callback (uint32_t alarm_num, hardware_alarm_callback_t callback)", "callback": "CALLBACK_HARDWARE_ALARM" },
+                { "fn": "bool hardware_alarm_set_target (uint32_t alarm_num, uint64_t t)"  },
+                { "fn": "void hardware_alarm_cancel (uint32_t alarm_num)" },
+                { "fn": "void hardware_alarm_force_irq (uint32_t alarm_num)" }
+            ]
+        }
+    ]
+}

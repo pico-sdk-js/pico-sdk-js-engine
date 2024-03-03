@@ -7,11 +7,664 @@
 
 #include "modules.h"
 
+#include "hardware/adc.h"
+#include "hardware/clocks.h"
 #include "hardware/timer.h"
 
 #include "jerryscript.h"
 #include "jerry_helper.h"
 #include "callback_engine.h"
+
+static jerry_value_t adc_init_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 0
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "adc_init()");
+        goto cleanup;
+    }
+
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "adc_init();");
+    adc_init();
+    ret_val = jerry_create_undefined();
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t adc_gpio_init_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 1
+        || !jerry_value_is_number(args_p[0])
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "adc_gpio_init(number)");
+        goto cleanup;
+    }
+
+    uint gpio = psj_jerry_to_uint(args_p[0]);
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "adc_gpio_init(%i);", gpio);
+    adc_gpio_init(gpio);
+    ret_val = jerry_create_undefined();
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t adc_select_input_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 1
+        || !jerry_value_is_number(args_p[0])
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "adc_select_input(number)");
+        goto cleanup;
+    }
+
+    uint input = psj_jerry_to_uint(args_p[0]);
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "adc_select_input(%i);", input);
+    adc_select_input(input);
+    ret_val = jerry_create_undefined();
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t adc_get_selected_input_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 0
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "adc_get_selected_input()");
+        goto cleanup;
+    }
+
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "adc_get_selected_input();");
+    const uint v = adc_get_selected_input();
+    ret_val = jerry_create_number(v);
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t adc_set_round_robin_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 1
+        || !jerry_value_is_number(args_p[0])
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "adc_set_round_robin(number)");
+        goto cleanup;
+    }
+
+    uint input_mask = psj_jerry_to_uint(args_p[0]);
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "adc_set_round_robin(%i);", input_mask);
+    adc_set_round_robin(input_mask);
+    ret_val = jerry_create_undefined();
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t adc_set_temp_sensor_enabled_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 1
+        || !jerry_value_is_boolean(args_p[0])
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "adc_set_temp_sensor_enabled(boolean)");
+        goto cleanup;
+    }
+
+    bool enable = psj_jerry_to_bool(args_p[0]);
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "adc_set_temp_sensor_enabled(%i);", enable);
+    adc_set_temp_sensor_enabled(enable);
+    ret_val = jerry_create_undefined();
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t adc_read_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 0
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "adc_read()");
+        goto cleanup;
+    }
+
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "adc_read();");
+    const uint16_t v = adc_read();
+    ret_val = jerry_create_number(v);
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t adc_run_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 1
+        || !jerry_value_is_boolean(args_p[0])
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "adc_run(boolean)");
+        goto cleanup;
+    }
+
+    bool run = psj_jerry_to_bool(args_p[0]);
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "adc_run(%i);", run);
+    adc_run(run);
+    ret_val = jerry_create_undefined();
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t adc_set_clkdiv_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 1
+        || !jerry_value_is_number(args_p[0])
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "adc_set_clkdiv(number)");
+        goto cleanup;
+    }
+
+    float clkdiv = psj_jerry_to_float(args_p[0]);
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "adc_set_clkdiv(%i);", clkdiv);
+    adc_set_clkdiv(clkdiv);
+    ret_val = jerry_create_undefined();
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t adc_fifo_setup_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 5
+        || !jerry_value_is_boolean(args_p[0])
+        || !jerry_value_is_boolean(args_p[1])
+        || !jerry_value_is_number(args_p[2])
+        || !jerry_value_is_boolean(args_p[3])
+        || !jerry_value_is_boolean(args_p[4])
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "adc_fifo_setup(boolean, boolean, number, boolean, boolean)");
+        goto cleanup;
+    }
+
+    bool en = psj_jerry_to_bool(args_p[0]);
+    bool dreq_en = psj_jerry_to_bool(args_p[1]);
+    uint16_t dreq_thresh = psj_jerry_to_uint16_t(args_p[2]);
+    bool err_in_fifo = psj_jerry_to_bool(args_p[3]);
+    bool byte_shift = psj_jerry_to_bool(args_p[4]);
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "adc_fifo_setup(%i, %i, %i, %i, %i);", en, dreq_en, dreq_thresh, err_in_fifo, byte_shift);
+    adc_fifo_setup(en, dreq_en, dreq_thresh, err_in_fifo, byte_shift);
+    ret_val = jerry_create_undefined();
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t adc_fifo_is_empty_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 0
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "adc_fifo_is_empty()");
+        goto cleanup;
+    }
+
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "adc_fifo_is_empty();");
+    const bool v = adc_fifo_is_empty();
+    ret_val = jerry_create_boolean(v);
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t adc_fifo_get_level_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 0
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "adc_fifo_get_level()");
+        goto cleanup;
+    }
+
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "adc_fifo_get_level();");
+    const uint8_t v = adc_fifo_get_level();
+    ret_val = jerry_create_number(v);
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t adc_fifo_get_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 0
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "adc_fifo_get()");
+        goto cleanup;
+    }
+
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "adc_fifo_get();");
+    const uint16_t v = adc_fifo_get();
+    ret_val = jerry_create_number(v);
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t adc_fifo_get_blocking_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 0
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "adc_fifo_get_blocking()");
+        goto cleanup;
+    }
+
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "adc_fifo_get_blocking();");
+    const uint16_t v = adc_fifo_get_blocking();
+    ret_val = jerry_create_number(v);
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t adc_fifo_drain_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 0
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "adc_fifo_drain()");
+        goto cleanup;
+    }
+
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "adc_fifo_drain();");
+    adc_fifo_drain();
+    ret_val = jerry_create_undefined();
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t adc_irq_set_enabled_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 1
+        || !jerry_value_is_boolean(args_p[0])
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "adc_irq_set_enabled(boolean)");
+        goto cleanup;
+    }
+
+    bool enabled = psj_jerry_to_bool(args_p[0]);
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "adc_irq_set_enabled(%i);", enabled);
+    adc_irq_set_enabled(enabled);
+    ret_val = jerry_create_undefined();
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t clocks_init_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 0
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "clocks_init()");
+        goto cleanup;
+    }
+
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "clocks_init();");
+    clocks_init();
+    ret_val = jerry_create_undefined();
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t clock_configure_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 5
+        || !jerry_value_is_number(args_p[0])
+        || !jerry_value_is_number(args_p[1])
+        || !jerry_value_is_number(args_p[2])
+        || !jerry_value_is_number(args_p[3])
+        || !jerry_value_is_number(args_p[4])
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "clock_configure(number, number, number, number, number)");
+        goto cleanup;
+    }
+
+    int clk_index = psj_jerry_to_int(args_p[0]);
+    uint32_t src = psj_jerry_to_uint32_t(args_p[1]);
+    uint32_t auxsrc = psj_jerry_to_uint32_t(args_p[2]);
+    uint32_t src_freq = psj_jerry_to_uint32_t(args_p[3]);
+    uint32_t freq = psj_jerry_to_uint32_t(args_p[4]);
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "clock_configure(%i, %i, %i, %i, %i);", clk_index, src, auxsrc, src_freq, freq);
+    const bool v = clock_configure(clk_index, src, auxsrc, src_freq, freq);
+    ret_val = jerry_create_boolean(v);
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t clock_stop_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 1
+        || !jerry_value_is_number(args_p[0])
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "clock_stop(number)");
+        goto cleanup;
+    }
+
+    int clk_index = psj_jerry_to_int(args_p[0]);
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "clock_stop(%i);", clk_index);
+    clock_stop(clk_index);
+    ret_val = jerry_create_undefined();
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t clock_get_hz_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 1
+        || !jerry_value_is_number(args_p[0])
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "clock_get_hz(number)");
+        goto cleanup;
+    }
+
+    int clk_index = psj_jerry_to_int(args_p[0]);
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "clock_get_hz(%i);", clk_index);
+    const uint32_t v = clock_get_hz(clk_index);
+    ret_val = jerry_create_number(v);
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t frequency_count_khz_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 1
+        || !jerry_value_is_number(args_p[0])
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "frequency_count_khz(number)");
+        goto cleanup;
+    }
+
+    uint src = psj_jerry_to_uint(args_p[0]);
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "frequency_count_khz(%i);", src);
+    const uint32_t v = frequency_count_khz(src);
+    ret_val = jerry_create_number(v);
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t clock_set_reported_hz_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 2
+        || !jerry_value_is_number(args_p[0])
+        || !jerry_value_is_number(args_p[1])
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "clock_set_reported_hz(number, number)");
+        goto cleanup;
+    }
+
+    int clk_index = psj_jerry_to_int(args_p[0]);
+    uint hz = psj_jerry_to_uint(args_p[1]);
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "clock_set_reported_hz(%i, %i);", clk_index, hz);
+    clock_set_reported_hz(clk_index, hz);
+    ret_val = jerry_create_undefined();
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t clocks_enable_resus_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 1
+        || !jerry_value_is_function(args_p[0]
+        || !jerry_value_is_null(args_p[0]))
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "clocks_enable_resus(function)");
+        goto cleanup;
+    }
+
+    jerry_value_t callback = args_p[0];
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "clocks_enable_resus([Function])");
+    if (jerry_value_is_null(callback))
+    {
+        clocks_enable_resus(NULL);
+        remove_callback(CALLBACK_CLOCK_ENABLE_RESUS, 0);
+    }
+    else
+    {
+        register_callback(CALLBACK_CLOCK_ENABLE_RESUS, 0, callback);
+        clocks_enable_resus(clocks_enable_resus_wrapper);
+    }
+
+    ret_val = jerry_create_undefined();
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t clock_gpio_init_int_frac_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 4
+        || !jerry_value_is_number(args_p[0])
+        || !jerry_value_is_number(args_p[1])
+        || !jerry_value_is_number(args_p[2])
+        || !jerry_value_is_number(args_p[3])
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "clock_gpio_init_int_frac(number, number, number, number)");
+        goto cleanup;
+    }
+
+    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint src = psj_jerry_to_uint(args_p[1]);
+    uint32_t div_int = psj_jerry_to_uint32_t(args_p[2]);
+    uint8_t div_frac = psj_jerry_to_uint8_t(args_p[3]);
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "clock_gpio_init_int_frac(%i, %i, %i, %i);", gpio, src, div_int, div_frac);
+    clock_gpio_init_int_frac(gpio, src, div_int, div_frac);
+    ret_val = jerry_create_undefined();
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t clock_gpio_init_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 3
+        || !jerry_value_is_number(args_p[0])
+        || !jerry_value_is_number(args_p[1])
+        || !jerry_value_is_number(args_p[2])
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "clock_gpio_init(number, number, number)");
+        goto cleanup;
+    }
+
+    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint src = psj_jerry_to_uint(args_p[1]);
+    float div = psj_jerry_to_float(args_p[2]);
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "clock_gpio_init(%i, %i, %i);", gpio, src, div);
+    clock_gpio_init(gpio, src, div);
+    ret_val = jerry_create_undefined();
+
+cleanup:
+
+    return ret_val;
+}
+
+static jerry_value_t clock_configure_gpin_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 4
+        || !jerry_value_is_number(args_p[0])
+        || !jerry_value_is_number(args_p[1])
+        || !jerry_value_is_number(args_p[2])
+        || !jerry_value_is_number(args_p[3])
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "clock_configure_gpin(number, number, number, number)");
+        goto cleanup;
+    }
+
+    int clk_index = psj_jerry_to_int(args_p[0]);
+    uint gpio = psj_jerry_to_uint(args_p[1]);
+    uint32_t src_freq = psj_jerry_to_uint32_t(args_p[2]);
+    uint32_t freq = psj_jerry_to_uint32_t(args_p[3]);
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "clock_configure_gpin(%i, %i, %i, %i);", clk_index, gpio, src_freq, freq);
+    const bool v = clock_configure_gpin(clk_index, gpio, src_freq, freq);
+    ret_val = jerry_create_boolean(v);
+
+cleanup:
+
+    return ret_val;
+}
 
 static jerry_value_t time_us_32_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
 {
@@ -388,6 +1041,110 @@ jerry_value_t get_hardware_module()
 {
     jerry_value_t module = jerry_create_object();
     jerry_value_t handler;
+
+    handler = jerry_create_external_function(adc_init_handler);
+    psj_jerry_set_property(module, "adc_init", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(adc_gpio_init_handler);
+    psj_jerry_set_property(module, "adc_gpio_init", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(adc_select_input_handler);
+    psj_jerry_set_property(module, "adc_select_input", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(adc_get_selected_input_handler);
+    psj_jerry_set_property(module, "adc_get_selected_input", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(adc_set_round_robin_handler);
+    psj_jerry_set_property(module, "adc_set_round_robin", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(adc_set_temp_sensor_enabled_handler);
+    psj_jerry_set_property(module, "adc_set_temp_sensor_enabled", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(adc_read_handler);
+    psj_jerry_set_property(module, "adc_read", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(adc_run_handler);
+    psj_jerry_set_property(module, "adc_run", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(adc_set_clkdiv_handler);
+    psj_jerry_set_property(module, "adc_set_clkdiv", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(adc_fifo_setup_handler);
+    psj_jerry_set_property(module, "adc_fifo_setup", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(adc_fifo_is_empty_handler);
+    psj_jerry_set_property(module, "adc_fifo_is_empty", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(adc_fifo_get_level_handler);
+    psj_jerry_set_property(module, "adc_fifo_get_level", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(adc_fifo_get_handler);
+    psj_jerry_set_property(module, "adc_fifo_get", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(adc_fifo_get_blocking_handler);
+    psj_jerry_set_property(module, "adc_fifo_get_blocking", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(adc_fifo_drain_handler);
+    psj_jerry_set_property(module, "adc_fifo_drain", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(adc_irq_set_enabled_handler);
+    psj_jerry_set_property(module, "adc_irq_set_enabled", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(clocks_init_handler);
+    psj_jerry_set_property(module, "clocks_init", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(clock_configure_handler);
+    psj_jerry_set_property(module, "clock_configure", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(clock_stop_handler);
+    psj_jerry_set_property(module, "clock_stop", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(clock_get_hz_handler);
+    psj_jerry_set_property(module, "clock_get_hz", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(frequency_count_khz_handler);
+    psj_jerry_set_property(module, "frequency_count_khz", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(clock_set_reported_hz_handler);
+    psj_jerry_set_property(module, "clock_set_reported_hz", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(clocks_enable_resus_handler);
+    psj_jerry_set_property(module, "clocks_enable_resus", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(clock_gpio_init_int_frac_handler);
+    psj_jerry_set_property(module, "clock_gpio_init_int_frac", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(clock_gpio_init_handler);
+    psj_jerry_set_property(module, "clock_gpio_init", handler);
+    jerry_release_value(handler);
+
+    handler = jerry_create_external_function(clock_configure_gpin_handler);
+    psj_jerry_set_property(module, "clock_configure_gpin", handler);
+    jerry_release_value(handler);
 
     handler = jerry_create_external_function(time_us_32_handler);
     psj_jerry_set_property(module, "time_us_32", handler);

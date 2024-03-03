@@ -174,8 +174,10 @@ if (TARGET_OS STREQUAL "rp2xxx")
   set(LIBRARIES
     ${LIBRARIES}
     pico_stdlib
-    hardware_flash)  
-    add_compile_definitions(NDEBUG=1)
+    hardware_adc
+    hardware_clocks
+    hardware_flash)
+  add_compile_definitions(NDEBUG=1)
 else()
   set(LIBRARIES
     ${LIBRARIES}

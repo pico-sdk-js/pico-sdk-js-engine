@@ -8,6 +8,8 @@
 #include "modules.h"
 
 {{#ifEquals @root.target 'rp2xxx'}}
+#include "hardware/adc.h"
+#include "hardware/clocks.h"
 #include "hardware/timer.h"
 {{else}}
 #include <sys/types.h>
@@ -20,11 +22,7 @@
 {{#each functions}}
 static jerry_value_t {{name}}_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
 {
-{{#if callback}}
-{{> function_callback }}
-{{else}}
-{{> function_standard }}
-{{/if}}
+{{> (functionType) }}
 }
 
 {{/each}}

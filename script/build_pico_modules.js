@@ -5,17 +5,26 @@ const Handlebars = require('handlebars');
 function CtoJSType(cType) {
 
     switch (cType) {
+        case "uint8_t":
+        case "uint16_t":
         case "uint32_t":
         case "uint64_t":
+        case "int8_t":
+        case "int16_t":
         case "int32_t":
         case "int64_t":
+        case "uint":
+        case "int":
+        case "float":
             return "number";
         case "bool":
             return "boolean";
         case "void":
             return "";
         default:
-            if (cType.includes("_callback_")) {
+            if (cType.startsWith('enum ')) {
+                return "number";
+            } else if (cType.includes("_callback_")) {
                 return "function";
             }
 
@@ -23,15 +32,39 @@ function CtoJSType(cType) {
     }
 }
 
+function getDefaultValue(cType) {
+
+    switch (cType) {
+        case "uint8_t":
+        case "uint16_t":
+        case "uint32_t":
+        case "uint64_t":
+        case "int8_t":
+        case "int16_t":
+        case "int32_t":
+        case "int64_t":
+        case "uint":
+        case "int":
+        case "float":
+            return "0";
+        case "bool":
+            return "true";
+        case "void":
+            return "";
+        default:
+            throw new Error(`Unknown default for ${cType}`);
+    }
+}
+
 class ModuleData {
     constructor(moduleInfo, target) {
         this.target = target;
         this.name = moduleInfo.name;
-        this.functions = moduleInfo.functions.map((f => new ModuleFunction(f))).filter(f => f.enabled);
+        this.functions = moduleInfo.functions.map((f => new ModuleFunction(f)));
     }
 }
 
-const fnRegEx = /^(?<retType>\w+) (?<name>\w+) \(((?<arg1Type>\w+) (?<arg1Name>\w+))?(, (?<arg2Type>\w+) (?<arg2Name>\w+))?(, (?<arg3Type>\w+) (?<arg3Name>\w+))?\)$/;
+const fnRegEx = /^(?<retType>\w+) (?<name>\w+) \(((?<arg1Type>(enum )?\w+) (?<arg1Name>\w+))?(, (?<arg2Type>(enum )?\w+) (?<arg2Name>\w+))?(, (?<arg3Type>(enum )?\w+) (?<arg3Name>\w+))?(, (?<arg4Type>(enum )?\w+) (?<arg4Name>\w+))?(, (?<arg5Type>(enum )?\w+) (?<arg5Name>\w+))?\)$/;
 
 class ModuleFunction {
     constructor(functionInfo) {
@@ -44,33 +77,36 @@ class ModuleFunction {
         this.returnType = match.groups.retType;
 
         const args = [];
-        if (match.groups.arg1Type) {
-            args.push({
-                name: match.groups.arg1Name,
-                type: match.groups.arg1Type
-            });
-        }
-        if (match.groups.arg2Type) {
-            args.push({
-                name: match.groups.arg2Name,
-                type: match.groups.arg2Type
-            });
-        }
-        if (match.groups.arg3Type) {
-            args.push({
-                name: match.groups.arg3Name,
-                type: match.groups.arg3Type
-            });
+        for (let i = 1; i <= 5; i++) {
+            const typeKey = `arg${i}Type`;
+            const nameKey = `arg${i}Name`;
+            if (match.groups[typeKey]) {
+                args.push({
+                    name: match.groups[nameKey],
+                    type: match.groups[typeKey]
+                });
+            } else {
+                break;
+            }
         }
 
         this.args = args.map((a) => new ModuleFunctionArg(a));
-        this.linuxRetVal = functionInfo.linuxRetVal;
-        this.enabled = functionInfo.enabled === undefined ? true : functionInfo.enabled;
+        this.linuxRetVal = functionInfo.linuxRetVal ?? getDefaultValue(this.returnType);
         this.callback = functionInfo.callback;
     }
 
     jsReturnType() {
         return CtoJSType(this.returnType);
+    }
+
+    functionType() {
+        if (this.callback && this.argCount() === 1) {
+            return "function_singleton_callback";
+        } else if (this.callback && this.argCount() === 2) {
+            return "function_callback";
+        } else {
+            return "function_standard";
+        }
     }
 
     argCount() {
@@ -91,13 +127,15 @@ class ModuleFunction {
     }
 
     traceSignature() {
-        if (this.callback) {
-            return `jerry_port_log(JERRY_LOG_LEVEL_TRACE, "${this.name}(%d, [Function])", callback_id);`    
+        if (this.callback && this.argCount() === 1) {
+            return `jerry_port_log(JERRY_LOG_LEVEL_TRACE, "${this.name}([Function])");`
+        } else if (this.callback && this.argCount() === 2) {
+            return `jerry_port_log(JERRY_LOG_LEVEL_TRACE, "${this.name}(%d, [Function])", callback_id);`
         } else {
             let argList = this.args?.map(a => a.name) ?? [];
             let printfArgs = this.args?.map(a => "%i").join(', ') ?? '';
             let logArgs = ["JERRY_LOG_LEVEL_TRACE", `"${this.name}(${printfArgs});"`, ...argList];
-            return `jerry_port_log(${logArgs.join(', ')});`    
+            return `jerry_port_log(${logArgs.join(', ')});`
         }
     }
 
@@ -111,6 +149,14 @@ class ModuleFunctionArg {
     constructor(arg) {
         this.name = arg.name;
         this.type = arg.type;
+    }
+
+    converterFunction() {
+        if (this.type.startsWith("enum ")) {
+            return "psj_jerry_to_int";
+        }
+
+        return `psj_jerry_to_${this.type}`;
     }
 
     jsType() {
@@ -139,16 +185,17 @@ function generate(modInfo, templateFile, outdir, target) {
     }
 }
 
-Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
+Handlebars.registerHelper('ifEquals', function (arg1, arg2, options) {
     return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
 });
 
-Handlebars.registerHelper('ifNotEquals', function(arg1, arg2, options) {
+Handlebars.registerHelper('ifNotEquals', function (arg1, arg2, options) {
     return (arg1 != arg2) ? options.fn(this) : options.inverse(this);
 });
 
 Handlebars.registerPartial('function_standard', fs.readFileSync(path.join(__dirname, 'function_standard.handlebars')).toString('utf8'));
 Handlebars.registerPartial('function_callback', fs.readFileSync(path.join(__dirname, 'function_callback.handlebars')).toString('utf8'));
+Handlebars.registerPartial('function_singleton_callback', fs.readFileSync(path.join(__dirname, 'function_singleton_callback.handlebars')).toString('utf8'));
 
 module.exports = {
     generate

@@ -1,0 +1,38 @@
+    jerry_value_t ret_val;
+
+    {{#ifNotEquals (argCount) 1}}
+    #error "ERROR: For callback functions, arg count must equal 1 (argCount: {{argCount}})"
+    {{/ifNotEquals}}
+    if (
+        args_count != 1
+        || !jerry_value_is_function(args_p[0]
+        || !jerry_value_is_null(args_p[0]))
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "{{signature}}");
+        goto cleanup;
+    }
+
+    jerry_value_t callback = args_p[0];
+
+    {{{traceSignature}}}
+    if (jerry_value_is_null(callback))
+    {
+        {{#ifEquals @root.target 'rp2xxx'}}
+        {{name}}(NULL);
+        {{/ifEquals}}
+        remove_callback({{callback}}, 0);
+    }
+    else
+    {
+        register_callback({{callback}}, 0, callback);
+        {{#ifEquals @root.target 'rp2xxx'}}
+        {{name}}({{name}}_wrapper);
+        {{/ifEquals}}
+    }
+
+    ret_val = jerry_create_undefined();
+
+cleanup:
+
+    return ret_val;

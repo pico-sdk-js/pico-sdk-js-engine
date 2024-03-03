@@ -6,7 +6,8 @@
 
 typedef enum __CALLBACK_TYPE {
     CALLBACK_GENERIC = 0,
-    CALLBACK_HARDWARE_ALARM = 1
+    CALLBACK_HARDWARE_ALARM = 1,
+    CALLBACK_CLOCK_ENABLE_RESUS = 2,
 } CALLBACK_TYPE;
 
 uint32_t hash(CALLBACK_TYPE type, uint32_t id);
@@ -17,5 +18,6 @@ bool has_callback(CALLBACK_TYPE type, uint32_t id);
 void remove_callback(CALLBACK_TYPE type, uint32_t id);
 
 void hardware_alarm_set_callback_wrapper(uint alarm_num);
+void clocks_enable_resus_wrapper();
 
 #endif // __CALLBACK_ENGINE_H

@@ -1,6 +1,7 @@
 #ifndef __JERRY_HELPER_H
 #define __JERRY_HELPER_H
 
+#include <sys/types.h>
 #include "jerryscript.h"
 
 typedef enum __PSJErrorCode {
@@ -23,15 +24,29 @@ jerry_char_t *VS(const jerry_char_t *format,va_list args);
 
 jerry_char_t *psj_jerry_to_string(const jerry_value_t value);
 
+uint psj_jerry_to_uint(const jerry_value_t value);
+
+uint8_t psj_jerry_to_uint8_t(const jerry_value_t value);
+
+uint16_t psj_jerry_to_uint16_t(const jerry_value_t value);
+
 uint32_t psj_jerry_to_uint32_t(const jerry_value_t value);
 
 uint64_t psj_jerry_to_uint64_t(const jerry_value_t value);
+
+int psj_jerry_to_int(const jerry_value_t value);
+
+int8_t psj_jerry_to_int8_t(const jerry_value_t value);
+
+int16_t psj_jerry_to_int16_t(const jerry_value_t value);
 
 int32_t psj_jerry_to_int32_t(const jerry_value_t value);
 
 int64_t psj_jerry_to_int64_t(const jerry_value_t value);
 
 bool psj_jerry_to_bool(const jerry_value_t value);
+
+float psj_jerry_to_float(const jerry_value_t value);
 
 bool psj_jerry_has_property(const jerry_value_t jObject, const jerry_char_t *property);
 
