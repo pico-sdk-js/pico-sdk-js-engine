@@ -99,3 +99,17 @@ void clocks_enable_resus_wrapper()
 
     jerry_release_value(result);
 }
+
+void gpio_set_irq_callback_wrapper()
+{
+    jerry_value_t result = invoke_callback(CALLBACK_GPIO_IRQ, 0);
+
+    if (jerry_value_is_error(result))
+    {
+        jerry_char_t *error_string = psj_jerry_exception_to_string(result);
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "GPIO IRQ error: %s", error_string);
+        free(error_string);
+    }
+
+    jerry_release_value(result);
+}

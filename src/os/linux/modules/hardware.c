@@ -1187,11 +1187,11 @@ static jerry_value_t gpio_set_irq_callback_handler(const jerry_value_t function_
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_set_irq_callback([Function])");
     if (jerry_value_is_null(callback))
     {
-        remove_callback(CALLBACK_GLOBAL_GPIO_IRQ, 0);
+        remove_callback(CALLBACK_GPIO_IRQ, 0);
     }
     else
     {
-        register_callback(CALLBACK_GLOBAL_GPIO_IRQ, 0, callback);
+        register_callback(CALLBACK_GPIO_IRQ, 0, callback);
     }
 
     ret_val = jerry_create_undefined();

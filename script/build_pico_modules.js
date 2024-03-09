@@ -93,6 +93,7 @@ class ModuleFunction {
         this.args = args.map((a) => new ModuleFunctionArg(a));
         this.linuxRetVal = functionInfo.linuxRetVal ?? getDefaultValue(this.returnType);
         this.callback = functionInfo.callback;
+        this.external = !!functionInfo.external;
     }
 
     jsReturnType() {
@@ -100,7 +101,9 @@ class ModuleFunction {
     }
 
     functionType() {
-        if (this.callback && this.argCount() === 1) {
+        if (this.external) {
+            return "function_external";
+        } else if (this.callback && this.argCount() === 1) {
             return "function_singleton_callback";
         } else if (this.callback && this.argCount() === 2) {
             return "function_callback";

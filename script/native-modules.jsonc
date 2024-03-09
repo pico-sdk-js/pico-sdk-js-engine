@@ -55,7 +55,7 @@
                 { "fn": "void gpio_set_drive_strength (uint gpio, int drive)" },
                 { "fn": "int gpio_get_drive_strength (uint gpio)" },
                 { "fn": "void gpio_set_irq_enabled (uint gpio, uint32_t event_mask, bool enabled)" },
-                { "fn": "void gpio_set_irq_callback (gpio_irq_callback_t callback)", "callback": "CALLBACK_GLOBAL_GPIO_IRQ" },
+                { "fn": "void gpio_set_irq_callback (gpio_irq_callback_t callback)", "callback": "CALLBACK_GPIO_IRQ" },
                 // { "fn": "void gpio_set_irq_enabled_with_callback (uint gpio, uint32_t event_mask, bool enabled, gpio_irq_callback_t callback)" },
                 { "fn": "void gpio_set_dormant_irq_enabled (uint gpio, uint32_t event_mask, bool enabled)" },
                 { "fn": "uint32_t gpio_get_irq_event_mask (uint gpio)" },

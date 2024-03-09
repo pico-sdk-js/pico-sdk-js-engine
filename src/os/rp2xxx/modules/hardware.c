@@ -1192,11 +1192,11 @@ static jerry_value_t gpio_set_irq_callback_handler(const jerry_value_t function_
     if (jerry_value_is_null(callback))
     {
         gpio_set_irq_callback(NULL);
-        remove_callback(CALLBACK_GLOBAL_GPIO_IRQ, 0);
+        remove_callback(CALLBACK_GPIO_IRQ, 0);
     }
     else
     {
-        register_callback(CALLBACK_GLOBAL_GPIO_IRQ, 0, callback);
+        register_callback(CALLBACK_GPIO_IRQ, 0, callback);
         gpio_set_irq_callback(gpio_set_irq_callback_wrapper);
     }
 
