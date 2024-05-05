@@ -11,10 +11,16 @@
         "algorithm": "c",
         "stdint-intn.h": "c",
         "functional": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "utlist.h": "c"
     },
     "cmake.configureSettings": {
-        "TARGET_OS": "linux_x86_64",
+        "TARGET_OS": "rp2xxx",
         "TARGET_VERSION": "0.0.1"
+    },
+    "remote.extensionKind": {
+        "ms-vscode.vscode-serial-monitor": [
+            "workspace"
+        ]
     }
 }

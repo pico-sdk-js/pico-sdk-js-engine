@@ -6,7 +6,7 @@ const path = require("path");
 const minimist = require("minimist");
 const childProcess = require("child_process");
 
-const b = require("./script/build_pico_modules");
+const pico_modules = require("./script/build_pico_modules");
 
 const package = require("./package.json")
 
@@ -68,8 +68,8 @@ if (argv.gen) {
   const rp2xxxModulePath = path.join(__dirname, 'src/os/rp2xxx/modules/');
   const nativeModules = require('./script/native-modules.jsonc');
 
-  b.generate(nativeModules, 'modules.handlebars', linuxModulePath, 'linux');
-  b.generate(nativeModules, 'modules.handlebars', rp2xxxModulePath, 'rp2xxx');
+  pico_modules.generate(nativeModules, 'modules.handlebars', linuxModulePath, 'linux');
+  pico_modules.generate(nativeModules, 'modules.handlebars', rp2xxxModulePath, 'rp2xxx');
 }
 
 if (argv.cmake) {
@@ -113,6 +113,8 @@ function cmake() {
 
   if (argv.release) {
     params.push("-DBUILD_TYPE=MinSizeRel")
+  } else {
+    params.push("-DBUILD_TYPE=Debug")
   }
 
   cmd(buildPath, "cmake", params);
@@ -157,6 +159,7 @@ function cmd(wd, cmd, args) {
   process.chdir(wd);
 
   try {
+    
     let output = childProcess.spawnSync(cmd, args, { stdio: "inherit" });
     if (output.status !== 0) {
       console.error(`Child process returned non-zero status: ${output.status}`);

@@ -85,18 +85,10 @@
             "gdbpath": "/usr/bin/gdb-multiarch",
             "executable": "${workspaceFolder}/build/pico-sdk-js-0.0.1.elf",
             "cwd": "${workspaceFolder}",
-            "target": "localhost:3333",
-            "remote": true,
+            "target": "extended-remote :3333",
             "printCalls": true,
-            "valuesFormatting": "parseText"
-        },
-        {
-            "name": "Debug Build",
-            "type": "node",
-            "cwd": "${workspaceFolder}",
-            "program": "build",
-            "args": ["--gen"]
+            "valuesFormatting": "parseText",
+            "preLaunchTask": "valgrind-debug: custom"
         }
-
     ]
 }

@@ -24,11 +24,11 @@ endif()
 
 if (TARGET_OS STREQUAL "rp2xxx")
   set(MEM_HEAP_SIZE 180)
-  set(JERRYSCRIPT_BUILD_TYPE MinSizeRel)
+  set(JERRYSCRIPT_BUILD_TYPE ${BUILD_TYPE})
   set(TARGET_OS_SRC ${TARGET_OS})
 elseif (TARGET_OS MATCHES "linux_.*")
   set(MEM_HEAP_SIZE 1024)
-  set(JERRYSCRIPT_BUILD_TYPE Debug)
+  set(JERRYSCRIPT_BUILD_TYPE ${BUILD_TYPE})
   set(TARGET_OS_SRC "linux")
 endif()
 
@@ -102,12 +102,13 @@ set(JERRYSCRIPT_BUILD_ARGS
   --js-parser=ON
   --mem-heap=${MEM_HEAP_SIZE}
   --mem-stats=ON
-  --snapshot-exec=ON
+  --snapshot-exec=OFF
   --line-info=ON
-  --vm-exec-stop=ON
+  --vm-exec-stop=OFF
   --profile=es.next #es2015-subset
   --jerry-cmdline=OFF
   --logging=ON
+  --external-context=OFF
   # --stack-limit=1024
   # --gc-limit=100000
 )

@@ -4,6 +4,9 @@
         "ms-vscode.cmake-tools",
         "1nvitr0.valgrind-task-integration",
         "ms-vscode.hexeditor",
-        "ms-vscode.cpptools-extension-pack"
+        "ms-vscode.cpptools-extension-pack",
+        "ms-vscode.vscode-serial-monitor",
+        "webfreak.debug",
+        "marus25.cortex-debug"
     ]
 }

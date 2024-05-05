@@ -2311,6 +2311,10 @@ jerry_value_t get_hardware_module()
     psj_jerry_set_property(module, "gpio_set_irq_callback", handler);
     jerry_release_value(handler);
 
+    handler = jerry_create_external_function(gpio_set_irq_enabled_with_callback_handler);
+    psj_jerry_set_property(module, "gpio_set_irq_enabled_with_callback", handler);
+    jerry_release_value(handler);
+
     handler = jerry_create_external_function(gpio_set_dormant_irq_enabled_handler);
     psj_jerry_set_property(module, "gpio_set_dormant_irq_enabled", handler);
     jerry_release_value(handler);

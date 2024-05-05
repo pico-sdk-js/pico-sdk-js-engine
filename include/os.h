@@ -32,10 +32,6 @@ Flash ROM is 2MB in total starting at XIP_BASE and includes this program's code
 #define FLASH_TARGET_OFFSET (1024 * 1024)
 #define FLASH_TARGET_SIZE (1024 * 1024)
 
-// Remaining buffer after header is for JS
-#define FLASH_JS_TARGET_OFFSET (FLASH_TARGET_OFFSET + FLASH_HEADER_SIZE)
-#define FLASH_JS_TARGET_SIZE (FLASH_TARGET_SIZE - FLASH_HEADER_SIZE)
-
 uint32_t os_get_flash_buffer_size();
 void os_flash_init();
 void os_flash_cleanup();

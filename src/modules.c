@@ -20,6 +20,8 @@ struct modules *__modules = NULL;
 
 void add_module(const jerry_char_t *name, ModuleCreateCallback callback)
 {
+    jerry_port_log(JERRY_LOG_LEVEL_DEBUG, "add_module: adding module '%s'", name);
+
     struct modules *module;
     module = malloc(sizeof(*module));
     module->key = S(name);
@@ -49,17 +51,21 @@ jerry_value_t get_module(jerry_char_t *name)
     struct modules *m;
     jerry_value_t module_value;
 
+    jerry_port_log(JERRY_LOG_LEVEL_DEBUG, "get_module: searching for module '%s'", name);
     HASH_FIND_STR(__modules, name, m);
     if (m == NULL)
     {
+        jerry_port_log(JERRY_LOG_LEVEL_DEBUG, "get_module: module not found");
         module_value = jerry_create_undefined();
     }
     else if (m->moduleValue != 0)
     {
+        jerry_port_log(JERRY_LOG_LEVEL_DEBUG, "get_module: module found, reusing");
         module_value = m->moduleValue;
     }
     else
     {
+        jerry_port_log(JERRY_LOG_LEVEL_DEBUG, "get_module: module found, creating");
         module_value = m->moduleValue = m->create();
     }
 

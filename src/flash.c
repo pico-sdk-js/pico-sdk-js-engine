@@ -1,5 +1,6 @@
 #include "flash.h"
 #include "os.h"
+#include "interrupt_state.h"
 
 #include <string.h>
 
@@ -91,7 +92,7 @@ const struct lfs_config cfg = {
 void psj_flash_init()
 {
     // Ensure interrupts are disabled to avoid flash corruption
-    uint8_t status = os_save_and_disable_interrupts();
+    push_interrupt_suspension();
 
     // mount the filesystem
     int err = lfs_mount(&lfs, &cfg);
@@ -104,7 +105,7 @@ void psj_flash_init()
     }
 
     // Restore interrupts
-    os_restore_interrupts(status);
+    pop_interrupt_suspension();
 }
 
 void psj_flash_cleanup()
@@ -116,7 +117,7 @@ void psj_flash_cleanup()
 int psj_flash_save(const jerry_char_t *path, const jerry_char_t *data, const bool append)
 {
     // Ensure interrupts are disabled to avoid flash corruption
-    uint8_t status = os_save_and_disable_interrupts();
+    push_interrupt_suspension();
 
     lfs_file_t file;
     int err;
@@ -134,7 +135,7 @@ int psj_flash_save(const jerry_char_t *path, const jerry_char_t *data, const boo
     if (err != LFS_ERR_OK)
     {
         // Restore interrupts to reenable logging
-        os_restore_interrupts(status);
+        pop_interrupt_suspension();
         jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error opening '%s' for write: %i", path, err);
         return -1;
     }
@@ -143,7 +144,7 @@ int psj_flash_save(const jerry_char_t *path, const jerry_char_t *data, const boo
     err = lfs_file_write(&lfs, &file, data, fileLen);
 
     // Restore interrupts after writing
-    os_restore_interrupts(status);
+    pop_interrupt_suspension();
     lfs_file_close(&lfs, &file);
 
     if (err < LFS_ERR_OK)
@@ -178,6 +179,9 @@ int psj_flash_file_size(const jerry_char_t *path, uint32_t *size)
 
 int psj_flash_read_all(const jerry_char_t *path, jerry_char_t *buffer, uint32_t max_length)
 {
+    // Ensure interrupts are disabled to avoid flash corruption
+    push_interrupt_suspension();
+
     lfs_file_t file;
     int err;
     struct lfs_info info;
@@ -186,19 +190,22 @@ int psj_flash_read_all(const jerry_char_t *path, jerry_char_t *buffer, uint32_t 
     {
         // file does not exist
         jerry_port_log(JERRY_LOG_LEVEL_TRACE, "Error getting stats on '%s': %i", path, err);
-        return -1;
+        err = -1;
+        goto exit;
     }
     else if (err < LFS_ERR_OK)
     {
         jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error getting stats on '%s': %i", path, err);
-        return -2;
+        err = -2;
+        goto exit;
     }
 
     err = lfs_file_open(&lfs, &file, path, LFS_O_RDONLY);
     if (err < LFS_ERR_OK)
     {
         jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error opening '%s': %i", path, err);
-        return -3;
+        err = -3;
+        goto exit;
     }
     
     err = lfs_file_read(&lfs, &file, buffer, max_length);
@@ -216,11 +223,18 @@ cleanup:
 
     lfs_file_close(&lfs, &file);
 
+exit:
+    // Restore interrupts after reading
+    pop_interrupt_suspension();
+
     return err;
 }
 
 int psj_flash_read(const jerry_char_t *path, jerry_char_t *buffer, uint32_t max_length, uint32_t segment)
 {
+    // Ensure interrupts are disabled to avoid flash corruption
+    push_interrupt_suspension();
+
     lfs_file_t file;
     int err;
     struct lfs_info info;
@@ -229,19 +243,22 @@ int psj_flash_read(const jerry_char_t *path, jerry_char_t *buffer, uint32_t max_
     {
         // file does not exist
         jerry_port_log(JERRY_LOG_LEVEL_TRACE, "Error getting stats on '%s': %i", path, err);
-        return -1;
+        err = -1;
+        goto exit;
     }
     else if (err < LFS_ERR_OK)
     {
         jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error getting stats on '%s': %i", path, err);
-        return -2;
+        err = -2;
+        goto exit;
     }
 
     err = lfs_file_open(&lfs, &file, path, LFS_O_RDONLY);
     if (err < LFS_ERR_OK)
     {
         jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error opening '%s': %i", path, err);
-        return -3;
+        err = -3;
+        goto exit;
     }
     
     err = lfs_file_seek(&lfs, &file, segment * SEGMENT_SIZE, LFS_SEEK_SET);
@@ -266,6 +283,10 @@ int psj_flash_read(const jerry_char_t *path, jerry_char_t *buffer, uint32_t max_
 cleanup:
 
     lfs_file_close(&lfs, &file);
+
+exit:
+    // Restore interrupts after reading
+    pop_interrupt_suspension();
 
     return err;
 }

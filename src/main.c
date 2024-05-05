@@ -12,6 +12,9 @@ int main(int argc, char *argv[])
 {
     os_init(argc, argv);
 
+    // Output header
+    printf("\n" TARGET_NAME " | " TARGET_VERSION "\n");
+
     os_wait_for_ready();
 
     /* Initialize engine */

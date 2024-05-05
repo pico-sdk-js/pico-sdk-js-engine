@@ -3,16 +3,50 @@
 #include <string.h>
 
 #include "utstring.h"
+#include "utlist.h"
 
 #include "modules.h"
 #include "jerryscript.h"
 #include "jerryscript-port.h"
+#include "interrupt_state.h"
 
 #include "jerry_helper.h"
+
+typedef struct __log_msg_node {
+    jerry_value_t response;
+    struct __log_msg_node *prev;
+    struct __log_msg_node *next;
+} log_msg_node;
+
+log_msg_node *msg_head = NULL;
 
 void jerry_port_fatal(jerry_fatal_code_t code)
 {
     exit(code);
+}
+
+void psj_jerry_port_log_flush()
+{
+    log_msg_node *node;
+
+    if (is_interrupts_suspended())
+    {
+        return;
+    }
+
+    while (msg_head != NULL)
+    {
+        node = msg_head;
+
+        DL_DELETE(msg_head, node);
+        jerry_char_t *jsonValue = psj_jerry_stringify(node->response);
+        printf("%s\n", jsonValue);
+
+        jerry_release_value(node->response);
+        free(node);
+    }
+
+    fflush(stdout);
 }
 
 void jerry_port_log(jerry_log_level_t level, const char *format, ...)
@@ -31,13 +65,14 @@ void jerry_port_log(jerry_log_level_t level, const char *format, ...)
 
     psj_jerry_set_property(response, "value", value);
 
-    jerry_char_t *jsonValue = psj_jerry_stringify(response);
-    printf("%s\n", jsonValue);
-    fflush(stdout);
+    log_msg_node *node = malloc(sizeof(log_msg_node));
+    node->response = response;
+    DL_APPEND(msg_head, node);
+
+    psj_jerry_port_log_flush();
 
     free(msg);
     jerry_release_value(value);
-    jerry_release_value(response);
 }
 
 UT_string *output_buffer = NULL;
