@@ -108,6 +108,41 @@ void psj_flash_init()
     pop_interrupt_suspension();
 }
 
+int psj_flash_reformat()
+{
+    // Ensure interrupts are disabled to avoid flash corruption
+    push_interrupt_suspension();
+
+    int err = lfs_unmount(&lfs);
+    if (err < 0)
+    {
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "reformat: lfs_unmount returned %d", err);
+        err = 0x1000000 | err;
+        goto cleanup;
+    }
+
+    err = lfs_format(&lfs, &cfg);
+    if (err < 0)
+    {
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "reformat: lfs_format returned %d", err);
+        err = 0x2000000 | err;
+        goto cleanup;
+    }
+
+    err = lfs_mount(&lfs, &cfg);
+    if (err < 0)
+    {
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "reformat: lfs_mount returned %d", err);
+        err = 0x3000000 | err;
+        goto cleanup;
+    }
+
+cleanup:
+    // Restore interrupts
+    pop_interrupt_suspension();
+    return err;
+}
+
 void psj_flash_cleanup()
 {
     // release any resources we were using
@@ -322,4 +357,21 @@ int psj_flash_list(struct lfs_info *file_info, uint32_t max_file_info)
     }
 
     return idx;
+}
+
+int psj_flash_delete(const jerry_char_t *path)
+{
+    int err = lfs_remove(&lfs, path);
+    if (err == LFS_ERR_NOENT)
+    {
+        jerry_port_log(JERRY_LOG_LEVEL_TRACE, "File not found deleting '%s': %i", path, err);
+        return 0;
+    }
+    else if (err < 0)
+    {
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error deleting '%s': %i", path, err);
+        return err;
+    }
+
+    return 1;
 }

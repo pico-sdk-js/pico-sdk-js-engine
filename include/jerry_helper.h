@@ -16,6 +16,8 @@ typedef enum __PSJErrorCode {
     JAVASCRIPT_ERROR,
     RUNTIME_ARG_ERROR,
     NO_CALLBACK_REGISTERED,
+    FORMAT_ERROR,
+    DELETE_ERROR,
 } PSJErrorCode;
 
 jerry_char_t *S(const jerry_char_t *txt);

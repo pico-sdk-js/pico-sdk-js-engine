@@ -200,8 +200,6 @@ jerry_char_t *VS(const jerry_char_t *format,va_list args)
 
 jerry_char_t *psj_jerry_vfget_error_message(const PSJErrorCode error_code, va_list args)
 {
-    jerry_char_t *errMsg;
-
     switch (error_code)
     {
         case OK:
@@ -234,6 +232,12 @@ jerry_char_t *psj_jerry_vfget_error_message(const PSJErrorCode error_code, va_li
         case RUNTIME_ARG_ERROR:
             return VS("Argument error calling '%s'", args);
             
+        case FORMAT_ERROR:
+            return S("Error occured while formating");
+            
+        case DELETE_ERROR:
+            return VS("Error deleting '%s'", args);
+
         default:
             return S("Undefined Error");
     }
