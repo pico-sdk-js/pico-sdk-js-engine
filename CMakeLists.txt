@@ -189,6 +189,12 @@ add_compile_definitions(LFS_NO_ERROR)
 add_compile_definitions(TARGET_NAME="${TARGET_NAME}")
 add_compile_definitions(TARGET_VERSION="${TARGET_VERSION}")
 
+if (BUILD_TYPE STREQUAL "Debug")
+  add_compile_definitions(DEBUG="1")
+else()
+  add_compile_definitions(RELEASE="1")
+endif()
+
 # create library shared with tests
 include_directories(${OUTPUT_LIB} ${INCLUDES})
 add_library(${OUTPUT_LIB} ${SOURCES} ${JERRYSCRIPT_LIBS})

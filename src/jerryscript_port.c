@@ -44,6 +44,7 @@ void psj_jerry_port_log_flush()
 
         jerry_release_value(node->response);
         free(node);
+        free(jsonValue);
     }
 
     fflush(stdout);

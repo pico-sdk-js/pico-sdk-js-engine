@@ -83,3 +83,33 @@
     * **--build** - Runs cmake &amp; make and produces an executable package
     * **--rebuild** - Cleans the build folder before running a build
     * **--run** - For 'linux' targets will run the executable after a successful build.
+
+## Debugging on pico
+
+1. Build for RP2xxx with debug bits
+
+    ```bash
+    node build --rebuild --target rp2xxx
+    ```
+
+2. Publish to Pico
+
+    ```bash
+    node build --publish
+    ```
+
+3. Start Debug Server
+
+    ```bash
+    node build --debug
+    ```
+
+4. Attach serial monitor
+
+    Can be done either via minicom:
+
+    ```bash
+    minicom -b 115200 -o -D /dev/ttyACM0
+    ```
+
+    Or can be connected via VS Code's Serial Monitor

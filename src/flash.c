@@ -25,9 +25,15 @@ int user_provided_block_device_read(const struct lfs_config *c, lfs_block_t bloc
 {
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_read(block: %u, off: %u, buffer: %p, size: %u)", block, off, buffer, size);
 
+    // Ensure interrupts are disabled to avoid flash corruption
+    push_interrupt_suspension();
+
     u_int8_t *flash_buffer = os_get_flash_buffer();
     uint32_t offset = (c->block_size * block) + off;
     memcpy(buffer, flash_buffer + offset, size);
+
+    // Restore interrupts
+    pop_interrupt_suspension();
 
     return LFS_ERR_OK;
 }
@@ -39,9 +45,15 @@ int user_provided_block_device_prog(const struct lfs_config *c, lfs_block_t bloc
 {
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_prog(block: %u, off: %u, buffer: %p, size: %u)", block, off, buffer, size);
 
+    // Ensure interrupts are disabled to avoid flash corruption
+    push_interrupt_suspension();
+
     // set a page of data
     uint32_t offset = (c->block_size * block) + off;
     os_flash_range_program(FLASH_TARGET_OFFSET + offset, buffer, size);
+
+    // Restore interrupts
+    pop_interrupt_suspension();
 
     return LFS_ERR_OK;
 }
@@ -55,8 +67,14 @@ int user_provided_block_device_erase(const struct lfs_config *c, lfs_block_t blo
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_erase(block: %u)", block);
     uint32_t offset = c->block_size * block;
 
+    // Ensure interrupts are disabled to avoid flash corruption
+    push_interrupt_suspension();
+
     // Clear entire flash_buffer
     os_flash_range_erase(FLASH_TARGET_OFFSET + offset, c->block_size);
+
+    // Restore interrupts
+    pop_interrupt_suspension();
 
     return LFS_ERR_OK;
 }
@@ -91,9 +109,6 @@ const struct lfs_config cfg = {
 
 void psj_flash_init()
 {
-    // Ensure interrupts are disabled to avoid flash corruption
-    push_interrupt_suspension();
-
     // mount the filesystem
     int err = lfs_mount(&lfs, &cfg);
 
@@ -103,16 +118,10 @@ void psj_flash_init()
         err = lfs_format(&lfs, &cfg);
         err = lfs_mount(&lfs, &cfg);
     }
-
-    // Restore interrupts
-    pop_interrupt_suspension();
 }
 
 int psj_flash_reformat()
 {
-    // Ensure interrupts are disabled to avoid flash corruption
-    push_interrupt_suspension();
-
     int err = lfs_unmount(&lfs);
     if (err < 0)
     {
@@ -138,8 +147,6 @@ int psj_flash_reformat()
     }
 
 cleanup:
-    // Restore interrupts
-    pop_interrupt_suspension();
     return err;
 }
 
@@ -151,9 +158,6 @@ void psj_flash_cleanup()
 
 int psj_flash_save(const jerry_char_t *path, const jerry_char_t *data, const bool append)
 {
-    // Ensure interrupts are disabled to avoid flash corruption
-    push_interrupt_suspension();
-
     lfs_file_t file;
     int err;
     int open_flags = LFS_O_WRONLY | LFS_O_CREAT;
@@ -169,8 +173,6 @@ int psj_flash_save(const jerry_char_t *path, const jerry_char_t *data, const boo
     err = lfs_file_open(&lfs, &file, path, open_flags);
     if (err != LFS_ERR_OK)
     {
-        // Restore interrupts to reenable logging
-        pop_interrupt_suspension();
         jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error opening '%s' for write: %i", path, err);
         return -1;
     }
@@ -178,8 +180,6 @@ int psj_flash_save(const jerry_char_t *path, const jerry_char_t *data, const boo
     int fileLen = strlen(data);
     err = lfs_file_write(&lfs, &file, data, fileLen);
 
-    // Restore interrupts after writing
-    pop_interrupt_suspension();
     lfs_file_close(&lfs, &file);
 
     if (err < LFS_ERR_OK)
@@ -214,9 +214,6 @@ int psj_flash_file_size(const jerry_char_t *path, uint32_t *size)
 
 int psj_flash_read_all(const jerry_char_t *path, jerry_char_t *buffer, uint32_t max_length)
 {
-    // Ensure interrupts are disabled to avoid flash corruption
-    push_interrupt_suspension();
-
     lfs_file_t file;
     int err;
     struct lfs_info info;
@@ -259,17 +256,12 @@ cleanup:
     lfs_file_close(&lfs, &file);
 
 exit:
-    // Restore interrupts after reading
-    pop_interrupt_suspension();
 
     return err;
 }
 
 int psj_flash_read(const jerry_char_t *path, jerry_char_t *buffer, uint32_t max_length, uint32_t segment)
 {
-    // Ensure interrupts are disabled to avoid flash corruption
-    push_interrupt_suspension();
-
     lfs_file_t file;
     int err;
     struct lfs_info info;
@@ -320,8 +312,6 @@ cleanup:
     lfs_file_close(&lfs, &file);
 
 exit:
-    // Restore interrupts after reading
-    pop_interrupt_suspension();
 
     return err;
 }

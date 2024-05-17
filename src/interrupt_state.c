@@ -3,6 +3,7 @@
 
 #include "os.h"
 #include "interrupt_state.h"
+#include "jerryscript-port-psj.h"
 
 uint32_t state;
 uint32_t stack_count = 0;
@@ -28,5 +29,7 @@ void pop_interrupt_suspension()
     if (stack_count == 0)
     {
         os_restore_interrupts(state);
+
+        psj_jerry_port_log_flush();
     }
 }
