@@ -22,29 +22,6 @@ void os_cleanup()
 {
 }
 
-void os_wait_for_ready()
-{
-    gpio_init(GPIO_WAIT_FOR_READY_PIN);
-    gpio_set_dir(GPIO_WAIT_FOR_READY_PIN, GPIO_IN);
-    gpio_pull_up(GPIO_WAIT_FOR_READY_PIN);
-
-    // Wait for gpio to initialize
-    while (gpio_get(GPIO_WAIT_FOR_READY_PIN) == 0)
-    {
-        printf("#");
-        sleep_ms(100);
-    }
-
-    while (gpio_get(GPIO_WAIT_FOR_READY_PIN))
-    {
-        printf(".");
-        sleep_ms(1000);
-    }
-
-    printf("\n");
-    gpio_deinit(GPIO_WAIT_FOR_READY_PIN);
-}
-
 void os_reset_usb_boot(uint32_t usb_activity_gpio_pin_mask, uint32_t disable_interface_mask)
 {
     reset_usb_boot(usb_activity_gpio_pin_mask, disable_interface_mask);

@@ -91,10 +91,6 @@ void os_cleanup()
     fcntl(stdin_fd, F_SETFL, init_fd);
 }
 
-void os_wait_for_ready()
-{
-}
-
 void os_reset_usb_boot(uint32_t usb_activity_gpio_pin_mask, uint32_t disable_interface_mask)
 {
 }

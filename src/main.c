@@ -12,8 +12,6 @@ int main(int argc, char *argv[])
 {
     os_init(argc, argv);
 
-    os_wait_for_ready();
-
     /* Initialize engine */
     jerry_init(JERRY_INIT_EMPTY);
 

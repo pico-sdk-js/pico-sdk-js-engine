@@ -8,7 +8,6 @@
 void os_init(int argc, char *argv[]);
 void os_cleanup();
 
-void os_wait_for_ready();
 int os_getchar_timeout_us(uint32_t timeout);
 bool os_getchar_timeout_us_is_valid(int chr);
 
