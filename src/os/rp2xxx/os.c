@@ -4,6 +4,7 @@
 #include "pico/bootrom.h"
 #include "hardware/flash.h"
 #include "hardware/sync.h"
+#include "hardware/watchdog.h"
 
 #include <stdlib.h>
 #include <ctype.h>
@@ -22,6 +23,22 @@ void os_cleanup()
 {
 }
 
+void os_restart(bool hard)
+{
+    os_set_is_repl_running(false);
+
+    if (hard)
+    {
+        os_set_is_running(false);
+        watchdog_reboot(0, 0, 3000);
+    }
+}
+
+void os_exit()
+{
+    // do nothing when client notifies of exit
+}
+
 void os_reset_usb_boot(uint32_t usb_activity_gpio_pin_mask, uint32_t disable_interface_mask)
 {
     reset_usb_boot(usb_activity_gpio_pin_mask, disable_interface_mask);
@@ -35,15 +52,6 @@ int os_getchar_timeout_us(uint32_t timeout)
 bool os_getchar_timeout_us_is_valid(int chr)
 {
     return chr != PICO_ERROR_TIMEOUT && chr != ENDSTDIN;
-}
-
-bool os_get_is_running()
-{
-    return true;
-}
-
-void os_exit()
-{
 }
 
 void os_process_input(char c, char *s, int max_length, int *sp)

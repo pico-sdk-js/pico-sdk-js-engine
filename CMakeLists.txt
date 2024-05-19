@@ -144,7 +144,8 @@ file(GLOB CMD_SOURCES
   ${ROOT_DIR}/src/cmds/*.c)
 
 file(GLOB ROOT_SOURCES 
-  ${ROOT_DIR}/src/*.c)
+  ${ROOT_DIR}/src/*.c
+  ${ROOT_DIR}/src/os/*.c)
 
 file(GLOB TEST_SOURCES 
   ${ROOT_DIR}/test/*.c)

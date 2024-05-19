@@ -10,21 +10,27 @@ void run_jerryscript_engine();
 
 int main(int argc, char *argv[])
 {
+    os_set_is_running(true);
     os_init(argc, argv);
 
-    /* Initialize engine */
-    jerry_init(JERRY_INIT_EMPTY);
+    do 
+    {
+        /* Initialize engine */
+        jerry_init(JERRY_INIT_EMPTY);
 
-    init_modules();
+        init_modules();
 
-    psj_repl_init();
-    psj_flash_init();
+        psj_repl_init();
+        psj_flash_init();
 
-    run_jerryscript_engine();
+        run_jerryscript_engine();
 
-cleanup:
-    psj_flash_cleanup();
-    psj_repl_cleanup();
+        psj_flash_cleanup();
+        psj_repl_cleanup();
+
+        reset_modules();
+
+     } while (os_get_is_running());
 
     os_cleanup();
 
@@ -33,12 +39,13 @@ cleanup:
 
 void run_jerryscript_engine()
 {
+    os_set_is_repl_running(true);
 
     // Run flash program
     psj_repl_run_flash();
     
     // Read in command
-    while (os_get_is_running())
+    while (os_get_is_repl_running())
     {
         psj_repl_cycle();
     }

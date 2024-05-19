@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <termios.h>
+#include <stdbool.h>
 
 #define CR '\r'
 #define NL '\n'
@@ -16,8 +17,6 @@
 int init_fd;
 int stdin_fd;
 struct termios tcOrig;
-
-bool is_running = true;
 
 // reserve 1MB of flash buffer
 static char flashFile[] = "flash.bin";
@@ -111,14 +110,16 @@ bool os_getchar_timeout_us_is_valid(int chr)
     return chr != -1;
 }
 
-bool os_get_is_running()
+void os_restart(bool hard)
 {
-    return is_running;
+    os_set_is_repl_running(false);
 }
 
 void os_exit()
 {
-    is_running = false;
+    // When client notifies of exit, then exit process
+    os_set_is_repl_running(false);
+    os_set_is_running(false);
 }
 
 void os_process_input(char c, char *s, int max_length, int *sp)
