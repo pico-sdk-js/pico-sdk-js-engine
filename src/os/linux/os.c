@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <termios.h>
 #include <stdbool.h>
+#include <malloc.h>
 
 #define CR '\r'
 #define NL '\n'
@@ -61,7 +62,7 @@ void os_init(int argc, char *argv[])
     tcsetattr(stdin_fd, TCSANOW, &tcNew);
 
     // Initialize "flash" memory
-    flash_buffer = malloc(FLASH_TARGET_SIZE);
+    flash_buffer = calloc(FLASH_TARGET_SIZE, 1);
     FILE *fp = fopen(flashFile, "r");
     if (fp != NULL)
     {
@@ -120,6 +121,17 @@ void os_exit()
     // When client notifies of exit, then exit process
     os_set_is_repl_running(false);
     os_set_is_running(false);
+}
+
+uint32_t os_get_total_ram()
+{
+    return 0;
+}
+
+uint32_t os_get_used_ram()
+{
+    struct mallinfo2 m = mallinfo2();
+    return m.uordblks;
 }
 
 void os_process_input(char c, char *s, int max_length, int *sp)

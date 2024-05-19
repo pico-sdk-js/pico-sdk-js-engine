@@ -149,6 +149,13 @@ void psj_repl_cycle()
 
 void psj_repl_cleanup()
 {
+    struct command *currentCmd, *tmp;
+
+    HASH_ITER(hh, _commands, currentCmd, tmp) {
+        HASH_DEL(_commands, currentCmd);
+        free(currentCmd);
+    }
+
     HASH_CLEAR(hh, _commands);
 }
 

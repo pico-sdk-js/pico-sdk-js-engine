@@ -22,6 +22,9 @@ void os_restart(bool hard);
 
 void os_process_input(char c, char *s, int max_length, int *position);
 
+uint32_t os_get_total_ram();
+uint32_t os_get_used_ram();
+
 // Flash functions
 /*
 Flash ROM is 2MB in total starting at XIP_BASE and includes this program's code

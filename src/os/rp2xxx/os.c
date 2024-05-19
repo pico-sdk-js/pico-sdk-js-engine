@@ -8,6 +8,7 @@
 
 #include <stdlib.h>
 #include <ctype.h>
+#include <malloc.h>
 
 #define GPIO_WAIT_FOR_READY_PIN 22
 #define ENDSTDIN 255
@@ -37,6 +38,20 @@ void os_restart(bool hard)
 void os_exit()
 {
     // do nothing when client notifies of exit
+}
+
+uint32_t os_get_total_ram()
+{
+    extern char __StackLimit, __bss_end__;
+
+    return &__StackLimit - &__bss_end__;
+}
+
+uint32_t os_get_used_ram()
+{
+    struct mallinfo m = mallinfo();
+
+    return m.uordblks;
 }
 
 void os_reset_usb_boot(uint32_t usb_activity_gpio_pin_mask, uint32_t disable_interface_mask)

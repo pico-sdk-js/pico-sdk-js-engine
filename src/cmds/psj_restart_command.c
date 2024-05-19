@@ -1,7 +1,6 @@
 #include "psj.h"
 
 #include "jerryscript.h"
-#include "hardware/watchdog.h"
 
 jerry_value_t psj_restart_command(jerry_value_t request_args)
 {
