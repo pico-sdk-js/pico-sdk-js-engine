@@ -56,6 +56,7 @@ if (argv.target === '?') {
 }
 
 const buildPath = path.join(__dirname, "build");
+const typesPath = path.join(buildPath, "types");
 const testBuildPath = path.join(buildPath, "test");
 const jerryBuildPath = path.join(__dirname, "lib/jerryscript/build");
 
@@ -70,6 +71,9 @@ if (argv.gen) {
 
   pico_modules.generate(nativeModules, 'modules.handlebars', linuxModulePath, 'linux');
   pico_modules.generate(nativeModules, 'modules.handlebars', rp2xxxModulePath, 'rp2xxx');
+
+  fs.ensureDirSync(typesPath);
+  pico_modules.generateTypes(nativeModules, 'typescript_types.handlebars', typesPath);
 }
 
 if (argv.cmake) {

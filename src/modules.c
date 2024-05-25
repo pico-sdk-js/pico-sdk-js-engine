@@ -32,6 +32,33 @@ void add_module(const jerry_char_t *name, ModuleCreateCallback callback)
     HASH_ADD_STR(__modules, key, module);
 }
 
+jerry_value_t psj_handler_require (const jerry_value_t func_obj_val, const jerry_value_t this_p, const jerry_value_t args_p[], const jerry_length_t args_count)
+{
+    jerry_value_t ret_val;
+
+    if (
+        args_count != 1
+        || !jerry_value_is_string(args_p[0])
+    )
+    {
+        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "require(string)");
+        goto cleanup;
+    }
+
+    jerry_char_t *module_name = psj_jerry_to_string(args_p[0]);
+
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "require(%s);", module_name);
+    
+    ret_val = get_module(module_name);
+
+cleanup:
+
+    free(module_name);
+    
+    return ret_val;
+}
+
+
 void init_modules()
 {
     // Setup module callbacks
@@ -44,6 +71,8 @@ void init_modules()
     /* Register 'print' function from the extensions */
     jerryx_handler_register_global((const jerry_char_t *)"print", jerryx_handler_print);
 
+    /* Register 'require' function for CommonJS support */
+    jerryx_handler_register_global((const jerry_char_t *)"require", psj_handler_require);
 }
 
 jerry_value_t get_module(jerry_char_t *name)

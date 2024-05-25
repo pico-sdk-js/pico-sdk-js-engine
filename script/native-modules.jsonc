@@ -2,6 +2,11 @@
     "modules": [
         {
             "name": "hardware",
+            "types": {
+                "resus_callback_t": "() => void",
+                "gpio_irq_callback_t": "(gpio: number, event_mask: number) => void",
+                "hardware_alarm_callback_t": "(alarm_num: number) => void"
+            },
             "functions": [
                 // ADC functions (see https://www.raspberrypi.com/documentation/pico-sdk/hardware.html#functions)
                 { "fn": "void adc_init ()" },
