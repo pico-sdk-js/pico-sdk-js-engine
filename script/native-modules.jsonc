@@ -1,6 +1,14 @@
 {
     "modules": [
         {
+            "name": "global",
+            "isGlobal": true,
+            "functions": [
+                { "tsDef": "function require (id: string): any" },
+                { "tsDef": "function print (...data: any[]): void" }
+            ]
+        },
+        {
             "name": "hardware",
             "types": {
                 "resus_callback_t": "() => void",

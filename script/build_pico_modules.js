@@ -19,6 +19,8 @@ function CtoJSType(cType, returnVoid) {
             return "number";
         case "bool":
             return "boolean";
+        case "char_t*":
+            return "string";
         case "void":
             return returnVoid ? "void" : "";
         default:
@@ -58,6 +60,8 @@ function getDefaultValue(cType) {
             return "0";
         case "bool":
             return "true";
+        case "char_t*":
+            return "NULL";
         case "void":
             return "";
         default:
@@ -69,20 +73,38 @@ class ModuleData {
     constructor(moduleInfo, target) {
         this.target = target;
         this.name = moduleInfo.name;
-        this.types = moduleInfo.types;
-        this.functions = moduleInfo.functions.map((f => new ModuleFunction(f, this.types)));
+        this.isGlobal = !!moduleInfo.isGlobal;
+        this.types = moduleInfo.types ?? {};
+        this.functions = moduleInfo.functions.map((f => f.tsDef ? new ModuleTsOnlyFunction(f, this) : new ModuleFunction(f, this)));
     }
 }
 
-const fnRegEx = /^(?<retType>\w+) (?<name>\w+) \(((?<arg1Type>(enum )?\w+) (?<arg1Name>\w+))?(, (?<arg2Type>(enum )?\w+) (?<arg2Name>\w+))?(, (?<arg3Type>(enum )?\w+) (?<arg3Name>\w+))?(, (?<arg4Type>(enum )?\w+) (?<arg4Name>\w+))?(, (?<arg5Type>(enum )?\w+) (?<arg5Name>\w+))?\)$/;
+const fnRegEx = /^(?<retType>\w+\*?) (?<name>\w+) \(((?<arg1Type>(enum )?\w+\*?) (?<arg1Name>\w+))?(, (?<arg2Type>(enum )?\w+\*?) (?<arg2Name>\w+))?(, (?<arg3Type>(enum )?\w+\*?) (?<arg3Name>\w+))?(, (?<arg4Type>(enum )?\w+\*?) (?<arg4Name>\w+))?(, (?<arg5Type>(enum )?\w+\*?) (?<arg5Name>\w+))?\)$/;
+
+class ModuleTsOnlyFunction {
+    constructor(functionInfo, module) {
+        this.module = module;
+        this.tsDef = functionInfo.tsDef;
+    }
+
+    tsSignature() {
+        if (this.module.isGlobal) {
+            return `declare ${this.tsDef}`;
+        }
+        
+        return this.tsDef;
+    }
+}
 
 class ModuleFunction {
-    constructor(functionInfo, types) {
+    constructor(functionInfo, module) {
+
         const match = fnRegEx.exec(functionInfo.fn);
         if (match == null) {
             throw new Error(`Invalid format: ${functionInfo.fn}`);
         }
 
+        this.module = module;
         this.name = match.groups.name;
         this.returnType = match.groups.retType;
 
@@ -104,7 +126,6 @@ class ModuleFunction {
         this.linuxRetVal = functionInfo.linuxRetVal ?? getDefaultValue(this.returnType);
         this.callback = functionInfo.callback;
         this.external = !!functionInfo.external;
-        this.types = types;
     }
 
     jsReturnType(returnVoid) {
@@ -150,8 +171,8 @@ class ModuleFunction {
     }
 
     tsSignature() {
-        let argList = this.args?.map(a => `${a.name}: ${CtoTSType(a.type, this.types)}`).join(', ') ?? '';
-        return `function ${this.name}(${argList}): ${CtoTSType(this.returnType, this.types, true)}`;
+        let argList = this.args?.map(a => `${a.name}: ${CtoTSType(a.type, this.module.types)}`).join(', ') ?? '';
+        return `function ${this.name}(${argList}): ${CtoTSType(this.returnType, this.module.types, true)}`;
     }
 }
 
@@ -184,6 +205,10 @@ function generate(modInfo, templateFile, outdir, target) {
     const template = Handlebars.compile(templateStr, options);
 
     for (let i = 0; i < modInfo.modules.length; i++) {
+
+        if (modInfo.modules[i].isGlobal) {
+            continue;
+        }
 
         const module = new ModuleData(modInfo.modules[i], target);
         const outputFile = path.join(outdir, module.name + ".c");

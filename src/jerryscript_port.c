@@ -78,6 +78,32 @@ void jerry_port_log(jerry_log_level_t level, const char *format, ...)
 
 UT_string *output_buffer = NULL;
 
+char *psj_escape_char(char c)
+{
+    switch (c)
+    {
+        case '%':
+            return S("%%");
+
+        case '\\':
+            return S("\\\\");
+
+        case '"':
+            return S("\\\"");
+
+        case '\'':
+            return S("\\\'");
+    
+    default:
+        {
+            char *newString = malloc(2*sizeof(char));
+            newString[0] = c;
+            newString[1] = 0;
+            return newString;
+        }
+    }
+}
+
 void jerry_port_print_char(char c)
 {
     if (output_buffer == NULL)
@@ -92,10 +118,8 @@ void jerry_port_print_char(char c)
     }
     else
     {
-        char new_str[2];
-        new_str[0] = c;
-        new_str[1] = 0;
-        utstring_printf(output_buffer, new_str);
+        char *new_str = psj_escape_char(c);
+        utstring_bincpy(output_buffer, new_str, strlen(new_str));
     }
 }
 

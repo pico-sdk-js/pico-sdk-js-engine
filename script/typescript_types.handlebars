@@ -8,7 +8,10 @@
 
 {{#each modules}}
 
+// {{name}} module
+{{#unless isGlobal}}
 declare module "pico/{{name}}" {
+{{/unless}}
 
     {{#each types}}
     type {{@key}} = {{{this}}};
@@ -18,5 +21,7 @@ declare module "pico/{{name}}" {
     {{tsSignature}};
 
     {{/each}}
+{{#unless isGlobal}}
 }
+{{/unless}}
 {{/each}}
