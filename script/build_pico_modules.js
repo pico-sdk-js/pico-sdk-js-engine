@@ -16,6 +16,7 @@ function CtoJSType(cType, returnVoid) {
         case "uint":
         case "int":
         case "float":
+        case "absolute_time_t":
             return "number";
         case "bool":
             return "boolean";
@@ -91,7 +92,7 @@ class ModuleTsOnlyFunction {
         if (this.module.isGlobal) {
             return `declare ${this.tsDef}`;
         }
-        
+
         return this.tsDef;
     }
 }
@@ -177,14 +178,17 @@ class ModuleFunction {
 }
 
 class ModuleFunctionArg {
-    constructor(arg) {
+    constructor(arg, module) {
         this.name = arg.name;
         this.type = arg.type;
+        this.module = module;
     }
 
     converterFunction() {
         if (this.type.startsWith("enum ")) {
             return "psj_jerry_to_int";
+        } else if (this.type == "absolute_time_t") {
+            return "(absolute_time_t)psj_jerry_to_uint64_t";
         }
 
         return `psj_jerry_to_${this.type}`;

@@ -65,6 +65,7 @@ void init_modules()
     assert(__modules == NULL);
 
     add_module("pico/hardware", get_hardware_module);
+    add_module("pico/highlevel", get_highlevel_module);
 
     // Setup global
 

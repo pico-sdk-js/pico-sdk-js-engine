@@ -11,6 +11,7 @@
 #include "hardware/adc.h"
 #include "hardware/clocks.h"
 #include "hardware/timer.h"
+#include "pico/time.h"
 {{else}}
 #include <sys/types.h>
 {{/ifEquals}}
@@ -19,6 +20,10 @@
 #include "jerry_helper.h"
 #include "callback_engine.h"
 
+{{#ifNotEquals @root.target 'rp2xxx'}}
+typedef uint64_t absolute_time_t;
+
+{{/ifNotEquals}}
 {{#each functions}}
 {{#unless external}}
 static jerry_value_t {{name}}_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)

@@ -10,6 +10,7 @@
 #include "hardware/adc.h"
 #include "hardware/clocks.h"
 #include "hardware/timer.h"
+#include "pico/time.h"
 
 #include "jerryscript.h"
 #include "jerry_helper.h"

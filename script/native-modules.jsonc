@@ -9,6 +9,19 @@
             ]
         },
         {
+            "name": "highlevel",
+            "types": {
+                "absolute_time_t": "number"
+            },
+            "functions": [
+                // Sleep functions (see https://www.raspberrypi.com/documentation/pico-sdk/group__sleep.html)
+                { "fn": "void sleep_until (absolute_time_t target)" },
+                { "fn": "void sleep_us (uint64_t us)" },
+                { "fn": "void sleep_ms (uint32_t ms)" },
+                { "fn": "bool best_effort_wfe_or_timeout (absolute_time_t timeout_timestamp)" }
+            ]
+        },
+        {
             "name": "hardware",
             "types": {
                 "resus_callback_t": "() => void",

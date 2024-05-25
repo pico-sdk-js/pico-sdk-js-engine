@@ -13,6 +13,8 @@
 #include "jerry_helper.h"
 #include "callback_engine.h"
 
+typedef uint64_t absolute_time_t;
+
 static jerry_value_t adc_init_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
 {
     jerry_value_t ret_val;
