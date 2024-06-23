@@ -5,12 +5,7 @@
 #include "utstring.h"
 #include "utlist.h"
 
-#include "modules.h"
-#include "jerryscript.h"
-#include "jerryscript-port.h"
-#include "interrupt_state.h"
-
-#include "jerry_helper.h"
+#include "psj.h"
 
 typedef struct __log_msg_node {
     jerry_value_t response;
@@ -57,6 +52,8 @@ void jerry_port_log(jerry_log_level_t level, const char *format, ...)
 
     jerry_value_t value = jerry_create_object();
     psj_jerry_set_uint32_property(value, "level", level);
+
+    psj_jerry_set_uint32_property(value, "core", get_core_number());
 
     va_list args;
     va_start(args, format);

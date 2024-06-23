@@ -28,8 +28,16 @@
             "type": "valgrind-debug",
             "target": "${command:cmake.launchTargetPath}",
             "valgrind": {
-              "args": ["-v"]
+              "args": ["-v", "--leak-check=full", "--show-leak-kinds=all", "--track-origins=yes"]
             }
+        },
+        {
+            "label": "Rebuild, Publish, and Start Debug",
+            "type": "shell",
+            "command": "node",
+            "args": [
+                "build", "--target", "rp2xxx", "--rebuild", "--publish", "--debug"
+            ]
         }
     ],
     "version": "2.0.0"

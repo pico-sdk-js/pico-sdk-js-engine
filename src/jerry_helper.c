@@ -178,7 +178,7 @@ jerry_char_t *psj_jerry_stringify(const jerry_value_t jObject)
 jerry_char_t *S(const jerry_char_t *txt)
 {
     size_t sz = strlen(txt);
-    jerry_char_t *sVal = malloc(sizeof(jerry_char_t) * (sz + 1));
+    jerry_char_t *sVal = calloc(sizeof(jerry_char_t) * (sz + 1), 1);
     strncpy(sVal, txt, sz);
     return sVal;
 }
@@ -190,7 +190,7 @@ jerry_char_t *VS(const jerry_char_t *format,va_list args)
     size_t sz = vsnprintf(NULL, 0, format, szArgs);
     va_end(szArgs);
 
-    jerry_char_t *sVal = malloc(sizeof(jerry_char_t) * (sz + 1));
+    jerry_char_t *sVal = calloc(sizeof(jerry_char_t) * (sz + 1), 1);
     size_t chkSz = vsprintf(sVal, format, args);
     
     assert(sz == chkSz);

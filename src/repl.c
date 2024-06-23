@@ -104,8 +104,22 @@ void psj_repl_init()
     psj_add_command("format", psj_format_command);
     psj_add_command("stats", psj_stats_command);
     psj_add_command("exec", psj_exec_command);
+    psj_add_command("kill", psj_kill_command);
     psj_add_command("restart", psj_restart_command);
     psj_add_command("quit", psj_quit_command);
+}
+
+void psj_repl_call_command_safe(void *cmdPtr)
+{
+    jerry_value_t cmd = *(jerry_value_t*)cmdPtr;
+    jerry_value_t response = psj_call_command(cmd);
+    jerry_char_t *jsonValue = psj_jerry_stringify(response);
+
+    printf("%s\n", jsonValue);
+    fflush(stdout);
+
+    free(jsonValue);
+    jerry_release_value(response);
 }
 
 void psj_repl_cycle()
@@ -126,14 +140,12 @@ void psj_repl_cycle()
             }
             else
             {
-                jerry_value_t response = psj_call_command(cmd);
-                jerry_char_t *jsonValue = psj_jerry_stringify(response);
+                // halt core1
+                push_interrupt_suspension();
 
-                printf("%s\n", jsonValue);
-                fflush(stdout);
+                psj_repl_call_command_safe(&cmd);
 
-                free(jsonValue);
-                jerry_release_value(response);
+                pop_interrupt_suspension();
             }
 
             jerry_release_value(cmd);
@@ -159,7 +171,7 @@ void psj_repl_cleanup()
     HASH_CLEAR(hh, _commands);
 }
 
-void psj_repl_run_flash()
+void psj_repl_run_flash(jerry_vm_exec_stop_callback_t halt_handler)
 {
     uint32_t scriptLength;
     int err = psj_flash_file_size(entry_file, &scriptLength);
@@ -185,6 +197,8 @@ void psj_repl_run_flash()
     }
     else
     {
+        jerry_set_vm_exec_stop_callback(halt_handler, NULL, 500);
+
         jerry_value_t ret_val = jerry_run(parsed_code);
         if (jerry_value_is_error(ret_val))
         {

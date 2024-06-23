@@ -15,21 +15,18 @@ bool is_interrupts_suspended()
 
 void push_interrupt_suspension()
 {
-    if (stack_count == 0)
-    {
-        state = os_save_and_disable_interrupts();
-    }
+    assert(stack_count == 0);
 
+    state = os_save_and_disable_interrupts();
     stack_count++;
 }
 
 void pop_interrupt_suspension()
 {
     stack_count--;
-    if (stack_count == 0)
-    {
-        os_restore_interrupts(state);
+    assert(stack_count == 0);
 
-        psj_jerry_port_log_flush();
-    }
+    os_restore_interrupts(state);
+
+    psj_jerry_port_log_flush();
 }

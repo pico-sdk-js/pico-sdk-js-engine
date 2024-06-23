@@ -25,15 +25,9 @@ int user_provided_block_device_read(const struct lfs_config *c, lfs_block_t bloc
 {
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_read(block: %u, off: %u, buffer: %p, size: %u)", block, off, buffer, size);
 
-    // Ensure interrupts are disabled to avoid flash corruption
-    push_interrupt_suspension();
-
     u_int8_t *flash_buffer = os_get_flash_buffer();
     uint32_t offset = (c->block_size * block) + off;
     memcpy(buffer, flash_buffer + offset, size);
-
-    // Restore interrupts
-    pop_interrupt_suspension();
 
     return LFS_ERR_OK;
 }
@@ -45,15 +39,9 @@ int user_provided_block_device_prog(const struct lfs_config *c, lfs_block_t bloc
 {
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_prog(block: %u, off: %u, buffer: %p, size: %u)", block, off, buffer, size);
 
-    // Ensure interrupts are disabled to avoid flash corruption
-    push_interrupt_suspension();
-
     // set a page of data
     uint32_t offset = (c->block_size * block) + off;
     os_flash_range_program(FLASH_TARGET_OFFSET + offset, buffer, size);
-
-    // Restore interrupts
-    pop_interrupt_suspension();
 
     return LFS_ERR_OK;
 }
@@ -67,14 +55,8 @@ int user_provided_block_device_erase(const struct lfs_config *c, lfs_block_t blo
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_erase(block: %u)", block);
     uint32_t offset = c->block_size * block;
 
-    // Ensure interrupts are disabled to avoid flash corruption
-    push_interrupt_suspension();
-
     // Clear entire flash_buffer
     os_flash_range_erase(FLASH_TARGET_OFFSET + offset, c->block_size);
-
-    // Restore interrupts
-    pop_interrupt_suspension();
 
     return LFS_ERR_OK;
 }

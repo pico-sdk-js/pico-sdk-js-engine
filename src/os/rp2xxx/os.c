@@ -1,7 +1,8 @@
-#include "os.h"
+#include "psj.h"
 
 #include "pico/stdlib.h"
 #include "pico/bootrom.h"
+#include "pico/multicore.h"
 #include "hardware/flash.h"
 #include "hardware/sync.h"
 #include "hardware/watchdog.h"
@@ -13,7 +14,7 @@
 #define GPIO_WAIT_FOR_READY_PIN 22
 #define ENDSTDIN 255
 
-const uint8_t *flash_buffer = (const uint8_t *)(XIP_BASE + FLASH_TARGET_OFFSET);
+const uint8_t *flash_buffer = (const uint8_t *)(XIP_NOCACHE_NOALLOC_BASE + FLASH_TARGET_OFFSET);
 
 void os_init(int argc, char *argv[])
 {
@@ -95,10 +96,20 @@ uint8_t *os_get_flash_buffer()
 
 uint32_t os_save_and_disable_interrupts()
 {
+    if (multicore_lockout_victim_is_initialized(1))
+    {
+        multicore_lockout_start_blocking();
+    }
+
     return save_and_disable_interrupts();
 }
 
 void os_restore_interrupts(uint32_t status)
 {
     restore_interrupts(status);
+
+    if (multicore_lockout_victim_is_initialized(1))
+    {
+        multicore_lockout_end_blocking();    
+    }
 }

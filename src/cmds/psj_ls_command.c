@@ -4,7 +4,7 @@
 
 jerry_value_t psj_ls_command(jerry_value_t request_args)
 {
-    struct lfs_info file_info[16];
+    struct lfs_info *file_info = malloc(sizeof(struct lfs_info) * 16);
 
     int file_count = psj_flash_list(file_info, 16);
 
@@ -18,6 +18,8 @@ jerry_value_t psj_ls_command(jerry_value_t request_args)
         jerry_set_property_by_index (file_array, idx, file_object);
         jerry_release_value(file_object);
     }
+
+    free(file_info);
 
     return file_array;
 }

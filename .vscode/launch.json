@@ -79,16 +79,35 @@
             ]
         },
         {
-            "name": "(gdb) Launch remote",
-            "type": "gdb",
+            "name": "(cortex) Attach remote (core 0)",
+            "type": "cortex-debug",
             "request": "attach",
-            "gdbpath": "/usr/bin/gdb-multiarch",
-            "executable": "${workspaceFolder}/build/pico-sdk-js-0.0.1.elf",
             "cwd": "${workspaceFolder}",
-            "target": "extended-remote :3333",
-            "printCalls": true,
-            "valuesFormatting": "parseText",
-            "preLaunchTask": "valgrind-debug: custom"
+            "executable": "${workspaceFolder}/build/pico-sdk-js-0.0.1.elf",
+            "servertype": "external",
+            "gdbPath" : "gdb-multiarch",
+            "gdbTarget": "localhost:3333",
+            "showDevDebugOutput": "raw"
+        },
+        {
+            "name": "(cortex) Attach remote (core 1)",
+            "type": "cortex-debug",
+            "request": "attach",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/pico-sdk-js-0.0.1.elf",
+            "servertype": "external",
+            "gdbPath" : "gdb-multiarch",
+            "gdbTarget": "localhost:3334",
+            "showDevDebugOutput": "raw"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "(cortex) Attach Both Cores",
+            "configurations": [
+                "(cortex) Attach remote (core 0)",
+                "(cortex) Attach remote (core 1)"
+            ]
         }
     ]
 }

@@ -12,7 +12,11 @@
         "stdint-intn.h": "c",
         "functional": "c",
         "string.h": "c",
-        "utlist.h": "c"
+        "utlist.h": "c",
+        "multicore.h": "c",
+        "psj.h": "c",
+        "types.h": "c",
+        "lfs.h": "c"
     },
     "cmake.configureSettings": {
         "TARGET_OS": "rp2xxx",

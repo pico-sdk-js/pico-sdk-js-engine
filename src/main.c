@@ -6,7 +6,7 @@
 #include "modules.h"
 #include "jerryscript.h"
 
-void run_jerryscript_engine();
+void run_repl_engine();
 
 int main(int argc, char *argv[])
 {
@@ -23,7 +23,13 @@ int main(int argc, char *argv[])
         psj_repl_init();
         psj_flash_init();
 
-        run_jerryscript_engine();
+        init_core1();
+
+        start_core1();
+        
+        run_repl_engine();
+
+        cleanup_core1();
 
         psj_flash_cleanup();
         psj_repl_cleanup();
@@ -37,13 +43,10 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void run_jerryscript_engine()
+void run_repl_engine()
 {
     os_set_is_repl_running(true);
 
-    // Run flash program
-    psj_repl_run_flash();
-    
     // Read in command
     while (os_get_is_repl_running())
     {

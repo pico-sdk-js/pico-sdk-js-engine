@@ -104,7 +104,7 @@ set(JERRYSCRIPT_BUILD_ARGS
   --mem-stats=ON
   --snapshot-exec=OFF
   --line-info=ON
-  --vm-exec-stop=OFF
+  --vm-exec-stop=ON
   --profile=es.next #es2015-subset
   --jerry-cmdline=OFF
   --logging=ON
@@ -176,9 +176,13 @@ if (TARGET_OS STREQUAL "rp2xxx")
   set(LIBRARIES
     ${LIBRARIES}
     pico_stdlib
+    pico_multicore
+    # pico_flash
     hardware_adc
     hardware_clocks
-    hardware_flash)
+    hardware_flash
+    # hardware_exception
+  )
   add_compile_definitions(NDEBUG=1)
 else()
   set(LIBRARIES
