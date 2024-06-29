@@ -16,7 +16,8 @@
         "multicore.h": "c",
         "psj.h": "c",
         "types.h": "c",
-        "lfs.h": "c"
+        "lfs.h": "c",
+        "stdbool.h": "c"
     },
     "cmake.configureSettings": {
         "TARGET_OS": "rp2xxx",

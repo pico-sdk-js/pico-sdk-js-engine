@@ -34,6 +34,14 @@ static void *thread_runner(void *)
     _threadRunning = false;
 }
 
+uint get_core_number()
+{
+    if (pthread_self() == tid)
+        return 1;
+
+    return 0;
+}
+
 void init_core1()
 {
     // core 1 thread not running
