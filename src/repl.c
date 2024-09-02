@@ -15,7 +15,7 @@
 // JSON inputs can be up to 1.5kb
 #define MAX_INPUT_LENGTH (1024+512)
 
-const char entry_file[] = "main.js";
+const char* noopFn = "let x = 0; while(true) { x++; }";
 
 char strg[MAX_INPUT_LENGTH];
 int lp = 0;
@@ -97,15 +97,40 @@ cleanup:
 
 void psj_repl_init()
 {
+    // ## FLASH COMMANDS
+
+    // List files in file system
     psj_add_command("ls", psj_ls_command);
+
+    // Write to file system
     psj_add_command("write", psj_write_command);
+
+    // Read from file system
     psj_add_command("read", psj_read_command);
+
+    // Delete file from file system
     psj_add_command("delete", psj_delete_command);
+
+    // Reformat file system
     psj_add_command("format", psj_format_command);
+    
+    // ## SYSTEM COMMANDS
+
+    // View stats about the system
     psj_add_command("stats", psj_stats_command);
+    
+    // Run a command, then resume execution
     psj_add_command("exec", psj_exec_command);
+
+    // ## EXECUTION COMMANDS
+
+    // Stop & Load the NOOP program
     psj_add_command("kill", psj_kill_command);
+
+    // Stop & Load the previously running program
     psj_add_command("restart", psj_restart_command);
+
+    // Exit Everything (only available on linux)
     psj_add_command("quit", psj_quit_command);
 }
 
@@ -171,25 +196,9 @@ void psj_repl_cleanup()
     HASH_CLEAR(hh, _commands);
 }
 
-void psj_repl_run_flash(jerry_vm_exec_stop_callback_t halt_handler)
+void psj_repl_run_javascript(const jerry_char_t *resource_name_p, size_t resource_name_length, const jerry_char_t *source_p, size_t source_size, jerry_vm_exec_stop_callback_t halt_handler)
 {
-    uint32_t scriptLength;
-    int err = psj_flash_file_size(entry_file, &scriptLength);
-    if (err < 0)
-    {
-        jerry_port_log(JERRY_LOG_LEVEL_TRACE, "psj_flash_file_size('%s') returned %i", entry_file, err);
-        return;
-    }
-
-    jerry_char_t script[scriptLength];
-    err = psj_flash_read_all(entry_file, script, scriptLength);
-    if (err < 0)
-    {
-        jerry_port_log(JERRY_LOG_LEVEL_TRACE, "psj_flash_read_all('%s') returned %i", entry_file, err);
-        return;
-    }
-    
-    jerry_value_t parsed_code = jerry_parse(entry_file, strlen(entry_file), script, scriptLength, JERRY_PARSE_STRICT_MODE | JERRY_PARSE_MODULE);
+    jerry_value_t parsed_code = jerry_parse(resource_name_p, resource_name_length, source_p, source_size, JERRY_PARSE_STRICT_MODE | JERRY_PARSE_MODULE);
 
     if (jerry_value_is_error(parsed_code))
     {
@@ -209,4 +218,32 @@ void psj_repl_run_flash(jerry_vm_exec_stop_callback_t halt_handler)
 
     /* Parsed source code must be freed */
     jerry_release_value(parsed_code);
+}
+
+void psj_repl_run_resource(const jerry_char_t *resource_name_p, jerry_vm_exec_stop_callback_t halt_handler)
+{
+    if (resource_name_p == NULL)
+    {
+        psj_repl_run_javascript("", 0, noopFn, strlen(noopFn), halt_handler);
+    }
+    else
+    {
+        uint32_t scriptLength;
+        int err = psj_flash_file_size(resource_name_p, &scriptLength);
+        if (err < 0)
+        {
+            jerry_port_log(JERRY_LOG_LEVEL_TRACE, "psj_flash_file_size('%s') returned %i", resource_name_p, err);
+            return;
+        }
+
+        jerry_char_t script[scriptLength];
+        err = psj_flash_read_all(resource_name_p, script, scriptLength);
+        if (err < 0)
+        {
+            jerry_port_log(JERRY_LOG_LEVEL_TRACE, "psj_flash_read_all('%s') returned %i", resource_name_p, err);
+            return;
+        }
+
+        psj_repl_run_javascript(resource_name_p, strlen(resource_name_p), script, scriptLength, halt_handler);
+    }
 }

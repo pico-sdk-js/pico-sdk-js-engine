@@ -20,12 +20,15 @@
         "stdbool.h": "c"
     },
     "cmake.configureSettings": {
-        "TARGET_OS": "rp2xxx",
+        "TARGET_OS": "linux_x86_64",
         "TARGET_VERSION": "0.0.1"
     },
     "remote.extensionKind": {
         "ms-vscode.vscode-serial-monitor": [
             "workspace"
         ]
+    },
+    "cmake.debugConfig": {
+
     }
 }

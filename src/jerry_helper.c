@@ -238,6 +238,9 @@ jerry_char_t *psj_jerry_vfget_error_message(const PSJErrorCode error_code, va_li
         case DELETE_ERROR:
             return VS("Error deleting '%s'", args);
 
+        case NOT_SUPPORTED:
+            return VS("'%s' not supported", args);
+
         default:
             return S("Undefined Error");
     }

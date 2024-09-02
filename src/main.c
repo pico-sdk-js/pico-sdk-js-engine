@@ -23,13 +23,7 @@ int main(int argc, char *argv[])
         psj_repl_init();
         psj_flash_init();
 
-        init_core1();
-
-        start_core1();
-        
         run_repl_engine();
-
-        cleanup_core1();
 
         psj_flash_cleanup();
         psj_repl_cleanup();
@@ -43,15 +37,22 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+static jerry_value_t vm_exec_stop_callback (void *user_p)
+{
+    if (!os_get_is_repl_running()) {
+        return jerry_create_string("Script aborted");
+    }
+
+    psj_repl_cycle();
+
+    return jerry_create_undefined();
+}
+
 void run_repl_engine()
 {
     os_set_is_repl_running(true);
 
-    // Read in command
-    while (os_get_is_repl_running())
-    {
-        psj_repl_cycle();
-    }
+    psj_repl_run_resource(NULL, vm_exec_stop_callback);
 
     /* Cleanup engine */
     jerry_cleanup();

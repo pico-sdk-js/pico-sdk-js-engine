@@ -13,7 +13,7 @@ typedef struct __log_msg_node {
     struct __log_msg_node *next;
 } log_msg_node;
 
-log_msg_node *pp_msg_head[2] = { NULL, NULL };
+log_msg_node *pp_msg_head = NULL;
 
 void jerry_port_fatal(jerry_fatal_code_t code)
 {
@@ -24,19 +24,16 @@ void psj_jerry_port_log_flush()
 {
     log_msg_node *node;
 
-    uint core_num = get_core_number();
-    assert(core_num < 2);
-
     if (is_interrupts_suspended())
     {
         return;
     }
 
-    while (pp_msg_head[core_num] != NULL)
+    while (pp_msg_head != NULL)
     {
-        node = pp_msg_head[core_num];
+        node = pp_msg_head;
 
-        DL_DELETE(pp_msg_head[core_num], node);
+        DL_DELETE(pp_msg_head, node);
         jerry_char_t *jsonValue = psj_jerry_stringify(node->response);
         printf("%s\n", jsonValue);
 
@@ -50,16 +47,11 @@ void psj_jerry_port_log_flush()
 
 void jerry_port_log(jerry_log_level_t level, const char *format, ...)
 {
-    uint core_num = get_core_number();
-    assert(core_num < 2);
-
     jerry_value_t response = jerry_create_object();
     psj_jerry_set_string_property(response, "cmd", "log");
 
     jerry_value_t value = jerry_create_object();
     psj_jerry_set_uint32_property(value, "level", level);
-
-    psj_jerry_set_uint32_property(value, "core", core_num);
 
     va_list args;
     va_start(args, format);
@@ -71,7 +63,7 @@ void jerry_port_log(jerry_log_level_t level, const char *format, ...)
 
     log_msg_node *node = malloc(sizeof(log_msg_node));
     node->response = response;
-    DL_APPEND(pp_msg_head[core_num], node);
+    DL_APPEND(pp_msg_head, node);
 
     psj_jerry_port_log_flush();
 

@@ -13,7 +13,7 @@ void psj_repl_cycle();
 
 void psj_repl_cleanup();
 
-void psj_repl_run_flash(jerry_vm_exec_stop_callback_t halt_handler);
+void psj_repl_run_resource(const jerry_char_t *resource_name_p, jerry_vm_exec_stop_callback_t halt_handler);
 
 jerry_value_t psj_exec_command(jerry_value_t request_args);
 jerry_value_t psj_restart_command(jerry_value_t request_args);
