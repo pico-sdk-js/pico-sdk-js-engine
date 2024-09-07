@@ -13,6 +13,7 @@ const productName = `${package.name}-${package.version}`;
 
 if (process.env.GITHUB_ENV) {
   fs.appendFileSync(process.env.GITHUB_ENV, `PACKAGE_VERSION=${package.version}\r\nPRODUCT_NAME=${productName}\r\n`);
+  fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `# ${package.name} ${package.version}\r\n`);
 }
 
 // Parse options
