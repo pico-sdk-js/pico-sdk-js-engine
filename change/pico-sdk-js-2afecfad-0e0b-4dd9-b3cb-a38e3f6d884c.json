@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Reverting back to single threading and adding kill & run commands",
+  "packageName": "pico-sdk-js",
+  "email": "jt000@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
