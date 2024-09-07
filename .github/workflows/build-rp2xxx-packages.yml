@@ -28,16 +28,16 @@ jobs:
 
     - uses: actions/setup-node@v4.0.1
 
-    - uses: ConorMacBride/install-package@v1
-      name: Install APT packages
+    - uses: awalsh128/cache-apt-pkgs-action@latest
       with:
-        apt: nodejs npm cmake gcc gcc-arm-none-eabi cppcheck clang-format libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib
+        packages: nodejs npm cmake gcc gcc-arm-none-eabi cppcheck clang-format libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib
+        version: 1.0
 
     - name: Pull NPM Packages
       run: npm install
 
     - name: Run build
-      run: node build --rebuild --target rp2xxx --release
+      run: node build --rebuild --target rp2xxxX --release
 
     - name: Archive production artifacts
       uses: actions/upload-artifact@v4

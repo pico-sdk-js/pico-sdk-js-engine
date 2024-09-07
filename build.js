@@ -50,7 +50,7 @@ if (argv.target === '?') {
       argv.target = 'linux_amd64';
     break;
     default:
-      console.error("unsupported target processor for auto-detection");
+      console.error("::error ::unsupported target processor for auto-detection");
     break;
   }
 }
@@ -133,7 +133,7 @@ function make() {
 
 function test() {
   if (argv.target === "rp2xxx") {
-    console.error(`Running tests on rp2xxx is not supported.`);
+    console.error('::error ::Running tests on rp2xxx is not supported.');
     process.exit(1);
 }
 
@@ -166,7 +166,7 @@ function cmd(wd, cmd, args) {
     
     let output = childProcess.spawnSync(cmd, args, { stdio: "inherit" });
     if (output.status !== 0) {
-      console.error(`Child process returned non-zero status: ${output.status}`);
+      console.error(`::error ::Child process returned non-zero status: ${output.status}`);
       process.exit(1);
     }
   } finally {
