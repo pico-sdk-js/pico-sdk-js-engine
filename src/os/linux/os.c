@@ -1,4 +1,4 @@
-#include "os.h"
+#include "psj.h"
 
 #include <assert.h>
 #include <ctype.h>
@@ -113,13 +113,13 @@ bool os_getchar_timeout_us_is_valid(int chr)
 
 void os_restart(bool hard)
 {
-    os_set_is_repl_running(false);
+    jsengine_set_state(JSENGINE_STATE_REQ_STOPPING);
 }
 
 void os_exit()
 {
     // When client notifies of exit, then exit process
-    os_set_is_repl_running(false);
+    jsengine_set_state(JSENGINE_STATE_REQ_STOPPING);
     os_set_is_running(false);
 }
 

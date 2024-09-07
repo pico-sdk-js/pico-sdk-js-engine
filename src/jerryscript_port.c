@@ -109,12 +109,14 @@ void jerry_port_print_char(char c)
     if (c == '\n')
     {
         jerry_port_log(JERRY_LOG_LEVEL_TRACE+1, utstring_body(output_buffer));
-        utstring_renew(output_buffer);
+        utstring_free(output_buffer);
+        output_buffer = NULL;
     }
     else
     {
         char *new_str = psj_escape_char(c);
         utstring_bincpy(output_buffer, new_str, strlen(new_str));
+        free(new_str);
     }
 }
 

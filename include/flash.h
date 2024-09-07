@@ -7,8 +7,8 @@
 #include "jerryscript.h"
 #include "lfs.h"
 
-// One segment is 1KB
-#define SEGMENT_SIZE (1024)
+// One segment is 256 bytes
+#define SEGMENT_SIZE (256)
 
 void psj_flash_init();
 int psj_flash_reformat();

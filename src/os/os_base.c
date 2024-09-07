@@ -14,13 +14,3 @@ void os_set_is_running(bool isRunning)
 {
     is_running = isRunning;
 }
-
-bool os_get_is_repl_running()
-{
-    return is_repl_running;
-}
-
-void os_set_is_repl_running(bool isRunning)
-{
-    is_repl_running = isRunning;
-}

@@ -15,8 +15,6 @@
 // JSON inputs can be up to 1.5kb
 #define MAX_INPUT_LENGTH (1024+512)
 
-const char* noopFn = "let x = 0; while(true) { x++; }";
-
 char strg[MAX_INPUT_LENGTH];
 int lp = 0;
 
@@ -122,16 +120,19 @@ void psj_repl_init()
     // Run a command, then resume execution
     psj_add_command("exec", psj_exec_command);
 
-    // ## EXECUTION COMMANDS
-
-    // Stop & Load the NOOP program
-    psj_add_command("kill", psj_kill_command);
-
-    // Stop & Load the previously running program
+    // Reboot the entire Pico device
     psj_add_command("restart", psj_restart_command);
 
     // Exit Everything (only available on linux)
     psj_add_command("quit", psj_quit_command);
+
+    // ## EXECUTION COMMANDS
+
+    // Stop & Load the passed in program stored locally in flash
+    psj_add_command("run", psj_run_command);
+
+    // Stop & Load the NOOP program
+    psj_add_command("kill", psj_kill_command);
 }
 
 void psj_repl_call_command_safe(void *cmdPtr)
@@ -165,12 +166,15 @@ void psj_repl_cycle()
             }
             else
             {
-                // halt core1
-                push_interrupt_suspension();
+                // multi-core not currently supported. When support is 
+                // added, then will need to consider interrupt suspension 
+                // when calling a user command
+                // 
+                // push_interrupt_suspension();
 
                 psj_repl_call_command_safe(&cmd);
 
-                pop_interrupt_suspension();
+                // pop_interrupt_suspension();
             }
 
             jerry_release_value(cmd);
@@ -194,56 +198,4 @@ void psj_repl_cleanup()
     }
 
     HASH_CLEAR(hh, _commands);
-}
-
-void psj_repl_run_javascript(const jerry_char_t *resource_name_p, size_t resource_name_length, const jerry_char_t *source_p, size_t source_size, jerry_vm_exec_stop_callback_t halt_handler)
-{
-    jerry_value_t parsed_code = jerry_parse(resource_name_p, resource_name_length, source_p, source_size, JERRY_PARSE_STRICT_MODE | JERRY_PARSE_MODULE);
-
-    if (jerry_value_is_error(parsed_code))
-    {
-        psj_print_unhandled_exception(parsed_code);
-    }
-    else
-    {
-        jerry_set_vm_exec_stop_callback(halt_handler, NULL, 500);
-
-        jerry_value_t ret_val = jerry_run(parsed_code);
-        if (jerry_value_is_error(ret_val))
-        {
-            psj_print_unhandled_exception(ret_val);
-        }
-        jerry_release_value(ret_val);
-    }
-
-    /* Parsed source code must be freed */
-    jerry_release_value(parsed_code);
-}
-
-void psj_repl_run_resource(const jerry_char_t *resource_name_p, jerry_vm_exec_stop_callback_t halt_handler)
-{
-    if (resource_name_p == NULL)
-    {
-        psj_repl_run_javascript("", 0, noopFn, strlen(noopFn), halt_handler);
-    }
-    else
-    {
-        uint32_t scriptLength;
-        int err = psj_flash_file_size(resource_name_p, &scriptLength);
-        if (err < 0)
-        {
-            jerry_port_log(JERRY_LOG_LEVEL_TRACE, "psj_flash_file_size('%s') returned %i", resource_name_p, err);
-            return;
-        }
-
-        jerry_char_t script[scriptLength];
-        err = psj_flash_read_all(resource_name_p, script, scriptLength);
-        if (err < 0)
-        {
-            jerry_port_log(JERRY_LOG_LEVEL_TRACE, "psj_flash_read_all('%s') returned %i", resource_name_p, err);
-            return;
-        }
-
-        psj_repl_run_javascript(resource_name_p, strlen(resource_name_p), script, scriptLength, halt_handler);
-    }
 }

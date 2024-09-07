@@ -4,5 +4,7 @@
 
 jerry_value_t psj_kill_command(jerry_value_t request_args)
 {
-    return psj_jerry_create_error_obj(NOT_SUPPORTED, "kill");
+    psj_set_next_resource(NULL);
+
+    return jerry_create_undefined();
 }

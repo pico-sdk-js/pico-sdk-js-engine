@@ -6,6 +6,7 @@
 #include "repl.h"
 #include "interrupt_state.h"
 #include "modules.h"
+#include "js_engine.h"
 
 #ifndef TARGET_NAME
 #define TARGET_NAME "UNKNOWN"

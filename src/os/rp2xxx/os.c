@@ -27,7 +27,7 @@ void os_cleanup()
 
 void os_restart(bool hard)
 {
-    os_set_is_repl_running(false);
+    jsengine_set_state(JSENGINE_STATE_REQ_STOPPING);
 
     if (hard)
     {

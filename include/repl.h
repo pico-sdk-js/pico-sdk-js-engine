@@ -13,17 +13,19 @@ void psj_repl_cycle();
 
 void psj_repl_cleanup();
 
-void psj_repl_run_resource(const jerry_char_t *resource_name_p, jerry_vm_exec_stop_callback_t halt_handler);
-
-jerry_value_t psj_exec_command(jerry_value_t request_args);
-jerry_value_t psj_restart_command(jerry_value_t request_args);
-jerry_value_t psj_stats_command(jerry_value_t request_args);
 jerry_value_t psj_read_command(jerry_value_t request_args);
 jerry_value_t psj_write_command(jerry_value_t request_args);
-jerry_value_t psj_quit_command(jerry_value_t request_args);
 jerry_value_t psj_ls_command(jerry_value_t request_args);
 jerry_value_t psj_delete_command(jerry_value_t request_args);
 jerry_value_t psj_format_command(jerry_value_t request_args);
+
+jerry_value_t psj_exec_command(jerry_value_t request_args);
+jerry_value_t psj_stats_command(jerry_value_t request_args);
+
+jerry_value_t psj_run_command(jerry_value_t request_args);
 jerry_value_t psj_kill_command(jerry_value_t request_args);
+jerry_value_t psj_restart_command(jerry_value_t request_args);
+
+jerry_value_t psj_quit_command(jerry_value_t request_args);
 
 #endif // __REPL_H
