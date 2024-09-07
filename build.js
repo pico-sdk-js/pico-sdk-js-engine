@@ -10,6 +10,10 @@ const pico_modules = require("./script/build_pico_modules");
 
 const package = require("./package.json")
 
+if (process.env.GITHUB_ENV) {
+  fs.appendFileSync(process.env.GITHUB_ENV, `PACKAGE_VERSION=${package.version}\r\n`);
+}
+
 // Parse options
 var unknownArg = false;
 var minimistOpts = { 
@@ -19,7 +23,7 @@ var minimistOpts = {
     target: '?'
   },
   unknown: function(x) { 
-    console.error(`ERROR: Unknown arg '${x}'.`);
+    console.error(`::error ::ERROR: Unknown arg '${x}'.`);
     unknownArg = true; 
   } 
 };
