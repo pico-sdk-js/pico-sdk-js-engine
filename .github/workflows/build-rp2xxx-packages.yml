@@ -10,20 +10,17 @@ on:
     branches: [ "main" ]
 
 env:
+  # PRODUCT_NAME is set in the 'Run build' step
   PRODUCT_NAME: tbd.0.0.0
 
 jobs:
   build:
-    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
-    # You can convert this to a matrix build if you need cross-platform coverage.
-    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: ubuntu-latest
 
     steps:
 
+    # do initial pull of source w/o submodules to save time if npm install or beachball:check fails
     - uses: actions/checkout@v3
-      with:
-        submodules: recursive
 
     - uses: actions/setup-node@v4.0.1
 
@@ -32,6 +29,9 @@ jobs:
 
     - name: Check for changefiles
       run: npm run beachball:check
+
+    - name: pull submodules
+      run: git submodules update --init --recursive
 
     - uses: ConorMacBride/install-package@v1
       name: Install APT packages

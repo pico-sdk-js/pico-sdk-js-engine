@@ -9,7 +9,7 @@
         "minimist": "^1.2.6"
     },
     "scripts": {
-        "beachball:change": "beachball change",
+        "beachball:change": "beachball change --no-commit",
         "beachball:check": "beachball check",
         "beachball:bump": "beachball bump"
     }
