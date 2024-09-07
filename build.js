@@ -9,6 +9,12 @@ const childProcess = require("child_process");
 const pico_modules = require("./script/build_pico_modules");
 
 const package = require("./package.json")
+const productName = `${package.name}-${package.version}`;
+
+if (process.env.GITHUB_ENV) {
+  fs.appendFileSync(process.env.GITHUB_ENV, `PACKAGE_VERSION=${package.version}\r\nPRODUCT_NAME=${productName}\r\n`);
+  fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `# ${package.name} ${package.version}\r\n`);
+}
 
 // Parse options
 var unknownArg = false;
@@ -19,7 +25,7 @@ var minimistOpts = {
     target: '?'
   },
   unknown: function(x) { 
-    console.error(`ERROR: Unknown arg '${x}'.`);
+    console.error(`::error ::ERROR: Unknown arg '${x}'.`);
     unknownArg = true; 
   } 
 };
@@ -50,7 +56,7 @@ if (argv.target === '?') {
       argv.target = 'linux_amd64';
     break;
     default:
-      console.error("unsupported target processor for auto-detection");
+      console.error("::error ::unsupported target processor for auto-detection");
     break;
   }
 }
@@ -133,7 +139,7 @@ function make() {
 
 function test() {
   if (argv.target === "rp2xxx") {
-    console.error(`Running tests on rp2xxx is not supported.`);
+    console.error('::error ::Running tests on rp2xxx is not supported.');
     process.exit(1);
 }
 
@@ -143,7 +149,7 @@ function test() {
 function publish() {
 
   // sudo openocd -f interface/cmsis-dap.cfg -f target/rp2040.cfg -c "adapter speed 5000" -c "program pico-sdk-js-0.0.1.elf verify reset exit"
-  const exeName = `${package.name}-${package.version}.elf`;
+  const exeName = `${productName}.elf`;
   cmd(buildPath, "sudo", ["openocd", "-f", "interface/cmsis-dap.cfg", "-f", "target/rp2040.cfg", "-c", "adapter speed 5000", "-c", `program ${exeName} verify reset exit`]);
 }
 
@@ -154,7 +160,7 @@ function startDebugServer() {
 }
 
 function run() {
-  let processName = `./${package.name}-${package.version}`;
+  let processName = `./${productName}`;
   cmd(buildPath, processName, []);
 }
 
@@ -166,7 +172,7 @@ function cmd(wd, cmd, args) {
     
     let output = childProcess.spawnSync(cmd, args, { stdio: "inherit" });
     if (output.status !== 0) {
-      console.error(`Child process returned non-zero status: ${output.status}`);
+      console.error(`::error ::Child process returned non-zero status: ${output.status}`);
       process.exit(1);
     }
   } finally {

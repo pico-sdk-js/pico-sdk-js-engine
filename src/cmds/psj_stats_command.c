@@ -7,6 +7,8 @@ jerry_value_t psj_stats_command(jerry_value_t request_args)
     psj_jerry_set_string_property(value, "name", TARGET_NAME);
     psj_jerry_set_string_property(value, "version", TARGET_VERSION);
 
+    psj_jerry_set_string_property(value, "running", psj_get_current_resource());
+
     uint32_t totalRam = os_get_total_ram();
     psj_jerry_set_uint32_property(value, "total ram", totalRam);
 

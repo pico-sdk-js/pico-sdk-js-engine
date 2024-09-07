@@ -19,7 +19,7 @@ endif()
 set(VALID_TARGET_OS "linux_amd64" "linux_x86_64" "rp2xxx")
 
 if (NOT TARGET_OS IN_LIST VALID_TARGET_OS)
-  message(FATAL_ERROR "TARGET_OS must be: linux_amd64, linux_x86_64, or rp2xxx")
+  message(FATAL_ERROR "::error ::TARGET_OS must be: linux_amd64, linux_x86_64, or rp2xxx")
 endif()
 
 if (TARGET_OS STREQUAL "rp2xxx")
@@ -117,6 +117,7 @@ if (TARGET_OS STREQUAL "rp2xxx")
   # Set PICO settings
   set(PICO_SDK_PATH ${ROOT_DIR}/lib/pico-sdk)
   set(PICO_BOARD pico_w)
+  set(PICO_PLATFORM rp2040)
 
   include(${PICO_SDK_PATH}/external/pico_sdk_import.cmake)
 endif()

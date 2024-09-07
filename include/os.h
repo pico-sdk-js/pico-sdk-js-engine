@@ -14,9 +14,6 @@ bool os_getchar_timeout_us_is_valid(int chr);
 bool os_get_is_running();
 void os_set_is_running(bool isRunning);
 
-bool os_get_is_repl_running();
-void os_set_is_repl_running(bool isRunning);
-
 void os_exit();
 void os_restart(bool hard);
 

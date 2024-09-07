@@ -10,6 +10,7 @@ jerry_value_t psj_read_command(jerry_value_t request_args)
     jerry_char_t *path = psj_jerry_get_string_property(request_args, "path");
     uint32_t seg = psj_jerry_get_uint32_property(request_args, "seg");
     jerry_value_t response;
+    jerry_char_t *buffer = NULL;
 
     if (path == NULL)
     {
@@ -24,7 +25,7 @@ jerry_value_t psj_read_command(jerry_value_t request_args)
         goto cleanup;
     }
 
-    jerry_char_t buffer[SEGMENT_SIZE];
+    buffer = calloc(SEGMENT_SIZE, sizeof(jerry_char_t));
     int bytes_read = psj_flash_read(path, buffer, SEGMENT_SIZE, seg);
     if (bytes_read >= 0)
     {
@@ -36,12 +37,14 @@ jerry_value_t psj_read_command(jerry_value_t request_args)
     }
     else
     {
-        response = psj_jerry_create_error_obj(WRITE_ERROR, path);
+        response = psj_jerry_create_error_obj(READ_ERROR, path);
     }
 
 cleanup:
 
     if (path != NULL) free(path);
+
+    if (buffer != NULL) free(buffer);
 
     return response;
 }

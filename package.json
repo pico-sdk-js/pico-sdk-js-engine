@@ -2,9 +2,15 @@
     "name": "pico-sdk-js",
     "version": "0.0.1",
     "devDependencies": {
+        "beachball": "^2.47.0",
         "fs-extra": "^4.0.2",
         "handlebars": "^4.7.8",
         "jsonc-require": "^1.0.1",
         "minimist": "^1.2.6"
+    },
+    "scripts": {
+        "beachball:change": "beachball change --no-commit",
+        "beachball:check": "beachball check",
+        "beachball:bump": "beachball bump"
     }
 }

@@ -4,9 +4,9 @@
 #include "jerryscript-port-psj.h"
 #include "os.h"
 #include "repl.h"
-#include "core1.h"
 #include "interrupt_state.h"
 #include "modules.h"
+#include "js_engine.h"
 
 #ifndef TARGET_NAME
 #define TARGET_NAME "UNKNOWN"

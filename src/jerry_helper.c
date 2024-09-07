@@ -177,6 +177,8 @@ jerry_char_t *psj_jerry_stringify(const jerry_value_t jObject)
 
 jerry_char_t *S(const jerry_char_t *txt)
 {
+    if (txt == NULL) return NULL;
+
     size_t sz = strlen(txt);
     jerry_char_t *sVal = calloc(sizeof(jerry_char_t) * (sz + 1), 1);
     strncpy(sVal, txt, sz);
@@ -237,6 +239,9 @@ jerry_char_t *psj_jerry_vfget_error_message(const PSJErrorCode error_code, va_li
             
         case DELETE_ERROR:
             return VS("Error deleting '%s'", args);
+
+        case NOT_SUPPORTED:
+            return VS("'%s' not supported", args);
 
         default:
             return S("Undefined Error");
