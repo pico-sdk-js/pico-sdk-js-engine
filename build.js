@@ -9,9 +9,10 @@ const childProcess = require("child_process");
 const pico_modules = require("./script/build_pico_modules");
 
 const package = require("./package.json")
+const productName = `${package.name}-${package.version}`;
 
 if (process.env.GITHUB_ENV) {
-  fs.appendFileSync(process.env.GITHUB_ENV, `PACKAGE_VERSION=${package.version}\r\n`);
+  fs.appendFileSync(process.env.GITHUB_ENV, `PACKAGE_VERSION=${package.version}\r\nPRODUCT_NAME=${productName}\r\n`);
 }
 
 // Parse options
@@ -147,7 +148,7 @@ function test() {
 function publish() {
 
   // sudo openocd -f interface/cmsis-dap.cfg -f target/rp2040.cfg -c "adapter speed 5000" -c "program pico-sdk-js-0.0.1.elf verify reset exit"
-  const exeName = `${package.name}-${package.version}.elf`;
+  const exeName = `${productName}.elf`;
   cmd(buildPath, "sudo", ["openocd", "-f", "interface/cmsis-dap.cfg", "-f", "target/rp2040.cfg", "-c", "adapter speed 5000", "-c", `program ${exeName} verify reset exit`]);
 }
 
@@ -158,7 +159,7 @@ function startDebugServer() {
 }
 
 function run() {
-  let processName = `./${package.name}-${package.version}`;
+  let processName = `./${productName}`;
   cmd(buildPath, processName, []);
 }
 
