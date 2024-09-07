@@ -2,8 +2,8 @@
 # See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-multi-platform.yml
 name: CMake on a single platform
 
-on: 
-  workflow_dispatch:
+on:
+  workflow_dispatch:    
   push:
     branches: [ "main" ]
   pull_request:
