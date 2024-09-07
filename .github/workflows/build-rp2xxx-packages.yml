@@ -31,7 +31,7 @@ jobs:
       run: npm run beachball:check
 
     - name: pull submodules
-      run: git submodules update --init --recursive
+      run: git submodule update --init --recursive
 
     - uses: ConorMacBride/install-package@v1
       name: Install APT packages
@@ -42,6 +42,7 @@ jobs:
       run: node build --rebuild --target rp2xxx --release
 
     - name: Archive production artifacts
+      if: ${{ github.event_name == 'push' }}
       uses: actions/upload-artifact@v4
       with:
         name: ${{ env.PRODUCT_NAME }}
