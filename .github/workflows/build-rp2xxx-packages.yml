@@ -63,10 +63,48 @@ jobs:
           build/pico-sdk-js-*.*
 
     - name: Create Release
+      id: releaseStep
       if: ${{ env.CREATE_RELEASE }}
       uses: actions/create-release@v1
       with:
         tag_name: v${{env.PACKAGE_VERSION}}
         release_name: Release ${{env.PACKAGE_NAME}} v${{env.PACKAGE_VERSION}}
+        body_path: CHANGELOG.md
         draft: true
         prerelease: true
+
+    - name: Upload Release Components (uf2 file)
+      if: ${{ env.CREATE_RELEASE }}
+      uses: actions/upload-release-asset
+      with:
+        upload_url: ${{ steps.releaseStep.outputs.upload_url }}
+        asset_path: build/${{ env.PRODUCT_NAME }}.uf2
+        asset_name: ${{ env.PRODUCT_NAME }}.uf2
+        asset_content_type: application/octet-stream
+
+    - name: Upload Release Components (elf file)
+      if: ${{ env.CREATE_RELEASE }}
+      uses: actions/upload-release-asset
+      with:
+        upload_url: ${{ steps.releaseStep.outputs.upload_url }}
+        asset_path: build/${{ env.PRODUCT_NAME }}.elf
+        asset_name: ${{ env.PRODUCT_NAME }}.elf
+        asset_content_type: application/octet-stream
+
+    - name: Upload Release Components (elf.map file)
+      if: ${{ env.CREATE_RELEASE }}
+      uses: actions/upload-release-asset
+      with:
+        upload_url: ${{ steps.releaseStep.outputs.upload_url }}
+        asset_path: build/${{ env.PRODUCT_NAME }}.elf.map
+        asset_name: ${{ env.PRODUCT_NAME }}.elf.map
+        asset_content_type: application/octet-stream
+
+    - name: Upload Release Components (bin file)
+      if: ${{ env.CREATE_RELEASE }}
+      uses: actions/upload-release-asset
+      with:
+        upload_url: ${{ steps.releaseStep.outputs.upload_url }}
+        asset_path: build/${{ env.PRODUCT_NAME }}.bin
+        asset_name: ${{ env.PRODUCT_NAME }}.bin
+        asset_content_type: application/octet-stream
