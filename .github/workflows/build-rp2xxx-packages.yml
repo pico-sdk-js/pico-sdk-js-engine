@@ -13,12 +13,6 @@ on:
   pull_request:
     branches: [ "main" ]
 
-env:
-  # PRODUCT_NAME, PACKAGE_NAME, & PACKAGE_VERSION are set in the 'Run build' step
-  PRODUCT_NAME: tbd.0.0.0
-  PACKAGE_NAME: tbd
-  PACKAGE_VERSION: 0.0.0
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -43,7 +37,9 @@ jobs:
 
     - name: Create changelog & bump version
       if: ${{ inputs.release }}
-      run: npm run beachball:bump -- --no-commit --no-push
+      # For testing without actually bumping use the below run instead...
+      # run: npm run beachball:bump -- --no-commit --no-push
+      run: npm run beachball:bump
 
     - name: pull submodules
       run: git submodule update --init --recursive
