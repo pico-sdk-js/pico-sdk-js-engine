@@ -76,10 +76,10 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: build
-        path: build
+        path: artifact
           
     - name: Create Release
-      id: releaseStep
+      id: release-step
       uses: softprops/action-gh-release@v2
       with:
         tag_name: v${{needs.build.outputs.PACKAGE_VERSION}}
@@ -88,7 +88,12 @@ jobs:
         draft: true
         prerelease: true
         files: |
-          build/${{ needs.build.outputs.PRODUCT_NAME }}.uf2
-          build/${{ needs.build.outputs.PRODUCT_NAME }}.elf
-          build/${{ needs.build.outputs.PRODUCT_NAME }}.elf.map
-          build/${{ needs.build.outputs.PRODUCT_NAME }}.bin
+          artifact/build/${{ needs.build.outputs.PRODUCT_NAME }}.uf2
+          artifact/build/${{ needs.build.outputs.PRODUCT_NAME }}.elf
+          artifact/build/${{ needs.build.outputs.PRODUCT_NAME }}.elf.map
+          artifact/build/${{ needs.build.outputs.PRODUCT_NAME }}.bin
+
+    - name: Append Build Log
+      run: |
+        echo "### Release ${{ steps.release-step.outputs.id }} published" >> $GITHUB_STEP_SUMMARY
+        echo "[Release ${{needs.build.outputs.PACKAGE_NAME}} v${{needs.build.outputs.PACKAGE_VERSION}}](${{ steps.release-step.outputs.url }})" >> $GITHUB_STEP_SUMMARY
