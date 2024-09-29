@@ -84,7 +84,7 @@ jobs:
       with:
         tag_name: v${{needs.build.outputs.PACKAGE_VERSION}}
         name: Release ${{needs.build.outputs.PACKAGE_NAME}} v${{needs.build.outputs.PACKAGE_VERSION}}
-        body_path: build/CHANGELOG.md
+        body_path: artifact/CHANGELOG.md
         draft: true
         prerelease: true
         files: |
