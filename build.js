@@ -12,8 +12,8 @@ const package = require("./package.json")
 const productName = `${package.name}-${package.version}`;
 
 if (process.env.GITHUB_OUTPUT) {
-  fs.appendFileSync(process.env.GITHUB_OUTPUT, `PACKAGE_NAME=${package.name}\r\nPACKAGE_VERSION=${package.version}\r\nPRODUCT_NAME=${productName}\r\n`);
-  fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `# ${package.name} ${package.version}\r\n`);
+  fs.appendFileSync(process.env.GITHUB_OUTPUT, `PACKAGE_NAME=${package.name}\nPACKAGE_VERSION=${package.version}\nPRODUCT_NAME=${productName}\n`);
+  fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `# ${package.name} ${package.version}\n`);
 }
 
 // Parse options
