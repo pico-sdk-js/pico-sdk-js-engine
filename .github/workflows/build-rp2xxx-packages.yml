@@ -1,21 +1,25 @@
-# This starter workflow is for a CMake project running on a single platform. There is a different starter workflow if you need cross-platform coverage.
-# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-multi-platform.yml
-name: CMake on a single platform
+name: Build RP2XXX Package
 
 on:
-  workflow_dispatch:    
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Create Release'
+        type: boolean
+        default: false
+
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
-env:
-  # PRODUCT_NAME is set in the 'Run build' step
-  PRODUCT_NAME: tbd.0.0.0
-
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      PRODUCT_NAME: ${{ steps.run-build.outputs.PRODUCT_NAME }}
+      PACKAGE_NAME: ${{ steps.run-build.outputs.PACKAGE_NAME }}
+      PACKAGE_VERSION: ${{ steps.run-build.outputs.PACKAGE_VERSION }}
 
     steps:
 
@@ -28,7 +32,14 @@ jobs:
       run: npm install
 
     - name: Check for changefiles
+      if: ${{ !inputs.release }}
       run: npm run beachball:check
+
+    - name: Create changelog & bump version
+      if: ${{ inputs.release }}
+      # For testing without actually bumping use the below run instead...
+      # run: npm run beachball:bump -- --no-commit --no-push
+      run: npm run beachball:bump
 
     - name: pull submodules
       run: git submodule update --init --recursive
@@ -39,12 +50,46 @@ jobs:
         apt: nodejs npm cmake gcc gcc-arm-none-eabi cppcheck clang-format libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib
 
     - name: Run build
+      id: run-build
       run: node build --rebuild --target rp2xxx --release
 
     - name: Archive production artifacts
-      if: ${{ github.event_name == 'push' }}
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ env.PRODUCT_NAME }}
+        name: build
         path: |
           build/pico-sdk-js-*.*
+          CHANGELOG.md
+
+  release:
+    if: ${{ inputs.release }}
+    runs-on: ubuntu-latest
+    needs: [build]
+
+    steps:
+    
+    - name: Download artifacts from build job
+      uses: actions/download-artifact@v4
+      with:
+        name: build
+        path: artifact
+          
+    - name: Create Release
+      id: release-step
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: v${{needs.build.outputs.PACKAGE_VERSION}}
+        name: Release ${{needs.build.outputs.PACKAGE_NAME}} v${{needs.build.outputs.PACKAGE_VERSION}}
+        body_path: artifact/CHANGELOG.md
+        draft: true
+        prerelease: true
+        files: |
+          artifact/build/${{ needs.build.outputs.PRODUCT_NAME }}.uf2
+          artifact/build/${{ needs.build.outputs.PRODUCT_NAME }}.elf
+          artifact/build/${{ needs.build.outputs.PRODUCT_NAME }}.elf.map
+          artifact/build/${{ needs.build.outputs.PRODUCT_NAME }}.bin
+
+    - name: Append Build Log
+      run: |
+        echo "### Release ${{ steps.release-step.outputs.id }} published" >> $GITHUB_STEP_SUMMARY
+        echo "[Release ${{needs.build.outputs.PACKAGE_NAME}} v${{needs.build.outputs.PACKAGE_VERSION}}](${{ steps.release-step.outputs.url }})" >> $GITHUB_STEP_SUMMARY
