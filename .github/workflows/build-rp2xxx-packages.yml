@@ -72,7 +72,7 @@ jobs:
 
     steps:
     
-    - name: Download math result for job 1
+    - name: Download artifacts from build job
       uses: actions/download-artifact@v4
       with:
         name: build
