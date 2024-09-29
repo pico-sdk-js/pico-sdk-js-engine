@@ -63,6 +63,7 @@ jobs:
         name: build
         path: |
           build/pico-sdk-js-*.*
+          CHANGELOG.md
 
   release:
     if: ${{ inputs.release }}
@@ -83,7 +84,7 @@ jobs:
       with:
         tag_name: v${{needs.build.outputs.PACKAGE_VERSION}}
         name: Release ${{needs.build.outputs.PACKAGE_NAME}} v${{needs.build.outputs.PACKAGE_VERSION}}
-        body_path: CHANGELOG.md
+        body_path: build/CHANGELOG.md
         draft: true
         prerelease: true
         files: |
