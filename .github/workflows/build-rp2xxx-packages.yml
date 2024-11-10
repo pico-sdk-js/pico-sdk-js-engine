@@ -39,7 +39,7 @@ jobs:
       if: ${{ inputs.release }}
       # For testing without actually bumping use the below run instead...
       # run: npm run beachball:bump -- --no-commit --no-push
-      run: npm run beachball:bump
+      run: npm run beachball:publish
 
     - name: pull submodules
       run: git submodule update --init --recursive

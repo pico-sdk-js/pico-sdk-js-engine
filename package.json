@@ -11,6 +11,6 @@
     "scripts": {
         "beachball:change": "beachball change --no-commit",
         "beachball:check": "beachball check",
-        "beachball:bump": "beachball bump"
+        "beachball:publish": "beachball publish"
     }
 }
