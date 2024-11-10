@@ -100,15 +100,16 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         tag_name: v${{needs.build.outputs.PACKAGE_VERSION}}
-        name: Release ${{needs.build.outputs.PACKAGE_NAME}} v${{needs.build.outputs.PACKAGE_VERSION}}
+        name: ${{needs.build.outputs.PACKAGE_NAME}} v${{needs.build.outputs.PACKAGE_VERSION}}
         body_path: CHANGELOG.md
-        draft: true
+        draft: false
         prerelease: true
+        fail_on_unmatched_files: true
         files: |
-          artifact/build/${{ needs.build.outputs.PRODUCT_NAME }}.uf2
-          artifact/build/${{ needs.build.outputs.PRODUCT_NAME }}.elf
-          artifact/build/${{ needs.build.outputs.PRODUCT_NAME }}.elf.map
-          artifact/build/${{ needs.build.outputs.PRODUCT_NAME }}.bin
+          artifact/${{ needs.build.outputs.PRODUCT_NAME }}.uf2
+          artifact/${{ needs.build.outputs.PRODUCT_NAME }}.elf
+          artifact/${{ needs.build.outputs.PRODUCT_NAME }}.elf.map
+          artifact/${{ needs.build.outputs.PRODUCT_NAME }}.bin
 
     - name: Append Build Log
       run: |
