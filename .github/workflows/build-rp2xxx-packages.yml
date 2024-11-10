@@ -15,8 +15,35 @@ on:
     branches: [ "main" ]
 
 jobs:
+  prebuild:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # do initial pull of source w/o submodules to save time if npm install or beachball:check fails
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v4.0.1
+  
+      - name: Pull NPM Packages
+        run: npm install
+  
+      - name: Check for changefiles
+        if: ${{ !inputs.release }}
+        run: npm run beachball:check
+  
+      - name: Create changelog & bump version
+        if: ${{ inputs.release }}
+        # For testing without actually bumping use the below run instead...
+        # run: npm run beachball:bump -- --no-commit --no-push
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          npm run beachball:publish
+  
   build:
     runs-on: ubuntu-latest
+    needs: [prebuild]
+    if: ${{ ! ( github.event_name == 'pull_request' && contains( github.event.pull_request.title, '[NO_BUILD]' ) ) }}
     outputs:
       PRODUCT_NAME: ${{ steps.run-build.outputs.PRODUCT_NAME }}
       PACKAGE_NAME: ${{ steps.run-build.outputs.PACKAGE_NAME }}
@@ -26,52 +53,28 @@ jobs:
 
     # do initial pull of source w/o submodules to save time if npm install or beachball:check fails
     - uses: actions/checkout@v3
+      with:
+        submodules: 'recursive'
 
     - uses: actions/setup-node@v4.0.1
 
     - name: Pull NPM Packages
       run: npm install
 
-    - name: Check for changefiles
-      if: ${{ !inputs.release }}
-      run: npm run beachball:check
-
-    - name: Create changelog & bump version
-      if: ${{ inputs.release }}
-      # For testing without actually bumping use the below run instead...
-      # run: npm run beachball:bump -- --no-commit --no-push
-      run: |
-        git config --global user.name "${{ github.actor }}"
-        git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-        npm run beachball:publish
-
-    - name: pull submodules
-      # if this is a pull_request & title contains '[NO_BUILD]', then skip the build
-      if: ${{ ! ( github.event_name == 'pull_request' && contains( github.event.pull_request.title, '[NO_BUILD]' ) ) }}
-      run: git submodule update --init --recursive
-
     - uses: ConorMacBride/install-package@v1
-      # if this is a pull_request & title contains '[NO_BUILD]', then skip the build
-      if: ${{ ! ( github.event_name == 'pull_request' && contains( github.event.pull_request.title, '[NO_BUILD]' ) ) }}
       name: Install APT packages
       with:
         apt: nodejs npm cmake gcc gcc-arm-none-eabi cppcheck clang-format libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib
 
     - name: Run build
-      # if this is a pull_request & title contains '[NO_BUILD]', then skip the build
-      if: ${{ ! ( github.event_name == 'pull_request' && contains( github.event.pull_request.title, '[NO_BUILD]' ) ) }}
       id: run-build
       run: node build --rebuild --target rp2xxx --release
 
     - name: Archive production artifacts
-      # if this is a pull_request & title contains '[NO_BUILD]', then skip the build
-      if: ${{ ! ( github.event_name == 'pull_request' && contains( github.event.pull_request.title, '[NO_BUILD]' ) ) }}
       uses: actions/upload-artifact@v4
       with:
         name: build
-        path: |
-          build/pico-sdk-js-*.*
-          CHANGELOG.md
+        path: build/pico-sdk-js-*.*
 
   release:
     if: ${{ inputs.release }}
