@@ -8,8 +8,6 @@ on:
         type: boolean
         default: false
 
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
