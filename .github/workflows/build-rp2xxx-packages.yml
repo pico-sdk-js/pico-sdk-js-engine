@@ -13,6 +13,8 @@ on:
 
 jobs:
   build:
+    # if this is a pull_request & title contains '[NO_BUILD]', then skip the build
+    if: ${{ ! ( github.event_name == 'pull_request' && contains( github.event.pull_request.title, '[NO_BUILD]' ) ) }}
     runs-on: ubuntu-latest
     outputs:
       PRODUCT_NAME: ${{ steps.run-build.outputs.PRODUCT_NAME }}
