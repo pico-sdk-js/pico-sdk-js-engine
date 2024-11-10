@@ -21,7 +21,7 @@ jobs:
     steps:
 
       # do initial pull of source w/o submodules to save time if npm install or beachball:check fails
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4.0.1
   
       - name: Pull NPM Packages
@@ -52,7 +52,7 @@ jobs:
     steps:
 
     # do initial pull of source w/o submodules to save time if npm install or beachball:check fails
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: 'recursive'
 
@@ -83,6 +83,12 @@ jobs:
 
     steps:
     
+    - uses: actions/checkout@v4
+      with:
+        sparse-checkout: |
+          CHANGELOG.md
+        sparse-checkout-cone-mode: false
+
     - name: Download artifacts from build job
       uses: actions/download-artifact@v4
       with:
