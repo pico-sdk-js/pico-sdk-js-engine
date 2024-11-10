@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Initial release of pico-sdk-js for running javascript on a Raspberry Pi Pico or Pico-W",
-  "packageName": "pico-sdk-js",
-  "email": "jt000@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}

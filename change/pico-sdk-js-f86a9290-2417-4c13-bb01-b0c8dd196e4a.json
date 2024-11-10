@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Using publish instead of bump",
-  "packageName": "pico-sdk-js",
-  "email": "jt000@users.noreply.github.com",
-  "dependentChangeType": "none"
-}
