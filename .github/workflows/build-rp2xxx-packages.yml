@@ -13,8 +13,6 @@ on:
 
 jobs:
   build:
-    # if this is a pull_request & title contains '[NO_BUILD]', then skip the build
-    if: ${{ ! ( github.event_name == 'pull_request' && contains( github.event.pull_request.title, '[NO_BUILD]' ) ) }}
     runs-on: ubuntu-latest
     outputs:
       PRODUCT_NAME: ${{ steps.run-build.outputs.PRODUCT_NAME }}
@@ -39,21 +37,29 @@ jobs:
       if: ${{ inputs.release }}
       # For testing without actually bumping use the below run instead...
       # run: npm run beachball:bump -- --no-commit --no-push
-      run: npm run beachball:bump
+      run: npm run beachball:publish
 
     - name: pull submodules
+      # if this is a pull_request & title contains '[NO_BUILD]', then skip the build
+      if: ${{ ! ( github.event_name == 'pull_request' && contains( github.event.pull_request.title, '[NO_BUILD]' ) ) }}
       run: git submodule update --init --recursive
 
     - uses: ConorMacBride/install-package@v1
+      # if this is a pull_request & title contains '[NO_BUILD]', then skip the build
+      if: ${{ ! ( github.event_name == 'pull_request' && contains( github.event.pull_request.title, '[NO_BUILD]' ) ) }}
       name: Install APT packages
       with:
         apt: nodejs npm cmake gcc gcc-arm-none-eabi cppcheck clang-format libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib
 
     - name: Run build
+      # if this is a pull_request & title contains '[NO_BUILD]', then skip the build
+      if: ${{ ! ( github.event_name == 'pull_request' && contains( github.event.pull_request.title, '[NO_BUILD]' ) ) }}
       id: run-build
       run: node build --rebuild --target rp2xxx --release
 
     - name: Archive production artifacts
+      # if this is a pull_request & title contains '[NO_BUILD]', then skip the build
+      if: ${{ ! ( github.event_name == 'pull_request' && contains( github.event.pull_request.title, '[NO_BUILD]' ) ) }}
       uses: actions/upload-artifact@v4
       with:
         name: build
