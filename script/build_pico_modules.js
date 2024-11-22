@@ -70,6 +70,24 @@ function getDefaultValue(cType) {
     }
 }
 
+function getTSDefaultValue(cType, types) {
+
+    let jsType = CtoJSType(cType);
+
+    switch (jsType) {
+        case "number":
+            return '0';
+        case "boolean":
+            return 'true';
+        case "string":
+            return '\'string\'';
+        case "function":
+            return '() => {}';
+        default:
+            throw new Error(`Unknown default for ${cType} (${jsType})`);
+    }
+}
+
 class ModuleData {
     constructor(moduleInfo, target) {
         this.target = target;
@@ -86,6 +104,7 @@ class ModuleTsOnlyFunction {
     constructor(functionInfo, module) {
         this.module = module;
         this.tsDef = functionInfo.tsDef;
+        this.tsTests = functionInfo.tsTests ?? [];
     }
 
     tsSignature() {
@@ -175,6 +194,16 @@ class ModuleFunction {
         let argList = this.args?.map(a => `${a.name}: ${CtoTSType(a.type, this.module.types)}`).join(', ') ?? '';
         return `function ${this.name}(${argList}): ${CtoTSType(this.returnType, this.module.types, true)}`;
     }
+
+    tsTests() {
+        let argList = this.args?.map(a => getTSDefaultValue(a.type, this.module.types)).join(', ') ?? '';
+        return [
+            {
+                returnType: CtoTSType(this.returnType, this.module.types, true),
+                test: `${this.name}(${argList})`
+            }
+        ];
+    }
 }
 
 class ModuleFunctionArg {
@@ -224,14 +253,14 @@ function generate(modInfo, templateFile, outdir, target) {
     }
 }
 
-function generateTypes(modInfo, templateFile, outdir) {
+function generateTypes(modInfo, templateFile, outdir, outfile) {
     const templatePath = path.join(__dirname, templateFile);
     const templateStr = fs.readFileSync(templatePath).toString('utf8');
     const options = {
         strict: true
     };
     const template = Handlebars.compile(templateStr, options);
-    const outputFile = path.join(outdir, "index.d.ts");
+    const outputFile = path.join(outdir, outfile);
 
     const modules = modInfo.modules.map((v) => new ModuleData(v), null);
 

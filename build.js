@@ -19,7 +19,7 @@ if (process.env.GITHUB_OUTPUT) {
 // Parse options
 var unknownArg = false;
 var minimistOpts = { 
-  string: ['target'],
+  string: ['target', 'genOut'],
   boolean: ['clean', 'cmake', 'make', 'gen', 'run', 'build', 'rebuild', 'test', 'publish', 'debug', 'release'],
   default: {
     target: '?'
@@ -62,7 +62,7 @@ if (argv.target === '?') {
 }
 
 const buildPath = path.join(__dirname, "build");
-const typesPath = path.join(buildPath, "types");
+const typesPath = argv.genOut ? path.resolve(argv.genOut) : path.join(buildPath, "types");
 const testBuildPath = path.join(buildPath, "test");
 const jerryBuildPath = path.join(__dirname, "lib/jerryscript/build");
 
@@ -79,7 +79,8 @@ if (argv.gen) {
   pico_modules.generate(nativeModules, 'modules.handlebars', rp2xxxModulePath, 'rp2xxx');
 
   fs.ensureDirSync(typesPath);
-  pico_modules.generateTypes(nativeModules, 'typescript_types.handlebars', typesPath);
+  pico_modules.generateTypes(nativeModules, 'typescript_types.handlebars', typesPath, 'index.d.ts');
+  pico_modules.generateTypes(nativeModules, 'typescript_types_tests.handlebars', typesPath, 'pico-sdk-js-tests.ts');
 }
 
 if (argv.cmake) {
