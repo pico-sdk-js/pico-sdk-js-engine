@@ -126,6 +126,9 @@ void psj_repl_init()
     // Exit Everything (only available on linux)
     psj_add_command("quit", psj_quit_command);
 
+    // Force a failure for testing purposes
+    psj_add_command("fail", psj_fail_command);
+
     // ## EXECUTION COMMANDS
 
     // Stop & Load the passed in program stored locally in flash
@@ -170,11 +173,11 @@ void psj_repl_cycle()
                 // added, then will need to consider interrupt suspension 
                 // when calling a user command
                 // 
-                // push_interrupt_suspension();
+                push_interrupt_suspension();
 
                 psj_repl_call_command_safe(&cmd);
 
-                // pop_interrupt_suspension();
+                pop_interrupt_suspension();
             }
 
             jerry_release_value(cmd);

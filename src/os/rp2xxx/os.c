@@ -113,3 +113,12 @@ void os_restore_interrupts(uint32_t status)
         multicore_lockout_end_blocking();    
     }
 }
+
+// Define weak functions to handle ISR_HARDFAULT
+void isr_hardfault(void)
+{
+    printf("!#isr_hardfault#!\n");
+    fflush(stdout);
+    
+    watchdog_reboot(0, 0, 0);
+}
