@@ -27,5 +27,6 @@ jerry_value_t psj_kill_command(jerry_value_t request_args);
 jerry_value_t psj_restart_command(jerry_value_t request_args);
 
 jerry_value_t psj_quit_command(jerry_value_t request_args);
+jerry_value_t psj_fail_command(jerry_value_t request_args);
 
 #endif // __REPL_H
