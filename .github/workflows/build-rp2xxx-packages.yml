@@ -69,7 +69,7 @@ jobs:
       run: |
         git config --global user.name "${{ github.actor }}"
         git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-        git commit -m "Version bump to v${{ steps.run-build.outputs.PACKAGE_VERSION }}"
+        git commit -a -m "Version bump to v${{ steps.run-build.outputs.PACKAGE_VERSION }}"
         git push
 
     - name: Archive production artifacts
