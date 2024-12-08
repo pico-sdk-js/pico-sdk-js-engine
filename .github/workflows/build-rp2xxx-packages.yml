@@ -58,16 +58,19 @@ jobs:
 
     - name: Create changelog & bump version
       if: ${{ inputs.release }}
-      # For testing without actually bumping use the below run instead...
-      # run: npm run beachball:bump -- --no-commit --no-push
-      run: |
-        git config --global user.name "${{ github.actor }}"
-        git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-        npm run beachball:publish
+      run: npm run beachball:bump
 
     - name: Run build
       id: run-build
       run: node build --rebuild --target rp2xxx --release
+
+    - name: Merge version bump
+      if: ${{ inputs.release }}
+      run: |
+        git config --global user.name "${{ github.actor }}"
+        git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+        git commit -m "Version bump to v${{ steps.run-build.outputs.PACKAGE_VERSION }}"
+        git push
 
     - name: Archive production artifacts
       uses: actions/upload-artifact@v4
