@@ -1,6 +1,6 @@
 {
   "name": "pico-sdk-js",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "devDependencies": {
     "beachball": "^2.47.0",
     "fs-extra": "^4.0.2",
@@ -11,6 +11,6 @@
   "scripts": {
     "beachball:change": "beachball change",
     "beachball:check": "beachball check",
-    "beachball:publish": "beachball publish"
+    "beachball:bump": "beachball bump"
   }
 }
