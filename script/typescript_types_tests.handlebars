@@ -7,32 +7,20 @@
 //
 
 {{#each modules}}
-{{#if isGlobal}}
-
-// {{name}} module
-{{#each types}}
-
-type {{@key}} = {{{this}}};
-{{/each}}
-{{#each functions}}
-
-{{tsSignature}};
-{{/each}}
-{{/if}}
+{{#unless isGlobal}}
+import * as {{name}} from "pico/{{name}}";
+{{/unless}}
 {{/each}}
 {{#each modules}}
-{{#unless isGlobal}}
 
 // {{name}} module
-declare module "pico/{{name}}" {
-    {{#each types}}
-
-    type {{@key}} = {{{this}}};
-    {{/each}}
+(() => {
     {{#each functions}}
 
-    {{tsSignature}};
+    {{#each tsTests}}
+    // $ExpectType {{{returnType}}}
+    {{#unless ../../isGlobal}}{{{../../name}}}.{{/unless}}{{{test}}};
     {{/each}}
-}
-{{/unless}}
+    {{/each}}
+});
 {{/each}}

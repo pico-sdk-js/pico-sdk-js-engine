@@ -4,8 +4,20 @@
             "name": "global",
             "isGlobal": true,
             "functions": [
-                { "tsDef": "function require (id: string): any" },
-                { "tsDef": "function print (...data: any[]): void" }
+                { 
+                    "tsDef": "function require (id: string): any",
+                    "tsTests": [
+                        { "returnType": "any", "test": "require('string')" }
+                    ]
+                },
+                { 
+                    "tsDef": "function print (...data: any[]): void",
+                    "tsTests": [
+                        { "returnType": "void", "test": "print()" },
+                        { "returnType": "void", "test": "print(1)" },
+                        { "returnType": "void", "test": "print('a', 1)" }
+                    ]
+                }
             ]
         },
         {
