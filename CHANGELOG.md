@@ -4,14 +4,6 @@
 
 <!-- Start content -->
 
-## 0.0.2
-
-Sun, 08 Dec 2024 13:04:38 GMT
-
-### Patches
-
-- Resolving issue writing to flash (jt000@users.noreply.github.com)
-
 ## 0.0.1
 
 Sun, 10 Nov 2024 21:41:13 GMT
