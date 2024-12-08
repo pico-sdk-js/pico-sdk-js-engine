@@ -1,6 +1,6 @@
 {
   "name": "pico-sdk-js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "devDependencies": {
     "beachball": "^2.47.0",
     "fs-extra": "^4.0.2",
