@@ -7,23 +7,11 @@
 #include "jerryscript-port.h"
 #include "lfs.h"
 
-#ifndef FLASH_PAGE_SIZE
-    #define FLASH_PAGE_SIZE (1u << 8)
-#endif
-
-#ifndef FLASH_SECTOR_SIZE
-    #define FLASH_SECTOR_SIZE (1u << 12)
-#endif
-
-#ifndef FLASH_BLOCK_SIZE
-    #define FLASH_BLOCK_SIZE (1u << 16)
-#endif
-
 // Read a region in a block. Negative error codes are propagated
 // to the user.
 int user_provided_block_device_read(const struct lfs_config *c, lfs_block_t block, lfs_off_t off, void *buffer, lfs_size_t size)
 {
-    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_read(block: %u, off: %u, buffer: %p, size: %u)", block, off, buffer, size);
+    // jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_read(block: %u, off: %u, buffer: %p, size: %u)", block, off, buffer, size);
 
     u_int8_t *flash_buffer = os_get_flash_buffer();
     uint32_t offset = (c->block_size * block) + off;
@@ -37,7 +25,7 @@ int user_provided_block_device_read(const struct lfs_config *c, lfs_block_t bloc
 // May return LFS_ERR_CORRUPT if the block should be considered bad.
 int user_provided_block_device_prog(const struct lfs_config *c, lfs_block_t block, lfs_off_t off, const void *buffer, lfs_size_t size)
 {
-    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_prog(block: %u, off: %u, buffer: %p, size: %u)", block, off, buffer, size);
+    // jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_prog(block: %u, off: %u, buffer: %p, size: %u)", block, off, buffer, size);
 
     // set a page of data
     uint32_t offset = (c->block_size * block) + off;
@@ -52,7 +40,7 @@ int user_provided_block_device_prog(const struct lfs_config *c, lfs_block_t bloc
 // May return LFS_ERR_CORRUPT if the block should be considered bad.
 int user_provided_block_device_erase(const struct lfs_config *c, lfs_block_t block)
 {
-    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_erase(block: %u)", block);
+    // jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_erase(block: %u)", block);
     uint32_t offset = c->block_size * block;
 
     // Clear entire flash_buffer
@@ -65,7 +53,23 @@ int user_provided_block_device_erase(const struct lfs_config *c, lfs_block_t blo
 // are propagated to the user.
 int user_provided_block_device_sync(const struct lfs_config *c)
 {
-    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_sync()");
+    // jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_sync()");
+    return LFS_ERR_OK;
+}
+
+int user_provided_block_device_lock(const struct lfs_config *c)
+{
+    // jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_lock()");
+    push_interrupt_suspension();
+
+    return LFS_ERR_OK;
+}
+
+int user_provided_block_device_unlock(const struct lfs_config *c)
+{
+    pop_interrupt_suspension();
+    // jerry_port_log(JERRY_LOG_LEVEL_TRACE, "user_provided_block_device_unlock()");
+
     return LFS_ERR_OK;
 }
 
@@ -74,10 +78,12 @@ lfs_t lfs;
 // configuration of the filesystem is provided by this struct
 const struct lfs_config cfg = {
     // block device operations
-    .read  = user_provided_block_device_read,
-    .prog  = user_provided_block_device_prog,
-    .erase = user_provided_block_device_erase,
-    .sync  = user_provided_block_device_sync,
+    .read   = user_provided_block_device_read,
+    .prog   = user_provided_block_device_prog,
+    .erase  = user_provided_block_device_erase,
+    .sync   = user_provided_block_device_sync,
+    .lock   = user_provided_block_device_lock,
+    .unlock = user_provided_block_device_unlock,
 
     // block device configuration
     .read_size = FLASH_PAGE_SIZE,
@@ -346,4 +352,36 @@ int psj_flash_delete(const jerry_char_t *path)
     }
 
     return 1;
+}
+
+uint32_t psj_flash_available()
+{
+    lfs_dir_t root_dir;
+    int err = lfs_dir_open(&lfs, &root_dir, "/");
+    if (err < 0)
+    {
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error opening root directory: %i", err);
+        return 0;
+    }
+
+    struct lfs_info file_info;
+    uint32_t totalAllocated = 0;
+
+    while ((err = lfs_dir_read(&lfs, &root_dir, &file_info )) > 0) 
+    {
+        totalAllocated += file_info.size;
+    }
+
+    if (err < 0)
+    {
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error reading root directory: %i", err);
+    }
+
+    err = lfs_dir_close(&lfs, &root_dir);
+    if (err < 0)
+    {
+        jerry_port_log(JERRY_LOG_LEVEL_ERROR, "Error closing root directory: %i", err);
+    }
+
+    return LFS_FILE_MAX - totalAllocated;
 }

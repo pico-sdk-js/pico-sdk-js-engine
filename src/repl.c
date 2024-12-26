@@ -169,15 +169,7 @@ void psj_repl_cycle()
             }
             else
             {
-                // multi-core not currently supported. When support is 
-                // added, then will need to consider interrupt suspension 
-                // when calling a user command
-                // 
-                push_interrupt_suspension();
-
                 psj_repl_call_command_safe(&cmd);
-
-                pop_interrupt_suspension();
             }
 
             jerry_release_value(cmd);

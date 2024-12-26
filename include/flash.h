@@ -19,5 +19,6 @@ int psj_flash_read_all(const jerry_char_t *path, jerry_char_t *buffer, uint32_t 
 int psj_flash_read(const jerry_char_t *path, jerry_char_t *buffer, uint32_t max_length, uint32_t segment);
 int psj_flash_list(struct lfs_info *file_info, uint32_t max_file_info);
 int psj_flash_delete(const jerry_char_t *path);
+uint32_t psj_flash_available();
 
 #endif // __FLASH_H

@@ -37,6 +37,18 @@ Flash ROM is 2MB in total starting at XIP_BASE and includes this program's code
 #define FLASH_TARGET_OFFSET (1024 * 1024)
 #define FLASH_TARGET_SIZE (1024 * 1024)
 
+#ifndef FLASH_PAGE_SIZE
+    #define FLASH_PAGE_SIZE (1u << 8)
+#endif
+
+#ifndef FLASH_SECTOR_SIZE
+    #define FLASH_SECTOR_SIZE (1u << 12)
+#endif
+
+#ifndef FLASH_BLOCK_SIZE
+    #define FLASH_BLOCK_SIZE (1u << 16)
+#endif
+
 uint32_t os_get_flash_buffer_size();
 void os_flash_init();
 void os_flash_cleanup();
