@@ -16,6 +16,10 @@ jerry_value_t psj_stats_command(jerry_value_t request_args)
     psj_jerry_set_uint32_property(value, "used ram", usedRam);
     psj_jerry_set_uint32_property(value, "available ram", totalRam - usedRam);
 
+    uint32_t availableFileSystem = psj_flash_available();
+    psj_jerry_set_uint32_property(value, "total bytes", LFS_FILE_MAX);
+    psj_jerry_set_uint32_property(value, "available bytes", availableFileSystem);
+
     jerry_heap_stats_t out_stats;
     if (jerry_get_memory_stats(&out_stats))
     {

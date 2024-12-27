@@ -192,6 +192,8 @@ else()
 endif()
 
 add_compile_definitions(LFS_NO_ERROR)
+add_compile_definitions(LFS_THREADSAFE)
+add_compile_definitions(LFS_FILE_MAX=1048576)
 add_compile_definitions(TARGET_NAME="${TARGET_NAME}")
 add_compile_definitions(TARGET_VERSION="${TARGET_VERSION}")
 
