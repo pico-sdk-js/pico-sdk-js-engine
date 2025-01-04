@@ -153,7 +153,7 @@ class ModuleFunction {
             this.returnDescription = functionInfo.returnDescription;
         }
 
-        this.args = this.args.map((a) => new ModuleFunctionArg(a));
+        this.args = this.args.map((a) => new ModuleFunctionArg(a, this.module));
         this.linuxRetVal = functionInfo.linuxRetVal ?? getDefaultValue(this.returnType);
         this.callback = functionInfo.callback;
         this.external = !!functionInfo.external;
@@ -161,6 +161,10 @@ class ModuleFunction {
 
     jsReturnType(returnVoid) {
         return CtoJSType(this.returnType, returnVoid);
+    }
+
+    tsReturnType() {
+        return CtoTSType(this.returnType, this.module.types, false);
     }
 
     functionType() {
@@ -237,6 +241,10 @@ class ModuleFunctionArg {
 
     jsType() {
         return CtoJSType(this.type);
+    }
+
+    tsType() {
+        return CtoTSType(this.type, this.module.types, false);
     }
 }
 

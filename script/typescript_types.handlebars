@@ -31,6 +31,15 @@ declare module "pico/{{name}}" {
     {{/each}}
     {{#each functions}}
 
+    /**
+     * {{description}}
+    {{#each args}}
+     * @param { {{type}} } {{name}} {{description}}
+    {{/each}}
+    {{#if returnDescription}}
+     * @returns { {{returnType}} } {{returnDescription}}
+    {{/if}}
+     */
     {{tsSignature}};
     {{/each}}
 }

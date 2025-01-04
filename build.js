@@ -90,6 +90,7 @@ if (argv.gen) {
   fs.ensureDirSync(typesPath);
   pico_modules.generateTypes(nativeModules, 'typescript_types.handlebars', typesPath, 'index.d.ts');
   pico_modules.generateTypes(nativeModules, 'typescript_types_tests.handlebars', typesPath, 'pico-sdk-js-tests.ts');
+  pico_modules.generateTypes(nativeModules, 'typescript_docs.handlebars', typesPath, 'index.md');
 }
 
 if (argv.cmake) {
