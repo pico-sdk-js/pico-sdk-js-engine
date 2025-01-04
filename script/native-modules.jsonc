@@ -378,8 +378,18 @@
           ]
         },
         {
-          "fn": "void clocks_enable_resus (resus_callback_t resus_callback)",
-          "callback": "CALLBACK_CLOCK_ENABLE_RESUS"
+          "name": "clocks_enable_resus",
+          "callback": "CALLBACK_CLOCK_ENABLE_RESUS",
+          "description": "Enable the resus function. Restarts clk_sys if it is accidentally stopped.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "resus_callback_t",
+              "name": "resus_callback",
+              "description": "A function pointer provided by the user to call if a resus event happens."
+            }
+          ]
         },
         {
           "name": "clock_gpio_init_int_frac",
@@ -786,12 +796,47 @@
           ]
         },
         {
-          "fn": "void gpio_set_irq_callback (gpio_irq_callback_t callback)",
-          "callback": "CALLBACK_GPIO_IRQ"
+          "name": "gpio_set_irq_callback",
+          "callback": "CALLBACK_GPIO_IRQ",
+          "description": "Set the generic callback used for GPIO IRQ events for the current core.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "gpio_irq_callback_t",
+              "name": "callback",
+              "description": "Default user function to call on GPIO irq. Note only one of these can be set per processor."
+            }
+          ]
         },
         {
-          "fn": "void gpio_set_irq_enabled_with_callback (uint gpio, uint32_t event_mask, bool enabled, gpio_irq_callback_t callback)",
-          "external": true
+          "name": "gpio_set_irq_enabled_with_callback",
+          "external": true,
+          "description": "Convenience function which performs multiple GPIO IRQ related initializations.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            },
+            {
+              "type": "uint32_t",
+              "name": "event_mask",
+              "description": "Which events will cause an interrupt. See gpio_irq_level for details."
+            },
+            {
+              "type": "bool",
+              "name": "enabled",
+              "description": "Enable or disable flag."
+            },
+            {
+              "type": "gpio_irq_callback_t",
+              "name": "callback",
+              "description": "User function to call on GPIO irq. if NULL, the callback is removed."
+            }
+          ]
         },
         {
           "name": "gpio_set_dormant_irq_enabled",
@@ -1240,8 +1285,23 @@
           ]
         },
         {
-          "fn": "void hardware_alarm_set_callback (uint32_t alarm_num, hardware_alarm_callback_t callback)",
-          "callback": "CALLBACK_HARDWARE_ALARM"
+          "name": "hardware_alarm_set_callback",
+          "callback": "CALLBACK_HARDWARE_ALARM",
+          "description": "Enable/Disable a callback for a hardware timer on this core.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "alarm_num",
+              "description": "The hardware alarm number."
+            },
+            {
+              "type": "hardware_alarm_callback_t",
+              "name": "callback",
+              "description": "The callback to install, or NULL to unset."
+            }
+          ]
         },
         {
           "name": "hardware_alarm_set_target",
