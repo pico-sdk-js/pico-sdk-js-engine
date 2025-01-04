@@ -7,6 +7,7 @@ const minimist = require("minimist");
 const childProcess = require("child_process");
 
 const pico_modules = require("./script/build_pico_modules");
+const { generateTypeInfo } = require("./script/gen_modules");
 
 const package = require("./package.json")
 const productName = `${package.name}-${package.version}`;
@@ -20,7 +21,7 @@ if (process.env.GITHUB_OUTPUT) {
 var unknownArg = false;
 var minimistOpts = { 
   string: ['target', 'genOut'],
-  boolean: ['clean', 'cmake', 'make', 'gen', 'run', 'build', 'rebuild', 'test', 'publish', 'debug', 'release'],
+  boolean: ['clean', 'cmake', 'make', 'genMods', 'gen', 'run', 'build', 'rebuild', 'test', 'publish', 'debug', 'release'],
   default: {
     target: '?'
   },
@@ -68,6 +69,14 @@ const jerryBuildPath = path.join(__dirname, "lib/jerryscript/build");
 
 if (argv.clean) {
   clean();
+}
+
+if (argv.genMods) {
+  const nativeModules = require('./script/native-modules.jsonc');
+
+  generateTypeInfo(nativeModules);
+
+  fs.writeFileSync('./script/native-modules.jsonc', JSON.stringify(nativeModules, null, 2));
 }
 
 if (argv.gen) {

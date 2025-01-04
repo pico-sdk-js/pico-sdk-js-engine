@@ -1,146 +1,1293 @@
 {
-    "modules": [
+  "modules": [
+    {
+      "name": "global",
+      "isGlobal": true,
+      "functions": [
         {
-            "name": "global",
-            "isGlobal": true,
-            "functions": [
-                { 
-                    "tsDef": "function require (id: string): any",
-                    "tsTests": [
-                        { "returnType": "any", "test": "require('string')" }
-                    ]
-                },
-                { 
-                    "tsDef": "function print (...data: any[]): void",
-                    "tsTests": [
-                        { "returnType": "void", "test": "print()" },
-                        { "returnType": "void", "test": "print(1)" },
-                        { "returnType": "void", "test": "print('a', 1)" }
-                    ]
-                }
-            ]
+          "tsDef": "function require (id: string): any",
+          "tsTests": [
+            {
+              "returnType": "any",
+              "test": "require('string')"
+            }
+          ]
         },
         {
-            "name": "highlevel",
-            "types": {
-                "absolute_time_t": "number"
+          "tsDef": "function print (...data: any[]): void",
+          "tsTests": [
+            {
+              "returnType": "void",
+              "test": "print()"
             },
-            "functions": [
-                // Sleep functions (see https://www.raspberrypi.com/documentation/pico-sdk/group__sleep.html)
-                { "fn": "void sleep_until (absolute_time_t target)" },
-                { "fn": "void sleep_us (uint64_t us)" },
-                { "fn": "void sleep_ms (uint32_t ms)" },
-                { "fn": "bool best_effort_wfe_or_timeout (absolute_time_t timeout_timestamp)" }
-            ]
-        },
-        {
-            "name": "hardware",
-            "types": {
-                "resus_callback_t": "() => void",
-                "gpio_irq_callback_t": "(gpio: number, event_mask: number) => void",
-                "hardware_alarm_callback_t": "(alarm_num: number) => void"
+            {
+              "returnType": "void",
+              "test": "print(1)"
             },
-            "functions": [
-                // ADC functions (see https://www.raspberrypi.com/documentation/pico-sdk/hardware.html#functions)
-                { "fn": "void adc_init ()" },
-                { "fn": "void adc_gpio_init (uint gpio)" },
-                { "fn": "void adc_select_input (uint input)" },
-                { "fn": "uint adc_get_selected_input ()" },
-                { "fn": "void adc_set_round_robin (uint input_mask)" },
-                { "fn": "void adc_set_temp_sensor_enabled (bool enable)" },
-                { "fn": "uint16_t adc_read ()" },
-                { "fn": "void adc_run (bool run)" },
-                { "fn": "void adc_set_clkdiv (float clkdiv)" },
-                { "fn": "void adc_fifo_setup (bool en, bool dreq_en, uint16_t dreq_thresh, bool err_in_fifo, bool byte_shift)" },
-                { "fn": "bool adc_fifo_is_empty ()" },
-                { "fn": "uint8_t adc_fifo_get_level ()" },
-                { "fn": "uint16_t adc_fifo_get ()" },
-                { "fn": "uint16_t adc_fifo_get_blocking ()" },
-                { "fn": "void adc_fifo_drain ()" },
-                { "fn": "void adc_irq_set_enabled (bool enabled)" },
-
-                // Clock functions (see https://www.raspberrypi.com/documentation/pico-sdk/hardware.html#hardware_clocks)
-                // NOTE: "enum clock_index" replaced with "int" to avoid issues on linux builds
-                { "fn": "void clocks_init ()" },
-                { "fn": "bool clock_configure (int clk_index, uint32_t src, uint32_t auxsrc, uint32_t src_freq, uint32_t freq)" },
-                { "fn": "void clock_stop (int clk_index)" },
-                { "fn": "uint32_t clock_get_hz (int clk_index)" },
-                { "fn": "uint32_t frequency_count_khz (uint src)" },
-                { "fn": "void clock_set_reported_hz (int clk_index, uint hz)" },
-                { "fn": "void clocks_enable_resus (resus_callback_t resus_callback)", "callback": "CALLBACK_CLOCK_ENABLE_RESUS" },
-                { "fn": "void clock_gpio_init_int_frac (uint gpio, uint src, uint32_t div_int, uint8_t div_frac)" },
-                { "fn": "void clock_gpio_init (uint gpio, uint src, float div)" },
-                { "fn": "bool clock_configure_gpin (int clk_index, uint gpio, uint32_t src_freq, uint32_t freq)" },
-
-                // GPIO functions (see https://www.raspberrypi.com/documentation/pico-sdk/hardware.html#hardware_gpio)
-                { "fn": "void gpio_set_function (uint gpio, int fn)" },
-                { "fn": "int gpio_get_function (uint gpio)" },
-                { "fn": "void gpio_set_pulls (uint gpio, bool up, bool down)" },
-                { "fn": "void gpio_pull_up (uint gpio)" },
-                { "fn": "bool gpio_is_pulled_up (uint gpio)" },
-                { "fn": "void gpio_pull_down (uint gpio)" },
-                { "fn": "bool gpio_is_pulled_down (uint gpio)" },
-                { "fn": "void gpio_disable_pulls (uint gpio)" },
-                { "fn": "void gpio_set_irqover (uint gpio, uint value)" },
-                { "fn": "void gpio_set_outover (uint gpio, uint value)" },
-                { "fn": "void gpio_set_inover (uint gpio, uint value)" },
-                { "fn": "void gpio_set_oeover (uint gpio, uint value)" },
-                { "fn": "void gpio_set_input_enabled (uint gpio, bool enabled)" },
-                { "fn": "void gpio_set_input_hysteresis_enabled (uint gpio, bool enabled)" },
-                { "fn": "bool gpio_is_input_hysteresis_enabled (uint gpio)" },
-                { "fn": "void gpio_set_slew_rate (uint gpio, int slew)" },
-                { "fn": "int gpio_get_slew_rate (uint gpio)" },
-                { "fn": "void gpio_set_drive_strength (uint gpio, int drive)" },
-                { "fn": "int gpio_get_drive_strength (uint gpio)" },
-                { "fn": "void gpio_set_irq_enabled (uint gpio, uint32_t event_mask, bool enabled)" },
-                { "fn": "void gpio_set_irq_callback (gpio_irq_callback_t callback)", "callback": "CALLBACK_GPIO_IRQ" },
-                { "fn": "void gpio_set_irq_enabled_with_callback (uint gpio, uint32_t event_mask, bool enabled, gpio_irq_callback_t callback)", "external": true },
-                { "fn": "void gpio_set_dormant_irq_enabled (uint gpio, uint32_t event_mask, bool enabled)" },
-                { "fn": "uint32_t gpio_get_irq_event_mask (uint gpio)" },
-                { "fn": "void gpio_acknowledge_irq (uint gpio, uint32_t event_mask)" },
-                // { "fn": "void gpio_add_raw_irq_handler_with_order_priority_masked (uint gpio_mask, irq_handler_t handler, uint8_t order_priority)" },
-                // { "fn": "void gpio_add_raw_irq_handler_with_order_priority (uint gpio, irq_handler_t handler, uint8_t order_priority)" },
-                // { "fn": "void gpio_add_raw_irq_handler_masked (uint gpio_mask, irq_handler_t handler)" },
-                // { "fn": "void gpio_add_raw_irq_handler (uint gpio, irq_handler_t handler)", "callback": "CALLBACK_GPIO_IRQ" },
-                // { "fn": "void gpio_remove_raw_irq_handler_masked (uint gpio_mask, irq_handler_t handler)" },
-                // { "fn": "void gpio_remove_raw_irq_handler (uint gpio, irq_handler_t handler)" },
-                { "fn": "void gpio_init (uint gpio)" },
-                { "fn": "void gpio_deinit (uint gpio)" },
-                { "fn": "void gpio_init_mask (uint gpio_mask)" },
-                { "fn": "bool gpio_get (uint gpio)" },
-                { "fn": "uint32_t gpio_get_all ()" },
-                { "fn": "void gpio_set_mask (uint32_t mask)" },
-                { "fn": "void gpio_clr_mask (uint32_t mask)" },
-                { "fn": "void gpio_xor_mask (uint32_t mask)" },
-                { "fn": "void gpio_put_masked (uint32_t mask, uint32_t value)" },
-                { "fn": "void gpio_put_all (uint32_t value)" },
-                { "fn": "void gpio_put (uint gpio, bool value)" },
-                { "fn": "bool gpio_get_out_level (uint gpio)" },
-                { "fn": "void gpio_set_dir_out_masked (uint32_t mask)" },
-                { "fn": "void gpio_set_dir_in_masked (uint32_t mask)" },
-                { "fn": "void gpio_set_dir_masked (uint32_t mask, uint32_t value)" },
-                { "fn": "void gpio_set_dir_all_bits (uint32_t values)" },
-                { "fn": "void gpio_set_dir (uint gpio, bool out)" },
-                { "fn": "bool gpio_is_dir_out (uint gpio)" },
-                { "fn": "uint gpio_get_dir (uint gpio)" },
-
-                // Timer functions (see https://www.raspberrypi.com/documentation/pico-sdk/hardware.html#functions140)
-                { "fn": "uint32_t time_us_32 ()" },
-                { "fn": "uint64_t time_us_64 ()" },
-                { "fn": "void busy_wait_us_32 (uint32_t delay_us)" },
-                { "fn": "void busy_wait_us (uint64_t delay_us)" },
-                { "fn": "void busy_wait_ms (uint32_t delay_ms)" },
-                { "fn": "void busy_wait_until (uint64_t t)" },
-                { "fn": "bool time_reached (uint64_t t)" },
-                { "fn": "void hardware_alarm_claim (uint32_t alarm_num)" },
-                { "fn": "int32_t hardware_alarm_claim_unused (bool required)" },
-                { "fn": "void hardware_alarm_unclaim (uint32_t alarm_num)" },
-                { "fn": "bool hardware_alarm_is_claimed (uint32_t alarm_num)" },
-                { "fn": "void hardware_alarm_set_callback (uint32_t alarm_num, hardware_alarm_callback_t callback)", "callback": "CALLBACK_HARDWARE_ALARM" },
-                { "fn": "bool hardware_alarm_set_target (uint32_t alarm_num, uint64_t t)"  },
-                { "fn": "void hardware_alarm_cancel (uint32_t alarm_num)" },
-                { "fn": "void hardware_alarm_force_irq (uint32_t alarm_num)" }
-            ]
+            {
+              "returnType": "void",
+              "test": "print('a', 1)"
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "name": "highlevel",
+      "types": {
+        "absolute_time_t": "number"
+      },
+      "functions": [
+        {
+          "name": "sleep_until",
+          "description": "Wait until after the given timestamp to return.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "absolute_time_t",
+              "name": "target",
+              "description": "The time after which to return."
+            }
+          ]
+        },
+        {
+          "name": "sleep_us",
+          "description": "Wait for the given number of microseconds before returning.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint64_t",
+              "name": "us",
+              "description": "The number of microseconds to sleep."
+            }
+          ]
+        },
+        {
+          "name": "sleep_ms",
+          "description": "Wait for the given number of milliseconds before returning.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "ms",
+              "description": "The number of milliseconds to sleep."
+            }
+          ]
+        },
+        {
+          "name": "best_effort_wfe_or_timeout",
+          "description": "Helper method for blocking on a timeout.",
+          "returnType": "bool",
+          "returnDescription": "True if the target time is reached, false otherwise .",
+          "args": [
+            {
+              "type": "absolute_time_t",
+              "name": "timeout_timestamp",
+              "description": "The timeout time."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "hardware",
+      "types": {
+        "resus_callback_t": "() => void",
+        "gpio_irq_callback_t": "(gpio: number, event_mask: number) => void",
+        "hardware_alarm_callback_t": "(alarm_num: number) => void"
+      },
+      "functions": [
+        {
+          "name": "adc_init",
+          "description": "Initialise the ADC HW.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": []
+        },
+        {
+          "name": "adc_gpio_init",
+          "description": "Initialise the gpio for use as an ADC pin.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "The GPIO number to use. Allowable GPIO numbers are 26 to 29 inclusive."
+            }
+          ]
+        },
+        {
+          "name": "adc_select_input",
+          "description": "ADC input select.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "input",
+              "description": "Input to select."
+            }
+          ]
+        },
+        {
+          "name": "adc_get_selected_input",
+          "description": "Get the currently selected ADC input channel.",
+          "returnType": "uint",
+          "returnDescription": "The currently selected input channel. 0...3 are GPIOs 26...29 respectively. Input 4 is the onboard temperature sensor. .",
+          "args": []
+        },
+        {
+          "name": "adc_set_round_robin",
+          "description": "Round Robin sampling selector.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "input_mask",
+              "description": "A bit pattern indicating which of the 5 inputs are to be sampled. Write a value of 0 to disable round robin sampling."
+            }
+          ]
+        },
+        {
+          "name": "adc_set_temp_sensor_enabled",
+          "description": "Enable the onboard temperature sensor.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "bool",
+              "name": "enable",
+              "description": "Set true to power on the onboard temperature sensor, false to power off."
+            }
+          ]
+        },
+        {
+          "name": "adc_read",
+          "description": "Perform a single conversion.",
+          "returnType": "uint16_t",
+          "returnDescription": "Result of the conversion. .",
+          "args": []
+        },
+        {
+          "name": "adc_run",
+          "description": "Enable or disable free-running sampling mode.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "bool",
+              "name": "run",
+              "description": "False to disable, true to enable free running conversion mode."
+            }
+          ]
+        },
+        {
+          "name": "adc_set_clkdiv",
+          "description": "Set the ADC Clock divisor.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "float",
+              "name": "clkdiv",
+              "description": "If non-zero, conversion will be started at intervals rather than back to back."
+            }
+          ]
+        },
+        {
+          "name": "adc_fifo_setup",
+          "description": "Setup the ADC FIFO.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "bool",
+              "name": "en",
+              "description": "Enables write each conversion result to the FIFO."
+            },
+            {
+              "type": "bool",
+              "name": "dreq_en",
+              "description": "Enable DMA requests when FIFO contains data."
+            },
+            {
+              "type": "uint16_t",
+              "name": "dreq_thresh",
+              "description": "Threshold for DMA requests/FIFO IRQ if enabled."
+            },
+            {
+              "type": "bool",
+              "name": "err_in_fifo",
+              "description": "If enabled, bit 15 of the FIFO contains error flag for each sample."
+            },
+            {
+              "type": "bool",
+              "name": "byte_shift",
+              "description": "Shift FIFO contents to be one byte in size (for byte DMA) - enables DMA to byte buffers."
+            }
+          ]
+        },
+        {
+          "name": "adc_fifo_is_empty",
+          "description": "Check FIFO empty state.",
+          "returnType": "bool",
+          "returnDescription": "Returns true if the FIFO is empty .",
+          "args": []
+        },
+        {
+          "name": "adc_fifo_get_level",
+          "description": "Get number of entries in the ADC FIFO.",
+          "returnType": "uint8_t",
+          "returnDescription": "",
+          "args": []
+        },
+        {
+          "name": "adc_fifo_get",
+          "description": "Get ADC result from FIFO.",
+          "returnType": "uint16_t",
+          "returnDescription": "",
+          "args": []
+        },
+        {
+          "name": "adc_fifo_get_blocking",
+          "description": "Wait for the ADC FIFO to have data.",
+          "returnType": "uint16_t",
+          "returnDescription": "",
+          "args": []
+        },
+        {
+          "name": "adc_fifo_drain",
+          "description": "Drain the ADC FIFO.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": []
+        },
+        {
+          "name": "adc_irq_set_enabled",
+          "description": "Enable/Disable ADC interrupts.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "bool",
+              "name": "enabled",
+              "description": "Set to true to enable the ADC interrupts, false to disable."
+            }
+          ]
+        },
+        {
+          "name": "clocks_init",
+          "description": "Initialise the clock hardware.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": []
+        },
+        {
+          "name": "clock_configure",
+          "description": "Configure the specified clock.",
+          "returnType": "bool",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "clk_index",
+              "description": "The clock to configure."
+            },
+            {
+              "type": "uint32_t",
+              "name": "src",
+              "description": "The main clock source, can be 0."
+            },
+            {
+              "type": "uint32_t",
+              "name": "auxsrc",
+              "description": "The auxiliary clock source, which depends on which clock is being set. Can be 0."
+            },
+            {
+              "type": "uint32_t",
+              "name": "src_freq",
+              "description": "Frequency of the input clock source."
+            },
+            {
+              "type": "uint32_t",
+              "name": "freq",
+              "description": "Requested frequency."
+            }
+          ]
+        },
+        {
+          "name": "clock_stop",
+          "description": "Stop the specified clock.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "clk_index",
+              "description": "The clock to stop."
+            }
+          ]
+        },
+        {
+          "name": "clock_get_hz",
+          "description": "Get the current frequency of the specified clock.",
+          "returnType": "uint32_t",
+          "returnDescription": "Clock frequency in Hz .",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "clk_index",
+              "description": "Clock."
+            }
+          ]
+        },
+        {
+          "name": "frequency_count_khz",
+          "description": "Measure a clocks frequency using the Frequency counter.",
+          "returnType": "uint32_t",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "src",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "clock_set_reported_hz",
+          "description": "Set the \"current frequency\" of the clock as reported by clock_get_hz without actually changing the clock.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "clk_index",
+              "description": ""
+            },
+            {
+              "type": "uint32_t",
+              "name": "hz",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "fn": "void clocks_enable_resus (resus_callback_t resus_callback)",
+          "callback": "CALLBACK_CLOCK_ENABLE_RESUS"
+        },
+        {
+          "name": "clock_gpio_init_int_frac",
+          "description": "Output an optionally divided clock to the specified gpio pin.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "The GPIO pin to output the clock to. Valid GPIOs are: 21, 23, 24, 25. These GPIOs are connected to the GPOUT0-3 clock generators."
+            },
+            {
+              "type": "uint32_t",
+              "name": "src",
+              "description": "The source clock. See the register field CLOCKS_CLK_GPOUT0_CTRL_AUXSRC for a full list. The list is the same for each GPOUT clock generator."
+            },
+            {
+              "type": "uint32_t",
+              "name": "div_int",
+              "description": "The integer part of the value to divide the source clock by. This is useful to not overwhelm the GPIO pin with a fast clock. this is in range of 1..2^24-1."
+            },
+            {
+              "type": "uint8_t",
+              "name": "div_frac",
+              "description": "The fractional part of the value to divide the source clock by. This is in range of 0..255 (/256)."
+            }
+          ]
+        },
+        {
+          "name": "clock_gpio_init",
+          "description": "Output an optionally divided clock to the specified gpio pin.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "The GPIO pin to output the clock to. Valid GPIOs are: 21, 23, 24, 25. These GPIOs are connected to the GPOUT0-3 clock generators."
+            },
+            {
+              "type": "uint32_t",
+              "name": "src",
+              "description": "The source clock. See the register field CLOCKS_CLK_GPOUT0_CTRL_AUXSRC for a full list. The list is the same for each GPOUT clock generator."
+            },
+            {
+              "type": "float",
+              "name": "div",
+              "description": "The float amount to divide the source clock by. This is useful to not overwhelm the GPIO pin with a fast clock."
+            }
+          ]
+        },
+        {
+          "name": "clock_configure_gpin",
+          "description": "Configure a clock to come from a gpio input.",
+          "returnType": "bool",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "clk_index",
+              "description": "The clock to configure."
+            },
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "The GPIO pin to run the clock from. Valid GPIOs are: 20 and 22."
+            },
+            {
+              "type": "uint32_t",
+              "name": "src_freq",
+              "description": "Frequency of the input clock source."
+            },
+            {
+              "type": "uint32_t",
+              "name": "freq",
+              "description": "Requested frequency."
+            }
+          ]
+        },
+        {
+          "name": "gpio_set_function",
+          "description": "Select GPIO function.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            },
+            {
+              "type": "uint32_t",
+              "name": "fn",
+              "description": "Which GPIO function select to use from list gpio_function."
+            }
+          ]
+        },
+        {
+          "name": "gpio_get_function",
+          "description": "Determine current GPIO function.",
+          "returnType": "int",
+          "returnDescription": "Which GPIO function is currently selected from list gpio_function .",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            }
+          ]
+        },
+        {
+          "name": "gpio_set_pulls",
+          "description": "Select up and down pulls on specific GPIO.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            },
+            {
+              "type": "bool",
+              "name": "up",
+              "description": "If true set a pull up on the GPIO."
+            },
+            {
+              "type": "bool",
+              "name": "down",
+              "description": "If true set a pull down on the GPIO."
+            }
+          ]
+        },
+        {
+          "name": "gpio_pull_up",
+          "description": "Set specified GPIO to be pulled up.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            }
+          ]
+        },
+        {
+          "name": "gpio_is_pulled_up",
+          "description": "Determine if the specified GPIO is pulled up.",
+          "returnType": "bool",
+          "returnDescription": "True if the GPIO is pulled up .",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            }
+          ]
+        },
+        {
+          "name": "gpio_pull_down",
+          "description": "Set specified GPIO to be pulled down.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            }
+          ]
+        },
+        {
+          "name": "gpio_is_pulled_down",
+          "description": "Determine if the specified GPIO is pulled down.",
+          "returnType": "bool",
+          "returnDescription": "True if the GPIO is pulled down .",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            }
+          ]
+        },
+        {
+          "name": "gpio_disable_pulls",
+          "description": "Disable pulls on specified GPIO.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            }
+          ]
+        },
+        {
+          "name": "gpio_set_irqover",
+          "description": "Set GPIO IRQ override.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            },
+            {
+              "type": "uint32_t",
+              "name": "value",
+              "description": "See gpio_override."
+            }
+          ]
+        },
+        {
+          "name": "gpio_set_outover",
+          "description": "Set GPIO output override.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            },
+            {
+              "type": "uint32_t",
+              "name": "value",
+              "description": "See gpio_override."
+            }
+          ]
+        },
+        {
+          "name": "gpio_set_inover",
+          "description": "Select GPIO input override.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            },
+            {
+              "type": "uint32_t",
+              "name": "value",
+              "description": "See gpio_override."
+            }
+          ]
+        },
+        {
+          "name": "gpio_set_oeover",
+          "description": "Select GPIO output enable override.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            },
+            {
+              "type": "uint32_t",
+              "name": "value",
+              "description": "See gpio_override."
+            }
+          ]
+        },
+        {
+          "name": "gpio_set_input_enabled",
+          "description": "Enable GPIO input.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            },
+            {
+              "type": "bool",
+              "name": "enabled",
+              "description": "True to enable input on specified GPIO."
+            }
+          ]
+        },
+        {
+          "name": "gpio_set_input_hysteresis_enabled",
+          "description": "Enable/disable GPIO input hysteresis (Schmitt trigger).",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            },
+            {
+              "type": "bool",
+              "name": "enabled",
+              "description": "True to enable input hysteresis on specified GPIO."
+            }
+          ]
+        },
+        {
+          "name": "gpio_is_input_hysteresis_enabled",
+          "description": "Determine whether input hysteresis is enabled on a specified GPIO.",
+          "returnType": "bool",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            }
+          ]
+        },
+        {
+          "name": "gpio_set_slew_rate",
+          "description": "Set slew rate for a specified GPIO.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            },
+            {
+              "type": "uint32_t",
+              "name": "slew",
+              "description": "GPIO output slew rate."
+            }
+          ]
+        },
+        {
+          "name": "gpio_get_slew_rate",
+          "description": "Determine current slew rate for a specified GPIO.",
+          "returnType": "int",
+          "returnDescription": "Current slew rate of that GPIO .",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            }
+          ]
+        },
+        {
+          "name": "gpio_set_drive_strength",
+          "description": "Set drive strength for a specified GPIO.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            },
+            {
+              "type": "uint32_t",
+              "name": "drive",
+              "description": "GPIO output drive strength."
+            }
+          ]
+        },
+        {
+          "name": "gpio_get_drive_strength",
+          "description": "Determine current slew rate for a specified GPIO.",
+          "returnType": "int",
+          "returnDescription": "Current drive strength of that GPIO .",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            }
+          ]
+        },
+        {
+          "name": "gpio_set_irq_enabled",
+          "description": "Enable or disable specific interrupt events for specified GPIO.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            },
+            {
+              "type": "uint32_t",
+              "name": "event_mask",
+              "description": "Which events will cause an interrupt."
+            },
+            {
+              "type": "bool",
+              "name": "enabled",
+              "description": "Enable or disable flag."
+            }
+          ]
+        },
+        {
+          "fn": "void gpio_set_irq_callback (gpio_irq_callback_t callback)",
+          "callback": "CALLBACK_GPIO_IRQ"
+        },
+        {
+          "fn": "void gpio_set_irq_enabled_with_callback (uint gpio, uint32_t event_mask, bool enabled, gpio_irq_callback_t callback)",
+          "external": true
+        },
+        {
+          "name": "gpio_set_dormant_irq_enabled",
+          "description": "Enable dormant wake up interrupt for specified GPIO and events.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            },
+            {
+              "type": "uint32_t",
+              "name": "event_mask",
+              "description": "Which events will cause an interrupt. See gpio_irq_level for details."
+            },
+            {
+              "type": "bool",
+              "name": "enabled",
+              "description": "Enable/disable flag."
+            }
+          ]
+        },
+        {
+          "name": "gpio_get_irq_event_mask",
+          "description": "Return the current interrupt status (pending events) for the given GPIO.",
+          "returnType": "uint32_t",
+          "returnDescription": "Bitmask of events that are currently pending for the GPIO. See gpio_irq_level for details. .",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            }
+          ]
+        },
+        {
+          "name": "gpio_acknowledge_irq",
+          "description": "Acknowledge a GPIO interrupt for the specified events on the calling core.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            },
+            {
+              "type": "uint32_t",
+              "name": "event_mask",
+              "description": "Bitmask of events to clear. See gpio_irq_level for details."
+            }
+          ]
+        },
+        {
+          "name": "gpio_init",
+          "description": "Initialise a GPIO for (enabled I/O and set func to GPIO_FUNC_SIO).",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            }
+          ]
+        },
+        {
+          "name": "gpio_deinit",
+          "description": "Resets a GPIO back to the NULL function, i.e. disables it.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            }
+          ]
+        },
+        {
+          "name": "gpio_init_mask",
+          "description": "Initialise multiple GPIOs (enabled I/O and set func to GPIO_FUNC_SIO).",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio_mask",
+              "description": "Mask with 1 bit per GPIO number to initialize."
+            }
+          ]
+        },
+        {
+          "name": "gpio_get",
+          "description": "Get state of a single specified GPIO.",
+          "returnType": "bool",
+          "returnDescription": "Current state of the GPIO. 0 for low, non-zero for high .",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            }
+          ]
+        },
+        {
+          "name": "gpio_get_all",
+          "description": "Get raw value of all GPIOs.",
+          "returnType": "uint32_t",
+          "returnDescription": "Bitmask of raw GPIO values, as bits 0-29 .",
+          "args": []
+        },
+        {
+          "name": "gpio_set_mask",
+          "description": "Drive high every GPIO appearing in mask.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "mask",
+              "description": "Bitmask of GPIO values to set, as bits 0-29."
+            }
+          ]
+        },
+        {
+          "name": "gpio_clr_mask",
+          "description": "Drive low every GPIO appearing in mask.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "mask",
+              "description": "Bitmask of GPIO values to clear, as bits 0-29."
+            }
+          ]
+        },
+        {
+          "name": "gpio_xor_mask",
+          "description": "Toggle every GPIO appearing in mask.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "mask",
+              "description": "Bitmask of GPIO values to toggle, as bits 0-29."
+            }
+          ]
+        },
+        {
+          "name": "gpio_put_masked",
+          "description": "Drive GPIO high/low depending on parameters.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "mask",
+              "description": "Bitmask of GPIO values to change, as bits 0-29."
+            },
+            {
+              "type": "uint32_t",
+              "name": "value",
+              "description": "Value to set."
+            }
+          ]
+        },
+        {
+          "name": "gpio_put_all",
+          "description": "Drive all pins simultaneously.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "value",
+              "description": "Bitmask of GPIO values to change, as bits 0-29."
+            }
+          ]
+        },
+        {
+          "name": "gpio_put",
+          "description": "Drive a single GPIO high/low.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            },
+            {
+              "type": "bool",
+              "name": "value",
+              "description": "If false clear the GPIO, otherwise set it."
+            }
+          ]
+        },
+        {
+          "name": "gpio_get_out_level",
+          "description": "Determine whether a GPIO is currently driven high or low.",
+          "returnType": "bool",
+          "returnDescription": "True if the GPIO output level is high, false if low. .",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            }
+          ]
+        },
+        {
+          "name": "gpio_set_dir_out_masked",
+          "description": "Set a number of GPIOs to output.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "mask",
+              "description": "Bitmask of GPIO to set to output, as bits 0-29."
+            }
+          ]
+        },
+        {
+          "name": "gpio_set_dir_in_masked",
+          "description": "Set a number of GPIOs to input.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "mask",
+              "description": "Bitmask of GPIO to set to input, as bits 0-29."
+            }
+          ]
+        },
+        {
+          "name": "gpio_set_dir_masked",
+          "description": "Set multiple GPIO directions.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "mask",
+              "description": "Bitmask of GPIO to set to input, as bits 0-29."
+            },
+            {
+              "type": "uint32_t",
+              "name": "value",
+              "description": "Values to set."
+            }
+          ]
+        },
+        {
+          "name": "gpio_set_dir_all_bits",
+          "description": "Set direction of all pins simultaneously.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "values",
+              "description": "Individual settings for each gpio; for GPIO N, bit N is 1 for out, 0 for in."
+            }
+          ]
+        },
+        {
+          "name": "gpio_set_dir",
+          "description": "Set a single GPIO direction.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            },
+            {
+              "type": "bool",
+              "name": "out",
+              "description": "True for out, false for in."
+            }
+          ]
+        },
+        {
+          "name": "gpio_is_dir_out",
+          "description": "Check if a specific GPIO direction is OUT.",
+          "returnType": "bool",
+          "returnDescription": "True if the direction for the pin is OUT .",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            }
+          ]
+        },
+        {
+          "name": "gpio_get_dir",
+          "description": "Get a specific GPIO direction.",
+          "returnType": "uint",
+          "returnDescription": "1 for out, 0 for in .",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "gpio",
+              "description": "GPIO number."
+            }
+          ]
+        },
+        {
+          "name": "time_us_32",
+          "description": "Return a 32 bit timestamp value in microseconds.",
+          "returnType": "uint32_t",
+          "returnDescription": "The 32 bit timestamp .",
+          "args": []
+        },
+        {
+          "name": "time_us_64",
+          "description": "Return the current 64 bit timestamp value in microseconds.",
+          "returnType": "uint64_t",
+          "returnDescription": "The 64 bit timestamp.",
+          "args": []
+        },
+        {
+          "name": "busy_wait_us_32",
+          "description": "Busy wait wasting cycles for the given (32 bit) number of microseconds.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "delay_us",
+              "description": "Delay amount in microseconds."
+            }
+          ]
+        },
+        {
+          "name": "busy_wait_us",
+          "description": "Busy wait wasting cycles for the given (64 bit) number of microseconds.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint64_t",
+              "name": "delay_us",
+              "description": "Delay amount in microseconds."
+            }
+          ]
+        },
+        {
+          "name": "busy_wait_ms",
+          "description": "Busy wait wasting cycles for the given number of milliseconds.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "delay_ms",
+              "description": "Delay amount in milliseconds."
+            }
+          ]
+        },
+        {
+          "name": "busy_wait_until",
+          "description": "Busy wait wasting cycles until after the specified timestamp.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "absolute_time_t",
+              "name": "t",
+              "description": "Absolute time to wait until."
+            }
+          ]
+        },
+        {
+          "name": "time_reached",
+          "description": "Check if the specified timestamp has been reached.",
+          "returnType": "bool",
+          "returnDescription": "True if it is now after the specified timestamp .",
+          "args": [
+            {
+              "type": "absolute_time_t",
+              "name": "t",
+              "description": "Absolute time to compare against current time."
+            }
+          ]
+        },
+        {
+          "name": "hardware_alarm_claim",
+          "description": "Cooperatively claim the use of this hardware alarm_num.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "alarm_num",
+              "description": "The hardware alarm to claim."
+            }
+          ]
+        },
+        {
+          "name": "hardware_alarm_claim_unused",
+          "description": "Cooperatively claim the use of this hardware alarm_num.",
+          "returnType": "int",
+          "returnDescription": "Alarm_num the hardware alarm claimed or -1 if requires was false, and none are available .",
+          "args": [
+            {
+              "type": "bool",
+              "name": "required",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "hardware_alarm_unclaim",
+          "description": "Cooperatively release the claim on use of this hardware alarm_num.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "alarm_num",
+              "description": "The hardware alarm to unclaim."
+            }
+          ]
+        },
+        {
+          "name": "hardware_alarm_is_claimed",
+          "description": "Determine if a hardware alarm has been claimed.",
+          "returnType": "bool",
+          "returnDescription": "True if claimed, false otherwise .",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "alarm_num",
+              "description": "The hardware alarm number."
+            }
+          ]
+        },
+        {
+          "fn": "void hardware_alarm_set_callback (uint32_t alarm_num, hardware_alarm_callback_t callback)",
+          "callback": "CALLBACK_HARDWARE_ALARM"
+        },
+        {
+          "name": "hardware_alarm_set_target",
+          "description": "Set the current target for the specified hardware alarm.",
+          "returnType": "bool",
+          "returnDescription": "True if the target was \"missed\"; i.e. it was in the past, or occurred before a future hardware timeout could be set .",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "alarm_num",
+              "description": "The hardware alarm number."
+            },
+            {
+              "type": "absolute_time_t",
+              "name": "t",
+              "description": "The target timestamp."
+            }
+          ]
+        },
+        {
+          "name": "hardware_alarm_cancel",
+          "description": "Cancel an existing target (if any) for a given hardware_alarm.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "alarm_num",
+              "description": "The hardware alarm number."
+            }
+          ]
+        },
+        {
+          "name": "hardware_alarm_force_irq",
+          "description": "Force and IRQ for a specific hardware alarm.",
+          "returnType": "void",
+          "returnDescription": "",
+          "args": [
+            {
+              "type": "uint32_t",
+              "name": "alarm_num",
+              "description": "The hardware alarm number."
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }

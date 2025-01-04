@@ -50,7 +50,7 @@ static jerry_value_t adc_gpio_init_handler(const jerry_value_t function_obj, con
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "adc_gpio_init(%i);", gpio);
     
@@ -74,7 +74,7 @@ static jerry_value_t adc_select_input_handler(const jerry_value_t function_obj, 
         goto cleanup;
     }
 
-    uint input = psj_jerry_to_uint(args_p[0]);
+    uint32_t input = psj_jerry_to_uint32_t(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "adc_select_input(%i);", input);
     
@@ -120,7 +120,7 @@ static jerry_value_t adc_set_round_robin_handler(const jerry_value_t function_ob
         goto cleanup;
     }
 
-    uint input_mask = psj_jerry_to_uint(args_p[0]);
+    uint32_t input_mask = psj_jerry_to_uint32_t(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "adc_set_round_robin(%i);", input_mask);
     
@@ -430,7 +430,7 @@ static jerry_value_t clock_configure_handler(const jerry_value_t function_obj, c
         goto cleanup;
     }
 
-    int clk_index = psj_jerry_to_int(args_p[0]);
+    uint32_t clk_index = psj_jerry_to_uint32_t(args_p[0]);
     uint32_t src = psj_jerry_to_uint32_t(args_p[1]);
     uint32_t auxsrc = psj_jerry_to_uint32_t(args_p[2]);
     uint32_t src_freq = psj_jerry_to_uint32_t(args_p[3]);
@@ -458,7 +458,7 @@ static jerry_value_t clock_stop_handler(const jerry_value_t function_obj, const 
         goto cleanup;
     }
 
-    int clk_index = psj_jerry_to_int(args_p[0]);
+    uint32_t clk_index = psj_jerry_to_uint32_t(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "clock_stop(%i);", clk_index);
     
@@ -482,7 +482,7 @@ static jerry_value_t clock_get_hz_handler(const jerry_value_t function_obj, cons
         goto cleanup;
     }
 
-    int clk_index = psj_jerry_to_int(args_p[0]);
+    uint32_t clk_index = psj_jerry_to_uint32_t(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "clock_get_hz(%i);", clk_index);
     const uint32_t v = 0;
@@ -506,7 +506,7 @@ static jerry_value_t frequency_count_khz_handler(const jerry_value_t function_ob
         goto cleanup;
     }
 
-    uint src = psj_jerry_to_uint(args_p[0]);
+    uint32_t src = psj_jerry_to_uint32_t(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "frequency_count_khz(%i);", src);
     const uint32_t v = 0;
@@ -531,8 +531,8 @@ static jerry_value_t clock_set_reported_hz_handler(const jerry_value_t function_
         goto cleanup;
     }
 
-    int clk_index = psj_jerry_to_int(args_p[0]);
-    uint hz = psj_jerry_to_uint(args_p[1]);
+    uint32_t clk_index = psj_jerry_to_uint32_t(args_p[0]);
+    uint32_t hz = psj_jerry_to_uint32_t(args_p[1]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "clock_set_reported_hz(%i, %i);", clk_index, hz);
     
@@ -592,8 +592,8 @@ static jerry_value_t clock_gpio_init_int_frac_handler(const jerry_value_t functi
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
-    uint src = psj_jerry_to_uint(args_p[1]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
+    uint32_t src = psj_jerry_to_uint32_t(args_p[1]);
     uint32_t div_int = psj_jerry_to_uint32_t(args_p[2]);
     uint8_t div_frac = psj_jerry_to_uint8_t(args_p[3]);
 
@@ -621,8 +621,8 @@ static jerry_value_t clock_gpio_init_handler(const jerry_value_t function_obj, c
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
-    uint src = psj_jerry_to_uint(args_p[1]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
+    uint32_t src = psj_jerry_to_uint32_t(args_p[1]);
     float div = psj_jerry_to_float(args_p[2]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "clock_gpio_init(%i, %i, %i);", gpio, src, div);
@@ -650,8 +650,8 @@ static jerry_value_t clock_configure_gpin_handler(const jerry_value_t function_o
         goto cleanup;
     }
 
-    int clk_index = psj_jerry_to_int(args_p[0]);
-    uint gpio = psj_jerry_to_uint(args_p[1]);
+    uint32_t clk_index = psj_jerry_to_uint32_t(args_p[0]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[1]);
     uint32_t src_freq = psj_jerry_to_uint32_t(args_p[2]);
     uint32_t freq = psj_jerry_to_uint32_t(args_p[3]);
 
@@ -678,8 +678,8 @@ static jerry_value_t gpio_set_function_handler(const jerry_value_t function_obj,
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
-    int fn = psj_jerry_to_int(args_p[1]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
+    uint32_t fn = psj_jerry_to_uint32_t(args_p[1]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_set_function(%i, %i);", gpio, fn);
     
@@ -703,7 +703,7 @@ static jerry_value_t gpio_get_function_handler(const jerry_value_t function_obj,
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_get_function(%i);", gpio);
     const int v = 0;
@@ -729,7 +729,7 @@ static jerry_value_t gpio_set_pulls_handler(const jerry_value_t function_obj, co
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
     bool up = psj_jerry_to_bool(args_p[1]);
     bool down = psj_jerry_to_bool(args_p[2]);
 
@@ -755,7 +755,7 @@ static jerry_value_t gpio_pull_up_handler(const jerry_value_t function_obj, cons
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_pull_up(%i);", gpio);
     
@@ -779,7 +779,7 @@ static jerry_value_t gpio_is_pulled_up_handler(const jerry_value_t function_obj,
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_is_pulled_up(%i);", gpio);
     const bool v = true;
@@ -803,7 +803,7 @@ static jerry_value_t gpio_pull_down_handler(const jerry_value_t function_obj, co
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_pull_down(%i);", gpio);
     
@@ -827,7 +827,7 @@ static jerry_value_t gpio_is_pulled_down_handler(const jerry_value_t function_ob
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_is_pulled_down(%i);", gpio);
     const bool v = true;
@@ -851,7 +851,7 @@ static jerry_value_t gpio_disable_pulls_handler(const jerry_value_t function_obj
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_disable_pulls(%i);", gpio);
     
@@ -876,8 +876,8 @@ static jerry_value_t gpio_set_irqover_handler(const jerry_value_t function_obj, 
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
-    uint value = psj_jerry_to_uint(args_p[1]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
+    uint32_t value = psj_jerry_to_uint32_t(args_p[1]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_set_irqover(%i, %i);", gpio, value);
     
@@ -902,8 +902,8 @@ static jerry_value_t gpio_set_outover_handler(const jerry_value_t function_obj, 
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
-    uint value = psj_jerry_to_uint(args_p[1]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
+    uint32_t value = psj_jerry_to_uint32_t(args_p[1]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_set_outover(%i, %i);", gpio, value);
     
@@ -928,8 +928,8 @@ static jerry_value_t gpio_set_inover_handler(const jerry_value_t function_obj, c
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
-    uint value = psj_jerry_to_uint(args_p[1]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
+    uint32_t value = psj_jerry_to_uint32_t(args_p[1]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_set_inover(%i, %i);", gpio, value);
     
@@ -954,8 +954,8 @@ static jerry_value_t gpio_set_oeover_handler(const jerry_value_t function_obj, c
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
-    uint value = psj_jerry_to_uint(args_p[1]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
+    uint32_t value = psj_jerry_to_uint32_t(args_p[1]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_set_oeover(%i, %i);", gpio, value);
     
@@ -980,7 +980,7 @@ static jerry_value_t gpio_set_input_enabled_handler(const jerry_value_t function
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
     bool enabled = psj_jerry_to_bool(args_p[1]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_set_input_enabled(%i, %i);", gpio, enabled);
@@ -1006,7 +1006,7 @@ static jerry_value_t gpio_set_input_hysteresis_enabled_handler(const jerry_value
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
     bool enabled = psj_jerry_to_bool(args_p[1]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_set_input_hysteresis_enabled(%i, %i);", gpio, enabled);
@@ -1031,7 +1031,7 @@ static jerry_value_t gpio_is_input_hysteresis_enabled_handler(const jerry_value_
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_is_input_hysteresis_enabled(%i);", gpio);
     const bool v = true;
@@ -1056,8 +1056,8 @@ static jerry_value_t gpio_set_slew_rate_handler(const jerry_value_t function_obj
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
-    int slew = psj_jerry_to_int(args_p[1]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
+    uint32_t slew = psj_jerry_to_uint32_t(args_p[1]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_set_slew_rate(%i, %i);", gpio, slew);
     
@@ -1081,7 +1081,7 @@ static jerry_value_t gpio_get_slew_rate_handler(const jerry_value_t function_obj
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_get_slew_rate(%i);", gpio);
     const int v = 0;
@@ -1106,8 +1106,8 @@ static jerry_value_t gpio_set_drive_strength_handler(const jerry_value_t functio
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
-    int drive = psj_jerry_to_int(args_p[1]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
+    uint32_t drive = psj_jerry_to_uint32_t(args_p[1]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_set_drive_strength(%i, %i);", gpio, drive);
     
@@ -1131,7 +1131,7 @@ static jerry_value_t gpio_get_drive_strength_handler(const jerry_value_t functio
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_get_drive_strength(%i);", gpio);
     const int v = 0;
@@ -1157,7 +1157,7 @@ static jerry_value_t gpio_set_irq_enabled_handler(const jerry_value_t function_o
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
     uint32_t event_mask = psj_jerry_to_uint32_t(args_p[1]);
     bool enabled = psj_jerry_to_bool(args_p[2]);
 
@@ -1218,7 +1218,7 @@ static jerry_value_t gpio_set_dormant_irq_enabled_handler(const jerry_value_t fu
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
     uint32_t event_mask = psj_jerry_to_uint32_t(args_p[1]);
     bool enabled = psj_jerry_to_bool(args_p[2]);
 
@@ -1244,7 +1244,7 @@ static jerry_value_t gpio_get_irq_event_mask_handler(const jerry_value_t functio
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_get_irq_event_mask(%i);", gpio);
     const uint32_t v = 0;
@@ -1269,7 +1269,7 @@ static jerry_value_t gpio_acknowledge_irq_handler(const jerry_value_t function_o
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
     uint32_t event_mask = psj_jerry_to_uint32_t(args_p[1]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_acknowledge_irq(%i, %i);", gpio, event_mask);
@@ -1294,7 +1294,7 @@ static jerry_value_t gpio_init_handler(const jerry_value_t function_obj, const j
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_init(%i);", gpio);
     
@@ -1318,7 +1318,7 @@ static jerry_value_t gpio_deinit_handler(const jerry_value_t function_obj, const
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_deinit(%i);", gpio);
     
@@ -1342,7 +1342,7 @@ static jerry_value_t gpio_init_mask_handler(const jerry_value_t function_obj, co
         goto cleanup;
     }
 
-    uint gpio_mask = psj_jerry_to_uint(args_p[0]);
+    uint32_t gpio_mask = psj_jerry_to_uint32_t(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_init_mask(%i);", gpio_mask);
     
@@ -1366,7 +1366,7 @@ static jerry_value_t gpio_get_handler(const jerry_value_t function_obj, const je
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_get(%i);", gpio);
     const bool v = true;
@@ -1535,7 +1535,7 @@ static jerry_value_t gpio_put_handler(const jerry_value_t function_obj, const je
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
     bool value = psj_jerry_to_bool(args_p[1]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_put(%i, %i);", gpio, value);
@@ -1560,7 +1560,7 @@ static jerry_value_t gpio_get_out_level_handler(const jerry_value_t function_obj
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_get_out_level(%i);", gpio);
     const bool v = true;
@@ -1683,7 +1683,7 @@ static jerry_value_t gpio_set_dir_handler(const jerry_value_t function_obj, cons
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
     bool out = psj_jerry_to_bool(args_p[1]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_set_dir(%i, %i);", gpio, out);
@@ -1708,7 +1708,7 @@ static jerry_value_t gpio_is_dir_out_handler(const jerry_value_t function_obj, c
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_is_dir_out(%i);", gpio);
     const bool v = true;
@@ -1732,7 +1732,7 @@ static jerry_value_t gpio_get_dir_handler(const jerry_value_t function_obj, cons
         goto cleanup;
     }
 
-    uint gpio = psj_jerry_to_uint(args_p[0]);
+    uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_get_dir(%i);", gpio);
     const uint v = 0;
@@ -1872,7 +1872,7 @@ static jerry_value_t busy_wait_until_handler(const jerry_value_t function_obj, c
         goto cleanup;
     }
 
-    uint64_t t = psj_jerry_to_uint64_t(args_p[0]);
+    absolute_time_t t = (absolute_time_t)psj_jerry_to_uint64_t(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "busy_wait_until(%i);", t);
     
@@ -1896,7 +1896,7 @@ static jerry_value_t time_reached_handler(const jerry_value_t function_obj, cons
         goto cleanup;
     }
 
-    uint64_t t = psj_jerry_to_uint64_t(args_p[0]);
+    absolute_time_t t = (absolute_time_t)psj_jerry_to_uint64_t(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "time_reached(%i);", t);
     const bool v = true;
@@ -1947,7 +1947,7 @@ static jerry_value_t hardware_alarm_claim_unused_handler(const jerry_value_t fun
     bool required = psj_jerry_to_bool(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "hardware_alarm_claim_unused(%i);", required);
-    const int32_t v = 0;
+    const int v = 0;
     ret_val = jerry_create_number(v);
 
 cleanup:
@@ -2053,7 +2053,7 @@ static jerry_value_t hardware_alarm_set_target_handler(const jerry_value_t funct
     }
 
     uint32_t alarm_num = psj_jerry_to_uint32_t(args_p[0]);
-    uint64_t t = psj_jerry_to_uint64_t(args_p[1]);
+    absolute_time_t t = (absolute_time_t)psj_jerry_to_uint64_t(args_p[1]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "hardware_alarm_set_target(%i, %i);", alarm_num, t);
     const bool v = true;

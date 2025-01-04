@@ -119,30 +119,41 @@ class ModuleTsOnlyFunction {
 class ModuleFunction {
     constructor(functionInfo, module) {
 
-        const match = fnRegEx.exec(functionInfo.fn);
-        if (match == null) {
-            throw new Error(`Invalid format: ${functionInfo.fn}`);
-        }
-
         this.module = module;
-        this.name = match.groups.name;
-        this.returnType = match.groups.retType;
 
-        const args = [];
-        for (let i = 1; i <= 5; i++) {
-            const typeKey = `arg${i}Type`;
-            const nameKey = `arg${i}Name`;
-            if (match.groups[typeKey]) {
-                args.push({
-                    name: match.groups[nameKey],
-                    type: match.groups[typeKey]
-                });
-            } else {
-                break;
+        if(functionInfo.fn) {
+            const match = fnRegEx.exec(functionInfo.fn);
+            if (match == null) {
+                throw new Error(`Invalid format: ${functionInfo.fn}`);
             }
+
+            this.name = match.groups.name;
+            this.returnType = match.groups.retType;
+
+            const args = [];
+            for (let i = 1; i <= 5; i++) {
+                const typeKey = `arg${i}Type`;
+                const nameKey = `arg${i}Name`;
+                if (match.groups[typeKey]) {
+                    args.push({
+                        name: match.groups[nameKey],
+                        type: match.groups[typeKey]
+                    });
+                } else {
+                    break;
+                }
+            }
+
+            this.args = args;
+        } else {
+            this.name = functionInfo.name;
+            this.returnType = functionInfo.returnType;
+            this.args = functionInfo.args;
+            this.description = functionInfo.description;
+            this.returnDescription = functionInfo.returnDescription;
         }
 
-        this.args = args.map((a) => new ModuleFunctionArg(a));
+        this.args = this.args.map((a) => new ModuleFunctionArg(a));
         this.linuxRetVal = functionInfo.linuxRetVal ?? getDefaultValue(this.returnType);
         this.callback = functionInfo.callback;
         this.external = !!functionInfo.external;
@@ -210,6 +221,7 @@ class ModuleFunctionArg {
     constructor(arg, module) {
         this.name = arg.name;
         this.type = arg.type;
+        this.description = arg.description;
         this.module = module;
     }
 
