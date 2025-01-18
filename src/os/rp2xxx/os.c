@@ -27,12 +27,16 @@ void os_cleanup()
 
 void os_restart(bool hard)
 {
-    jsengine_set_state(JSENGINE_STATE_REQ_STOPPING);
-
     if (hard)
     {
+        jsengine_set_state(JSENGINE_STATE_REQ_STOPPING);
+
         os_set_is_running(false);
         watchdog_reboot(0, 0, 3000);
+    }
+    else
+    {
+        jsengine_set_state(JSENGINE_STATE_REQ_RESTART);
     }
 }
 
