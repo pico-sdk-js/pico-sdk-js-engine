@@ -118,6 +118,7 @@ if (TARGET_OS STREQUAL "rp2xxx")
   set(PICO_SDK_PATH ${ROOT_DIR}/lib/pico-sdk)
   set(PICO_BOARD pico_w)
   set(PICO_PLATFORM rp2040)
+  set(PICO_BUILD_DOCS 1)
 
   include(${PICO_SDK_PATH}/external/pico_sdk_import.cmake)
 endif()

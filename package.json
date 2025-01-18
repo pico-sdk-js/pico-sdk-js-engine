@@ -2,11 +2,13 @@
   "name": "pico-sdk-js",
   "version": "0.0.3",
   "devDependencies": {
+    "@xmldom/xmldom": "^0.9.6",
     "beachball": "^2.47.0",
     "fs-extra": "^4.0.2",
     "handlebars": "^4.7.8",
     "jsonc-require": "^1.0.1",
-    "minimist": "^1.2.6"
+    "minimist": "^1.2.6",
+    "xpath": "^0.0.34"
   },
   "scripts": {
     "beachball:change": "beachball change",

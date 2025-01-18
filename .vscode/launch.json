@@ -2,6 +2,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Build",
+            "type": "node",
+            "request": "launch",
+            "program": "build.js",
+            "args": ["--gen"]
+        },
+        {
             "name": "(gdb) Launch local",
             "type": "cppdbg",
             "request": "launch",
