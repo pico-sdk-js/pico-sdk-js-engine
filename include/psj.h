@@ -7,6 +7,7 @@
 #include "interrupt_state.h"
 #include "modules.h"
 #include "js_engine.h"
+#include "configuration.h"
 
 #ifndef TARGET_NAME
 #define TARGET_NAME "UNKNOWN"

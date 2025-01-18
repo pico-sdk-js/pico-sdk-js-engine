@@ -19,7 +19,9 @@ typedef enum __PSJErrorCode {
     FORMAT_ERROR,
     DELETE_ERROR,
     NOT_SUPPORTED,
-    HIDDEN_PATH
+    HIDDEN_PATH,
+    UNKNOWN_CONFIG,
+    INVALID_CONFIG_VALUE
 } PSJErrorCode;
 
 jerry_char_t *S(const jerry_char_t *txt);

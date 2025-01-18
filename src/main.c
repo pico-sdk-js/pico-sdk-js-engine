@@ -21,7 +21,11 @@ int main(int argc, char *argv[])
         psj_repl_init();
         psj_flash_init();
 
+        init_configuration();
+
         psj_run_js_loop();
+
+        cleanup_configuration();
 
         psj_flash_cleanup();
         psj_repl_cleanup();
