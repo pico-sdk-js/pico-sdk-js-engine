@@ -243,6 +243,9 @@ jerry_char_t *psj_jerry_vfget_error_message(const PSJErrorCode error_code, va_li
         case NOT_SUPPORTED:
             return VS("'%s' not supported", args);
 
+        case HIDDEN_PATH:
+            return S("Hidden files are protected from reading, writing, or deleting");
+
         default:
             return S("Undefined Error");
     }

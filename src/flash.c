@@ -144,6 +144,13 @@ void psj_flash_cleanup()
     lfs_unmount(&lfs);
 }
 
+bool psj_is_hidden_file(const jerry_char_t *path)
+{
+    // files starting with "." are hidden
+    // for example, ".config"
+    return path[0] == '.';
+}
+
 int psj_flash_save(const jerry_char_t *path, const jerry_char_t *data, const bool append)
 {
     lfs_file_t file;
