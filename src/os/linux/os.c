@@ -113,7 +113,7 @@ bool os_getchar_timeout_us_is_valid(int chr)
 
 void os_restart(bool hard)
 {
-    jsengine_set_state(JSENGINE_STATE_REQ_STOPPING);
+    jsengine_set_state(JSENGINE_STATE_REQ_RESTART);
 }
 
 void os_exit()

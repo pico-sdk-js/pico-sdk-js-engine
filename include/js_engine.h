@@ -7,6 +7,7 @@
 #define JSENGINE_STATE_RUNNING          (1)
 #define JSENGINE_STATE_REQ_STOPPING     (2)
 #define JSENGINE_STATE_AWAIT_STOPPING   (3)
+#define JSENGINE_STATE_REQ_RESTART      (4)
 
 int8_t jsengine_get_state();
 void jsengine_set_state(int8_t state);

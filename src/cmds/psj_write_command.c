@@ -10,9 +10,15 @@ jerry_value_t psj_write_command(jerry_value_t request_args)
     jerry_value_t response;
     bool append = false;
 
-    if (path == NULL)
+    if (path == NULL || path[0] == '\0')
     {
         response = psj_jerry_create_error_obj(MISSING_ARG, "path");
+        goto cleanup;
+    }
+
+    if (psj_is_hidden_file(path))
+    {
+        response = psj_jerry_create_error_obj(HIDDEN_PATH);
         goto cleanup;
     }
 

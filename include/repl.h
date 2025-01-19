@@ -13,6 +13,9 @@ void psj_repl_cycle();
 
 void psj_repl_cleanup();
 
+jerry_value_t psj_config_read_command(jerry_value_t request_args);
+jerry_value_t psj_config_write_command(jerry_value_t request_args);
+
 jerry_value_t psj_read_command(jerry_value_t request_args);
 jerry_value_t psj_write_command(jerry_value_t request_args);
 jerry_value_t psj_ls_command(jerry_value_t request_args);

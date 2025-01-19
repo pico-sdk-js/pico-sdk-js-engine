@@ -12,7 +12,7 @@
             "name": "(gdb) Launch local",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/pico-sdk-js-0.0.0",
+            "program": "${workspaceFolder}/build/pico-sdk-js-0.0.3",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/build",

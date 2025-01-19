@@ -17,7 +17,13 @@
         "psj.h": "c",
         "types.h": "c",
         "lfs.h": "c",
-        "stdbool.h": "c"
+        "stdbool.h": "c",
+        "ratio": "c",
+        "system_error": "c",
+        "array": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c"
     },
     "cmake.configureSettings": {
         "TARGET_OS": "linux_x86_64",

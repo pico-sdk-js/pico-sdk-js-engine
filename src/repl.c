@@ -114,6 +114,12 @@ void psj_repl_init()
     
     // ## SYSTEM COMMANDS
 
+    // Read config settings
+    psj_add_command("config_r", psj_config_read_command);
+
+    // Write config settings
+    psj_add_command("config_w", psj_config_write_command);
+
     // View stats about the system
     psj_add_command("stats", psj_stats_command);
     
