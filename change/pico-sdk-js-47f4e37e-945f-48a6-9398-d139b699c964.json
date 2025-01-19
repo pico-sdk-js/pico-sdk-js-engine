@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Adding \"autorun\" configuration to automatically start a script on startup",
-  "packageName": "pico-sdk-js",
-  "email": "jt000@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}

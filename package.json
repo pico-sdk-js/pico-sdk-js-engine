@@ -1,6 +1,6 @@
 {
   "name": "pico-sdk-js",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "devDependencies": {
     "@xmldom/xmldom": "^0.9.6",
     "beachball": "^2.47.0",

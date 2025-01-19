@@ -1,8 +1,16 @@
 # Change Log - pico-sdk-js
 
-<!-- This log was last generated on Fri, 27 Dec 2024 22:35:09 GMT and should not be manually modified. -->
+<!-- This log was last generated on Sun, 19 Jan 2025 14:46:08 GMT and should not be manually modified. -->
 
 <!-- Start content -->
+
+## 0.1.0
+
+Sun, 19 Jan 2025 14:46:08 GMT
+
+### Minor changes
+
+- Adding "autorun" configuration to automatically start a script on startup (jt000@users.noreply.github.com)
 
 ## 0.0.3
 
