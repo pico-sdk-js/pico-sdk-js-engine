@@ -23,10 +23,12 @@
         "array": "c",
         "tuple": "c",
         "type_traits": "c",
-        "utility": "c"
+        "utility": "c",
+        "timer.h": "c",
+        "clocks.h": "c"
     },
     "cmake.configureSettings": {
-        "TARGET_OS": "linux_x86_64",
+        "TARGET_OS": "rp2040",
         "TARGET_VERSION": "0.0.1"
     },
     "remote.extensionKind": {

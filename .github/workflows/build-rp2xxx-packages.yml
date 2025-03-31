@@ -1,4 +1,4 @@
-name: Build RP2XXX Package
+name: Build rp2040 Package
 
 permissions: 
   contents: write
@@ -62,7 +62,7 @@ jobs:
 
     - name: Run build
       id: run-build
-      run: node build --rebuild --target rp2xxx --release
+      run: node build --rebuild --target rp2040 --release
 
     - name: Merge version bump
       if: ${{ inputs.release }}

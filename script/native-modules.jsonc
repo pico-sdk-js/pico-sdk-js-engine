@@ -116,7 +116,7 @@
             {
               "type": "uint32_t",
               "name": "gpio",
-              "description": "The GPIO number to use. Allowable GPIO numbers are 26 to 29 inclusive."
+              "description": "The GPIO number to use. Allowable GPIO numbers are 26 to 29 inclusive on RP2040 or RP2350A, 40-48 inclusive on RP2350B."
             }
           ]
         },
@@ -137,7 +137,7 @@
           "name": "adc_get_selected_input",
           "description": "Get the currently selected ADC input channel.",
           "returnType": "uint",
-          "returnDescription": "The currently selected input channel. 0...3 are GPIOs 26...29 respectively. Input 4 is the onboard temperature sensor. .",
+          "returnDescription": "The currently selected input channel.",
           "args": []
         },
         {
@@ -149,7 +149,7 @@
             {
               "type": "uint32_t",
               "name": "input_mask",
-              "description": "A bit pattern indicating which of the 5 inputs are to be sampled. Write a value of 0 to disable round robin sampling."
+              "description": "A bit pattern indicating which of the 5/8 inputs are to be sampled. Write a value of 0 to disable round robin sampling."
             }
           ]
         },
@@ -281,21 +281,14 @@
           ]
         },
         {
-          "name": "clocks_init",
-          "description": "Initialise the clock hardware.",
-          "returnType": "void",
-          "returnDescription": "",
-          "args": []
-        },
-        {
           "name": "clock_configure",
-          "description": "Configure the specified clock.",
+          "description": "Configure the specified clock with automatic clock divisor setup.",
           "returnType": "bool",
-          "returnDescription": "",
+          "returnDescription": "True if the clock is updated, false if freq > src_freq .",
           "args": [
             {
               "type": "uint32_t",
-              "name": "clk_index",
+              "name": "clock",
               "description": "The clock to configure."
             },
             {
@@ -328,7 +321,7 @@
           "args": [
             {
               "type": "uint32_t",
-              "name": "clk_index",
+              "name": "clock",
               "description": "The clock to stop."
             }
           ]
@@ -341,7 +334,7 @@
           "args": [
             {
               "type": "uint32_t",
-              "name": "clk_index",
+              "name": "clock",
               "description": "Clock."
             }
           ]
@@ -367,7 +360,7 @@
           "args": [
             {
               "type": "uint32_t",
-              "name": "clk_index",
+              "name": "clock",
               "description": ""
             },
             {
@@ -393,29 +386,29 @@
         },
         {
           "name": "clock_gpio_init_int_frac",
-          "description": "Output an optionally divided clock to the specified gpio pin.",
+          "description": "",
           "returnType": "void",
           "returnDescription": "",
           "args": [
             {
               "type": "uint32_t",
               "name": "gpio",
-              "description": "The GPIO pin to output the clock to. Valid GPIOs are: 21, 23, 24, 25. These GPIOs are connected to the GPOUT0-3 clock generators."
+              "description": ""
             },
             {
               "type": "uint32_t",
               "name": "src",
-              "description": "The source clock. See the register field CLOCKS_CLK_GPOUT0_CTRL_AUXSRC for a full list. The list is the same for each GPOUT clock generator."
+              "description": ""
             },
             {
               "type": "uint32_t",
               "name": "div_int",
-              "description": "The integer part of the value to divide the source clock by. This is useful to not overwhelm the GPIO pin with a fast clock. this is in range of 1..2^24-1."
+              "description": ""
             },
             {
               "type": "uint8_t",
-              "name": "div_frac",
-              "description": "The fractional part of the value to divide the source clock by. This is in range of 0..255 (/256)."
+              "name": "div_frac8",
+              "description": ""
             }
           ]
         },
@@ -450,7 +443,7 @@
           "args": [
             {
               "type": "uint32_t",
-              "name": "clk_index",
+              "name": "clock",
               "description": "The clock to configure."
             },
             {
@@ -484,15 +477,15 @@
             {
               "type": "uint32_t",
               "name": "fn",
-              "description": "Which GPIO function select to use from list gpio_function."
+              "description": "Which GPIO function select to use from list gpio_function_t."
             }
           ]
         },
         {
           "name": "gpio_get_function",
           "description": "Determine current GPIO function.",
-          "returnType": "int",
-          "returnDescription": "Which GPIO function is currently selected from list gpio_function .",
+          "returnType": "uint32_t",
+          "returnDescription": "Which GPIO function is currently selected from list gpio_function_t .",
           "args": [
             {
               "type": "uint32_t",
@@ -761,7 +754,7 @@
         },
         {
           "name": "gpio_get_drive_strength",
-          "description": "Determine current slew rate for a specified GPIO.",
+          "description": "Determine current drive strength for a specified GPIO.",
           "returnType": "int",
           "returnDescription": "Current drive strength of that GPIO .",
           "args": [
@@ -948,7 +941,7 @@
           "name": "gpio_get_all",
           "description": "Get raw value of all GPIOs.",
           "returnType": "uint32_t",
-          "returnDescription": "Bitmask of raw GPIO values, as bits 0-29 .",
+          "returnDescription": "Bitmask of raw GPIO values .",
           "args": []
         },
         {
@@ -960,7 +953,7 @@
             {
               "type": "uint32_t",
               "name": "mask",
-              "description": "Bitmask of GPIO values to set, as bits 0-29."
+              "description": "Bitmask of GPIO values to set."
             }
           ]
         },
@@ -973,7 +966,7 @@
             {
               "type": "uint32_t",
               "name": "mask",
-              "description": "Bitmask of GPIO values to clear, as bits 0-29."
+              "description": "Bitmask of GPIO values to clear."
             }
           ]
         },
@@ -986,20 +979,20 @@
             {
               "type": "uint32_t",
               "name": "mask",
-              "description": "Bitmask of GPIO values to toggle, as bits 0-29."
+              "description": "Bitmask of GPIO values to toggle."
             }
           ]
         },
         {
           "name": "gpio_put_masked",
-          "description": "Drive GPIO high/low depending on parameters.",
+          "description": "Drive GPIOs high/low depending on parameters.",
           "returnType": "void",
           "returnDescription": "",
           "args": [
             {
               "type": "uint32_t",
               "name": "mask",
-              "description": "Bitmask of GPIO values to change, as bits 0-29."
+              "description": "Bitmask of GPIO values to change."
             },
             {
               "type": "uint32_t",
@@ -1017,7 +1010,7 @@
             {
               "type": "uint32_t",
               "name": "value",
-              "description": "Bitmask of GPIO values to change, as bits 0-29."
+              "description": "Bitmask of GPIO values to change."
             }
           ]
         },
@@ -1061,7 +1054,7 @@
             {
               "type": "uint32_t",
               "name": "mask",
-              "description": "Bitmask of GPIO to set to output, as bits 0-29."
+              "description": "Bitmask of GPIO to set to output."
             }
           ]
         },
@@ -1074,7 +1067,7 @@
             {
               "type": "uint32_t",
               "name": "mask",
-              "description": "Bitmask of GPIO to set to input, as bits 0-29."
+              "description": "Bitmask of GPIO to set to input."
             }
           ]
         },
@@ -1155,21 +1148,21 @@
         },
         {
           "name": "time_us_32",
-          "description": "Return a 32 bit timestamp value in microseconds.",
+          "description": "Return a 32 bit timestamp value in microseconds for the default timer instance.",
           "returnType": "uint32_t",
           "returnDescription": "The 32 bit timestamp .",
           "args": []
         },
         {
           "name": "time_us_64",
-          "description": "Return the current 64 bit timestamp value in microseconds.",
+          "description": "Return the current 64 bit timestamp value in microseconds for the default timer instance.",
           "returnType": "uint64_t",
-          "returnDescription": "The 64 bit timestamp.",
+          "returnDescription": "The 64 bit timestamp .",
           "args": []
         },
         {
           "name": "busy_wait_us_32",
-          "description": "Busy wait wasting cycles for the given (32 bit) number of microseconds.",
+          "description": "Busy wait wasting cycles for the given (32 bit) number of microseconds using the default timer instance.",
           "returnType": "void",
           "returnDescription": "",
           "args": [
@@ -1182,7 +1175,7 @@
         },
         {
           "name": "busy_wait_us",
-          "description": "Busy wait wasting cycles for the given (64 bit) number of microseconds.",
+          "description": "Busy wait wasting cycles for the given (64 bit) number of microseconds using the default timer instance.",
           "returnType": "void",
           "returnDescription": "",
           "args": [
@@ -1195,7 +1188,7 @@
         },
         {
           "name": "busy_wait_ms",
-          "description": "Busy wait wasting cycles for the given number of milliseconds.",
+          "description": "Busy wait wasting cycles for the given number of milliseconds using the default timer instance.",
           "returnType": "void",
           "returnDescription": "",
           "args": [
@@ -1208,7 +1201,7 @@
         },
         {
           "name": "busy_wait_until",
-          "description": "Busy wait wasting cycles until after the specified timestamp.",
+          "description": "Busy wait wasting cycles until after the specified timestamp using the default timer instance.",
           "returnType": "void",
           "returnDescription": "",
           "args": [
@@ -1221,7 +1214,7 @@
         },
         {
           "name": "time_reached",
-          "description": "Check if the specified timestamp has been reached.",
+          "description": "Check if the specified timestamp has been reached on the default timer instance.",
           "returnType": "bool",
           "returnDescription": "True if it is now after the specified timestamp .",
           "args": [
@@ -1234,7 +1227,7 @@
         },
         {
           "name": "hardware_alarm_claim",
-          "description": "Cooperatively claim the use of this hardware alarm_num.",
+          "description": "Cooperatively claim the use of this hardware alarm_num on the default timer instance.",
           "returnType": "void",
           "returnDescription": "",
           "args": [
@@ -1247,20 +1240,20 @@
         },
         {
           "name": "hardware_alarm_claim_unused",
-          "description": "Cooperatively claim the use of this hardware alarm_num.",
+          "description": "Cooperatively claim the use of a hardware alarm_num on the default timer instance.",
           "returnType": "int",
-          "returnDescription": "Alarm_num the hardware alarm claimed or -1 if requires was false, and none are available .",
+          "returnDescription": "Alarm_num the hardware alarm claimed or -1 if required was false, and none are available .",
           "args": [
             {
               "type": "bool",
               "name": "required",
-              "description": ""
+              "description": "If true the function will panic if none are available."
             }
           ]
         },
         {
           "name": "hardware_alarm_unclaim",
-          "description": "Cooperatively release the claim on use of this hardware alarm_num.",
+          "description": "Cooperatively release the claim on use of this hardware alarm_num on the default timer instance.",
           "returnType": "void",
           "returnDescription": "",
           "args": [
@@ -1273,7 +1266,7 @@
         },
         {
           "name": "hardware_alarm_is_claimed",
-          "description": "Determine if a hardware alarm has been claimed.",
+          "description": "Determine if a hardware alarm has been claimed on the default timer instance.",
           "returnType": "bool",
           "returnDescription": "True if claimed, false otherwise .",
           "args": [
@@ -1287,7 +1280,7 @@
         {
           "name": "hardware_alarm_set_callback",
           "callback": "CALLBACK_HARDWARE_ALARM",
-          "description": "Enable/Disable a callback for a hardware timer on this core.",
+          "description": "Enable/Disable a callback for a hardware alarm on the default timer instance on this core.",
           "returnType": "void",
           "returnDescription": "",
           "args": [
@@ -1305,7 +1298,7 @@
         },
         {
           "name": "hardware_alarm_set_target",
-          "description": "Set the current target for the specified hardware alarm.",
+          "description": "Set the current target for the specified hardware alarm on the default timer instance.",
           "returnType": "bool",
           "returnDescription": "True if the target was \"missed\"; i.e. it was in the past, or occurred before a future hardware timeout could be set .",
           "args": [
@@ -1323,7 +1316,7 @@
         },
         {
           "name": "hardware_alarm_cancel",
-          "description": "Cancel an existing target (if any) for a given hardware_alarm.",
+          "description": "Cancel an existing target (if any) for the specified hardware_alarm on the default timer instance.",
           "returnType": "void",
           "returnDescription": "",
           "args": [
@@ -1336,7 +1329,7 @@
         },
         {
           "name": "hardware_alarm_force_irq",
-          "description": "Force and IRQ for a specific hardware alarm.",
+          "description": "Force and IRQ for a specific hardware alarm on the default timer instance.",
           "returnType": "void",
           "returnDescription": "",
           "args": [

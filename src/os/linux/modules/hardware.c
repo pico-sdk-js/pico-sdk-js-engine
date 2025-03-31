@@ -391,28 +391,6 @@ cleanup:
     return ret_val;
 }
 
-static jerry_value_t clocks_init_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
-{
-    jerry_value_t ret_val;
-
-    if (
-        args_count != 0
-    )
-    {
-        ret_val = psj_jerry_create_error_obj(RUNTIME_ARG_ERROR, "clocks_init()");
-        goto cleanup;
-    }
-
-
-    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "clocks_init();");
-    
-    ret_val = jerry_create_undefined();
-
-cleanup:
-
-    return ret_val;
-}
-
 static jerry_value_t clock_configure_handler(const jerry_value_t function_obj, const jerry_value_t this_val, const jerry_value_t args_p[], const jerry_length_t args_count)
 {
     jerry_value_t ret_val;
@@ -430,13 +408,13 @@ static jerry_value_t clock_configure_handler(const jerry_value_t function_obj, c
         goto cleanup;
     }
 
-    uint32_t clk_index = psj_jerry_to_uint32_t(args_p[0]);
+    uint32_t clock = psj_jerry_to_uint32_t(args_p[0]);
     uint32_t src = psj_jerry_to_uint32_t(args_p[1]);
     uint32_t auxsrc = psj_jerry_to_uint32_t(args_p[2]);
     uint32_t src_freq = psj_jerry_to_uint32_t(args_p[3]);
     uint32_t freq = psj_jerry_to_uint32_t(args_p[4]);
 
-    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "clock_configure(%i, %i, %i, %i, %i);", clk_index, src, auxsrc, src_freq, freq);
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "clock_configure(%i, %i, %i, %i, %i);", clock, src, auxsrc, src_freq, freq);
     const bool v = true;
     ret_val = jerry_create_boolean(v);
 
@@ -458,9 +436,9 @@ static jerry_value_t clock_stop_handler(const jerry_value_t function_obj, const 
         goto cleanup;
     }
 
-    uint32_t clk_index = psj_jerry_to_uint32_t(args_p[0]);
+    uint32_t clock = psj_jerry_to_uint32_t(args_p[0]);
 
-    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "clock_stop(%i);", clk_index);
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "clock_stop(%i);", clock);
     
     ret_val = jerry_create_undefined();
 
@@ -482,9 +460,9 @@ static jerry_value_t clock_get_hz_handler(const jerry_value_t function_obj, cons
         goto cleanup;
     }
 
-    uint32_t clk_index = psj_jerry_to_uint32_t(args_p[0]);
+    uint32_t clock = psj_jerry_to_uint32_t(args_p[0]);
 
-    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "clock_get_hz(%i);", clk_index);
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "clock_get_hz(%i);", clock);
     const uint32_t v = 0;
     ret_val = jerry_create_number(v);
 
@@ -531,10 +509,10 @@ static jerry_value_t clock_set_reported_hz_handler(const jerry_value_t function_
         goto cleanup;
     }
 
-    uint32_t clk_index = psj_jerry_to_uint32_t(args_p[0]);
+    uint32_t clock = psj_jerry_to_uint32_t(args_p[0]);
     uint32_t hz = psj_jerry_to_uint32_t(args_p[1]);
 
-    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "clock_set_reported_hz(%i, %i);", clk_index, hz);
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "clock_set_reported_hz(%i, %i);", clock, hz);
     
     ret_val = jerry_create_undefined();
 
@@ -595,9 +573,9 @@ static jerry_value_t clock_gpio_init_int_frac_handler(const jerry_value_t functi
     uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
     uint32_t src = psj_jerry_to_uint32_t(args_p[1]);
     uint32_t div_int = psj_jerry_to_uint32_t(args_p[2]);
-    uint8_t div_frac = psj_jerry_to_uint8_t(args_p[3]);
+    uint8_t div_frac8 = psj_jerry_to_uint8_t(args_p[3]);
 
-    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "clock_gpio_init_int_frac(%i, %i, %i, %i);", gpio, src, div_int, div_frac);
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "clock_gpio_init_int_frac(%i, %i, %i, %i);", gpio, src, div_int, div_frac8);
     
     ret_val = jerry_create_undefined();
 
@@ -650,12 +628,12 @@ static jerry_value_t clock_configure_gpin_handler(const jerry_value_t function_o
         goto cleanup;
     }
 
-    uint32_t clk_index = psj_jerry_to_uint32_t(args_p[0]);
+    uint32_t clock = psj_jerry_to_uint32_t(args_p[0]);
     uint32_t gpio = psj_jerry_to_uint32_t(args_p[1]);
     uint32_t src_freq = psj_jerry_to_uint32_t(args_p[2]);
     uint32_t freq = psj_jerry_to_uint32_t(args_p[3]);
 
-    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "clock_configure_gpin(%i, %i, %i, %i);", clk_index, gpio, src_freq, freq);
+    jerry_port_log(JERRY_LOG_LEVEL_TRACE, "clock_configure_gpin(%i, %i, %i, %i);", clock, gpio, src_freq, freq);
     const bool v = true;
     ret_val = jerry_create_boolean(v);
 
@@ -706,7 +684,7 @@ static jerry_value_t gpio_get_function_handler(const jerry_value_t function_obj,
     uint32_t gpio = psj_jerry_to_uint32_t(args_p[0]);
 
     jerry_port_log(JERRY_LOG_LEVEL_TRACE, "gpio_get_function(%i);", gpio);
-    const int v = 0;
+    const uint32_t v = 0;
     ret_val = jerry_create_number(v);
 
 cleanup:
@@ -2179,10 +2157,6 @@ jerry_value_t get_hardware_module()
 
     handler = jerry_create_external_function(adc_irq_set_enabled_handler);
     psj_jerry_set_property(module, "adc_irq_set_enabled", handler);
-    jerry_release_value(handler);
-
-    handler = jerry_create_external_function(clocks_init_handler);
-    psj_jerry_set_property(module, "clocks_init", handler);
     jerry_release_value(handler);
 
     handler = jerry_create_external_function(clock_configure_handler);

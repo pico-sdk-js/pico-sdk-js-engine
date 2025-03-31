@@ -73,12 +73,12 @@
 4. Run build
 
     ```bash
-    node build --rebuild --target rp2xxx
+    node build --rebuild --target rp2040
     ```
 
     **Build Options**
 
-    * **--target <os\arch>** - Sets the target for the build to `linux_amd64`, `linux_x86_64`, or `rp2xxx` (rp2040)
+    * **--target <os\arch>** - Sets the target for the build to `linux_amd64`, `linux_x86_64`, or `rp2040` (rp2040)
     * **--clean** - Removes previous build folders
     * **--build** - Runs cmake &amp; make and produces an executable package
     * **--rebuild** - Cleans the build folder before running a build
@@ -86,10 +86,10 @@
 
 ## Debugging on pico
 
-1. Build for RP2xxx with debug bits
+1. Build for rp2040 with debug bits
 
     ```bash
-    node build --rebuild --target rp2xxx
+    node build --rebuild --target rp2040
     ```
 
 2. Publish to Pico

@@ -16,16 +16,16 @@ if (NOT BUILD_TYPE)
   set(BUILD_TYPE Debug)
 endif()
 
-set(VALID_TARGET_OS "linux_amd64" "linux_x86_64" "rp2xxx")
+set(VALID_TARGET_OS "linux_amd64" "linux_x86_64" "rp2040")
 
 if (NOT TARGET_OS IN_LIST VALID_TARGET_OS)
-  message(FATAL_ERROR "::error ::TARGET_OS must be: linux_amd64, linux_x86_64, or rp2xxx")
+  message(FATAL_ERROR "::error ::TARGET_OS must be: linux_amd64, linux_x86_64, or rp2040")
 endif()
 
-if (TARGET_OS STREQUAL "rp2xxx")
+if (TARGET_OS STREQUAL "rp2040")
   set(MEM_HEAP_SIZE 180)
   set(JERRYSCRIPT_BUILD_TYPE ${BUILD_TYPE})
-  set(TARGET_OS_SRC ${TARGET_OS})
+  set(TARGET_OS_SRC "rp2xxx")
 elseif (TARGET_OS MATCHES "linux_.*")
   set(MEM_HEAP_SIZE 1024)
   set(JERRYSCRIPT_BUILD_TYPE ${BUILD_TYPE})
@@ -49,7 +49,7 @@ set(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 # Set JERRYSCRIPT settings
 set(JERRYSCRIPT_SDK_PATH ${ROOT_DIR}/lib/jerryscript)
 
-if (TARGET_OS STREQUAL "rp2xxx")
+if (TARGET_OS STREQUAL "rp2040")
   set(JERRYSCRIPT_TOOLCHAIN ${ROOT_DIR}/jerryscript_toolchain.cmake)
   elseif(TARGET_OS STREQUAL "linux_amd64")
   set(JERRYSCRIPT_TOOLCHAIN ${JERRYSCRIPT_SDK_PATH}/cmake/toolchain_linux_aarch64.cmake)
@@ -113,7 +113,7 @@ set(JERRYSCRIPT_BUILD_ARGS
   # --gc-limit=100000
 )
 
-if (TARGET_OS STREQUAL "rp2xxx")
+if (TARGET_OS STREQUAL "rp2040")
   # Set PICO settings
   set(PICO_SDK_PATH ${ROOT_DIR}/lib/pico-sdk)
   set(PICO_BOARD pico_w)
@@ -125,7 +125,7 @@ endif()
 
 project(${TARGET_NAME} CXX C ASM)
 
-if (TARGET_OS STREQUAL "rp2xxx")
+if (TARGET_OS STREQUAL "rp2040")
   # Initialize PICO_SDK
   pico_sdk_init()
 endif()
@@ -174,7 +174,7 @@ set(LIBRARIES
   ${LIBRARIES}
   ${JERRYSCRIPT_LIBS})
 
-if (TARGET_OS STREQUAL "rp2xxx")
+if (TARGET_OS STREQUAL "rp2040")
   set(LIBRARIES
     ${LIBRARIES}
     pico_stdlib
@@ -214,7 +214,7 @@ include_directories(${OUTPUT_TARGET} ${INCLUDES})
 add_executable(${OUTPUT_TARGET} ${ROOT_DIR}/src/main.c)
 target_link_libraries(${OUTPUT_TARGET} PRIVATE ${LIBRARIES} ${OUTPUT_LIB})
 
-if (TARGET_OS STREQUAL "rp2xxx")
+if (TARGET_OS STREQUAL "rp2040")
   # Enable USB output, disable UART output
   pico_enable_stdio_usb(${OUTPUT_TARGET} 1)
   pico_enable_stdio_uart(${OUTPUT_TARGET} 0)

@@ -149,8 +149,8 @@ function make() {
 }
 
 function test() {
-  if (argv.target === "rp2xxx") {
-    console.error('::error ::Running tests on rp2xxx is not supported.');
+  if (argv.target === "rp2040") {
+    console.error('::error ::Running tests on rp2040 is not supported.');
     process.exit(1);
 }
 

@@ -36,7 +36,7 @@
             "type": "shell",
             "command": "node",
             "args": [
-                "build", "--target", "rp2xxx", "--rebuild", "--publish", "--debug"
+                "build", "--target", "rp2040", "--rebuild", "--publish", "--debug"
             ]
         }
     ],
